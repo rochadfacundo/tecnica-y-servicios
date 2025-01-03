@@ -1,0 +1,61 @@
+<div class="contact-container">
+  <!-- Sección de contacto con cuadro central -->
+  <div class="contact-box d-flex flex-wrap align-items-center justify-content-between">
+    <!-- Parte izquierda -->
+    <div class="contact-left  text-white text-center">
+      <h3>¡Contáctanos!</h3>
+      <p><strong>Ubicación:</strong> Humberto Primo 985 Piso 13 of. 1 y 2</p>
+      <p><strong>Horarios:</strong> Lunes a Viernes 09 a 17 hs.</p>
+      <p>
+        <a href="https://wa.me/1156537467">
+          <strong>
+            <i class="icon fab fa-whatsapp fa-lg fs-1" aria-hidden="true"></i></strong>
+        </a>
+
+      </p>
+      <p>
+
+        <a
+          href="https://www.instagram.com/tecnicayservicios/"
+          class="m-2 text-white text-decoration-underline">
+          <strong><i class="icon fab fa-instagram fa-lg fs-1"></i></strong>
+        </a>
+      </p>
+    </div>
+
+<!-- Parte derecha -->
+<div class="contact-right">
+  <!-- Placeholder del mapa -->
+   <div class="map">
+  <google-map
+    mapId="6759407fa377403a"
+    [center]="center"
+    [zoom]="zoom"
+    class="map-container">
+    <map-advanced-marker [position]="center"></map-advanced-marker>
+  </google-map>
+</div>
+</div>
+
+
+  </div>
+
+  <!-- Sección de formulario -->
+  <div class="contact-form bg-white">
+    <h4 class="text-center mb-4">Déjanos tu consulta, te responderemos cuanto antes:</h4>
+    <form>
+      <div class="mb-3">
+        <input type="text" class="form-control" placeholder="Nombre" required />
+      </div>
+      <div class="mb-3">
+        <input type="email" class="form-control" placeholder="Correo electrónico" required />
+      </div>
+      <div class="mb-3">
+        <textarea class="form-control" rows="5" placeholder="Mensaje" required></textarea>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary px-5">Enviar</button>
+      </div>
+    </form>
+  </div>
+</div>

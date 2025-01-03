@@ -1,0 +1,32 @@
+<div class="container-fluid home-container">
+  <div class="row no-gutters">
+    <!-- Sección de texto -->
+    <div class="right-section">
+      <h1 class="align-text-top libre-baskerville-bold m-5 fs-2">Técnica y Servicios</h1>
+      <p class=" libre-baskerville-regular  m-2 fs-4">Organizador Asesor de Productores de Seguros</p>
+      <h3 class="libre-baskerville-regular-italic m-3 fs-3">Acompañarte es nuestro propósito</h3>
+    </div>
+    <!-- Sección de imagen -->
+    <div class="left-section">
+      <img src="../../../assets/desktop.png" alt="Escritorio" class="img-fluid">
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Nueva sección: Compañías -->
+<div class="container-fluid companias-section">
+  <h2 class="text-center text-white libre-baskerville-bold">Trabajamos con las mejores compañías</h2>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let compania of companias">
+      <div class="card">
+        <img [src]="compania.logo" alt="{{ compania.nombre }}" class="card-img-top">
+        <div class="card-body">
+          <h5 class="card-title text-center libre-baskerville-regular-italic fs-3">{{ compania.nombre }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

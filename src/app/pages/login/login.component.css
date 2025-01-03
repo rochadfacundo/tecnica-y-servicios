@@ -1,0 +1,98 @@
+
+
+html, body {
+  height: 100%; /* Asegura que el body ocupe toda la altura de la ventana */
+  margin: 0;    /* Elimina márgenes predeterminados */
+}
+
+.image{
+  background-image: url('/assets/desktop2.png'); /* Ruta absoluta desde la raíz */
+  background-size: cover; /* Hace que la imagen cubra toda la pantalla */
+  background-position: center; /* Centra la imagen */
+  background-attachment: fixed; /* Mantiene la imagen fija mientras se hace scroll */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh; /* Hacemos que el contenedor sea más pequeño */
+  width: 80%; /* Aumentamos el ancho del contenedor */
+  max-width: 600px; /* Máximo ancho */
+  background-color: var(--menu-bg-color);
+  border: 4px solid #f0f0f0;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 137, 123, 0.3);
+  padding: 20px;
+  position: relative; /* Asegura que el contenedor esté por encima de la imagen */
+  z-index: 1; /* Asegura que esté por encima de la imagen */
+}
+
+.card {
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: white;
+}
+
+h3 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.mb-3 {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-control {
+  margin-bottom: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+  border: 2px solid var(--menu-bg-color);
+  box-shadow: 0 0 8px rgba(0, 137, 123, 0.5);
+  outline: none;
+}
+
+.text-danger {
+  font-size: 0.85rem;
+  color: red;
+  height: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.text-danger.visible {
+  opacity: 1;
+}
+
+button {
+  background-color: var(--menu-bg-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #00695c;
+}
+
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+}

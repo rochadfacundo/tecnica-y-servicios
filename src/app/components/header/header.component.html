@@ -1,0 +1,43 @@
+<nav class="menu navbar navbar-expand-md"> <!-- Cambié 'lg' por 'md' -->
+  <div class="container-fluid">
+    <div class="logo pb-3">
+      <a routerLink="/">
+        <img class="borde-r" src=".../../../../../assets/logo.png" alt="Logo Técnica y Servicios">
+      </a>
+    </div>
+
+    <!-- Botón para pantallas pequeñas -->
+    <button class="navbar-toggler" style="background-color: #b9b4b4;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon">
+        <i class="fas fa-bars" style="color:#000; font-size:27px;"></i>
+      </span>
+    </button>
+
+    <!-- Menú de navegación que se colapsa en pantallas más pequeñas -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav mx-auto">
+        <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="home" routerLinkActive="router-link-active" >
+          <i class="fa fa-home" aria-hidden="true"></i> Home
+        </a>
+        <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="acerca-de" routerLinkActive="router-link-active" >
+          <i class="fa fa-user" aria-hidden="true"></i> Acerca de
+        </a>
+        <a class="borde m-2 p-3 text-decoration-none text-center no-focus"  routerLink="servicios" routerLinkActive="router-link-active">
+          <i class="fa fa-file-text" aria-hidden="true"></i> Servicios
+        </a>
+        <a class="borde m-2 p-3 text-decoration-none text-center no-focus"  routerLink="contacto" routerLinkActive="router-link-active">
+          <i class="fa fa-envelope" aria-hidden="true"></i> Contacto
+        </a>
+      </div>
+
+      <div class="nav navbar-nav ms-auto">
+
+        <a class="text-center no-focus" routerLink="login" routerLinkActive="router-link-active">
+
+          <i class="bi bi-person-circle fs-1"></i>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,74 @@
+[
+  {
+    "email": "",
+    "role": "Director Técnico",
+    "name": "Horacio",
+    "surName": "Rocha"
+  },
+  {
+    "email": "",
+    "role": "Director comercial",
+    "name": "Juan Pablo",
+    "surName": "Rodríguez"
+  },
+  {
+    "email": "acollia@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Andrea",
+    "surName": "Collia"
+  },
+  {
+    "email": "afranze@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "América",
+    "surName": "Franzé"
+  },
+  {
+    "email": "jtassone@tecnicayservicios.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Jessica",
+    "surName": "Tassone"
+  },
+  {
+    "email": "jorsi@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Julieta",
+    "surName": "Orsi"
+  },
+  {
+    "email": "candrade@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Claudia",
+    "surName": "Andrade"
+  },
+  {
+    "email": "fescalante@tecnicayseguros.com.ar",
+    "role": "Ejecutivo Comercial",
+    "name": "Federico",
+    "surName": "Escalante"
+  },
+  {
+    "email": "sojeda@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Sofía",
+    "surName": "Ojeda"
+  },
+  {
+    "email": "mrocha@tecnicayseguros.com.ar",
+    "role": "Cobranzas",
+    "name": "Micaela",
+    "surName": "Rocha"
+  },
+  {
+    "email": "ademarchi@tecnicayseguros.com.ar",
+    "role": "Encargada Siniestros",
+    "name": "Andrea",
+    "surName": "Demarchi"
+  },
+  {
+    "email": "sponce@tecnicayseguros.com.ar",
+    "role": "Administración Siniestros",
+    "name": "Silvia",
+    "surName": "Ponce"
+  }
+]

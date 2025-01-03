@@ -1,1 +1,66 @@
 /* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --menu-bg-color: #4c5c4c; /* Color de fondo para el menú */
+    --bg-color-light-green: #94c484;
+  
+    --color-light2-green:#74b45c;
+  }
+  
+  
+  
+  /*Font google*/
+  .libre-baskerville-regular {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .libre-baskerville-bold {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .libre-baskerville-regular-italic {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .borde-r{
+    /* Efecto de borde */
+    border: 2px solid rgba(0, 0, 0, 0.2); /* Borde sutil */
+    /* Sombra */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra suave */
+  
+    /* Transición para efectos */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 80%;
+    height: 60px;
+  }
+  
+  
+  .borde-r:hover{
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Aumenta la sombra */
+  }
+  
+  
+  .icon{
+    color:whitesmoke;
+  }
+  
+  .icon:hover{
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Aumenta la sombra */
+    color: var(--bg-color-light-green);
+    cursor: pointer;
+  }
+  
+  .icon .no-focus:focus {
+    outline: none; /* Eliminar el borde de enfoque */
+    box-shadow: none; /* Eliminar cualquier sombra extra */
+  }
+  
+  
