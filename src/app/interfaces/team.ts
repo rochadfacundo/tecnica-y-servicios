@@ -5,4 +5,5 @@ export interface Team {
   role:string;
   name:string;
   surName:string;
+  photo:string;
 }

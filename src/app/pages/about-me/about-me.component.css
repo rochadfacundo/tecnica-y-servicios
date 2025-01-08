@@ -119,6 +119,21 @@ p {
   box-sizing: border-box;
 }
 
+/* Estilo para las columnas (2 por fila) */
+.col-md-6 {
+  flex: 1 1 calc(50% - 1.5rem); /* 2 columnas por fila con espacio entre ellas */
+  box-sizing: border-box;
+}
+
+/* Estilo para la imagen dentro de la card */
+.card-img-top {
+  width: 120px;
+  height: 120px;
+  object-fit: cover; /* Asegura que la imagen se ajuste correctamente */
+  margin: 0 auto; /* Centra la imagen */
+  display: block;
+}
+
 /* Estilo de las cards */
 .card {
   background-color: white;

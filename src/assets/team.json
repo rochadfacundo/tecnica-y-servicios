@@ -3,72 +3,85 @@
     "email": "",
     "role": "Director Técnico",
     "name": "Horacio",
-    "surName": "Rocha"
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "",
     "role": "Director comercial",
     "name": "Juan Pablo",
-    "surName": "Rodríguez"
+    "surName": "Rodríguez",
+    "photo": "../assets/asesoramiento.png"
+
   },
   {
     "email": "acollia@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Andrea",
-    "surName": "Collia"
+    "surName": "Collia",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "afranze@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "América",
-    "surName": "Franzé"
+    "surName": "Franzé",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "jtassone@tecnicayservicios.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Jessica",
-    "surName": "Tassone"
+    "surName": "Tassone",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "jorsi@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Julieta",
-    "surName": "Orsi"
+    "surName": "Orsi",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "candrade@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Claudia",
-    "surName": "Andrade"
+    "surName": "Andrade",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "fescalante@tecnicayseguros.com.ar",
     "role": "Ejecutivo Comercial",
     "name": "Federico",
-    "surName": "Escalante"
+    "surName": "Escalante",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "sojeda@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Sofía",
-    "surName": "Ojeda"
+    "surName": "Ojeda",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "mrocha@tecnicayseguros.com.ar",
     "role": "Cobranzas",
     "name": "Micaela",
-    "surName": "Rocha"
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "ademarchi@tecnicayseguros.com.ar",
     "role": "Encargada Siniestros",
     "name": "Andrea",
-    "surName": "Demarchi"
+    "surName": "Demarchi",
+    "photo": "../assets/asesoramiento.png"
   },
   {
     "email": "sponce@tecnicayseguros.com.ar",
     "role": "Administración Siniestros",
     "name": "Silvia",
-    "surName": "Ponce"
+    "surName": "Ponce",
+    "photo": "../assets/asesoramiento.png"
   }
 ]
