@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Auth,createUserWithEmailAndPassword,signInWithEmailAndPassword} from '@angular/fire/auth';
 //import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 //import { auth } from '../../../firebase';
 
@@ -8,7 +9,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class AuthService {
 
-
+  private _auth=inject(Auth);
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -35,29 +36,29 @@ export class AuthService {
     return this.isAuthenticatedSubject.value;
   }
 
-  async login(email: string, password: string) {/*
+  async login(email: string, password: string) {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(this._auth, email, password);
       console.log('entramo y logueamo');
-      this.setAuthenticated(true); // Al iniciar sesión, se actualiza el estado de autenticación
+
       return userCredential.user;
     } catch (error) {
-      this.setAuthenticated(false); // Si ocurre un error, se marca como no autenticado
+
       console.error('Error al iniciar sesión', error);
       throw error;
-    }*/
+    }
   }
 
   async register(email:string,password:string)
   {
-    /*
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(this._auth, email, password);
       return userCredential.user;
   } catch (error) {
       console.error("Error al registrar usuario:", error);
       throw error;
-  }*/
+  }
   }
 
   async logout() {/*

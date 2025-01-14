@@ -8,13 +8,13 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AuthGuard, NoAuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  {path: 'home', component: HomeComponent
+  {path: 'home', component: HomeComponent,canActivate:[NoAuthGuard]
   },
   {path: 'acerca-de', component: AboutMeComponent},
   {path: 'servicios', component: ServicesComponent},
   {path: 'contacto', component: ContactMeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'dashboard', component: DashboardComponent},
+  {path: 'dashboard', component: DashboardComponent,canActivate:[AuthGuard]},
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' } // Ruta por defecto si no se encuentra otra
 ];
