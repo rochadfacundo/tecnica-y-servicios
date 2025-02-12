@@ -5,39 +5,44 @@ import { map } from 'rxjs';
 import { CanActivateFn } from '@angular/router';
 
 export const AuthGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService); // Usamos inject() para obtener el servicio
+  const authState = inject(AuthService);
   const router = inject(Router);
-/*
-  authService.isAuthenticated$.pipe(
+
+  return authState.authState$.pipe(
     map(state=>{
       console.log(state);
-      if(!state){
-        router.navigateByUrl('home');
-        return false;
-      }else{
+      if(!state)
+        {
+          //router.navigateByUrl('dashboard');
+          return false;
+        }
+
         return true;
-      }
-    })
-  )*/
-  return true;
+
+    }
+
+    )
+  )
 };
 
 export const NoAuthGuard:  CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-/*
-  authService.isAuthenticated$.pipe(
 
+  const authState = inject(AuthService);
+  const router = inject(Router);
+
+  return authState.authState$.pipe(
     map(state=>{
       console.log(state);
-      if(state){
-        router.navigateByUrl('dashboard');
-        return false;
-      }else{
-        return true;
-      }
-    })
-  )*/
+      if(!state)
+        {
+          return true;
+        }
 
-  return true;
+      router.navigateByUrl('dashboard');
+      return false;
+
+    }
+
+    )
+  )
 };

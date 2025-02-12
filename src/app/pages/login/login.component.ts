@@ -35,7 +35,9 @@ export class LoginComponent {
 
     try {
       // Convertimos el username en un correo electrónico ficticio
-      const email = `${username}@tecnicayservicios.com`;
+      //const email = `${username}@tecnicayservicios.com`;
+
+      const email = `${username}@admin.com`;
 
       // Llamamos al servicio de autenticación
       const user = await this.s_auth.login(email, password);

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Auth,createUserWithEmailAndPassword,signInWithEmailAndPassword} from '@angular/fire/auth';
+import { Auth,authState,createUserWithEmailAndPassword,getAuth,signInWithEmailAndPassword} from '@angular/fire/auth';
 //import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 //import { auth } from '../../../firebase';
 
@@ -14,18 +14,11 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor() {
-    // Escucha los cambios en el estado de autenticación
-    /*
-    onAuthStateChanged(auth, (user) => {
-      this.isAuthenticatedSubject.next(!!user); // Actualiza el estado
-    });*/
 
-
-
-
+  get authState$():Observable<any>
+  {
+    return authState(this._auth);
   }
-
 
     // Para el estado de autenticación, usa un setter que actualice el estado
     setAuthenticated(status: boolean) {
@@ -61,10 +54,10 @@ export class AuthService {
   }
   }
 
-  async logout() {/*
+  async logout() {
     // Lógica para cerrar sesión (si estás usando Firebase Authentication)
-    await auth.signOut();
-    this.setAuthenticated(false); // Se actualiza el estado a no autenticado*/
+    await this._auth.signOut();
+
   }
 
 
