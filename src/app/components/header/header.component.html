@@ -15,24 +15,36 @@
 
     <!-- Menú de navegación que se colapsa en pantallas más pequeñas -->
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav mx-auto">
-        <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="home" routerLinkActive="router-link-active" >
-          <i class="fa fa-home" aria-hidden="true"></i> Home
-        </a>
-        <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="acerca-de" routerLinkActive="router-link-active" >
-          <i class="fa fa-user" aria-hidden="true"></i> Acerca de
-        </a>
-        <a class="borde m-2 p-3 text-decoration-none text-center no-focus"  routerLink="servicios" routerLinkActive="router-link-active">
-          <i class="fa fa-file-text" aria-hidden="true"></i> Servicios
-        </a>
-        <a class="borde m-2 p-3 text-decoration-none text-center no-focus"  routerLink="contacto" routerLinkActive="router-link-active">
-          <i class="fa fa-envelope" aria-hidden="true"></i> Contacto
-        </a>
-      </div>
+  <div class="navbar-nav mx-auto">
+    <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+       routerLink="home"
+       routerLinkActive="router-link-active"
+       (click)="closeMenu()">
+      <i class="fa fa-home" aria-hidden="true"></i> Home
+    </a>
+    <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+       routerLink="acerca-de"
+       routerLinkActive="router-link-active"
+       (click)="closeMenu()">
+      <i class="fa fa-user" aria-hidden="true"></i> Acerca de
+    </a>
+    <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+       routerLink="servicios"
+       routerLinkActive="router-link-active"
+       (click)="closeMenu()">
+      <i class="fa fa-file-text" aria-hidden="true"></i> Servicios
+    </a>
+    <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+       routerLink="contacto"
+       routerLinkActive="router-link-active"
+       (click)="closeMenu()">
+      <i class="fa fa-envelope" aria-hidden="true"></i> Contacto
+    </a>
+  </div>
 
       <div class="nav navbar-nav ms-auto">
 
-        <a class="text-center no-focus" routerLink="login" routerLinkActive="router-link-active">
+        <a class="m-2 p-3 text-center no-focus" routerLink="login" routerLinkActive="router-link-active"  (click)="closeMenu()">
 
           <i class="bi bi-person-circle fs-1"></i>
         </a>

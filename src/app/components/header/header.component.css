@@ -34,6 +34,14 @@
 
 }
 
+.navbar-collapse {
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.collapsing {
+  height: 0 !important;
+  opacity: 0;
+}
 
 .borde {
   /* Efecto de borde */

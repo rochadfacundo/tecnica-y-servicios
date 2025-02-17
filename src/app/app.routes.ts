@@ -6,15 +6,29 @@ import { ContactMeComponent } from './pages/contact-me/contact-me.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AuthGuard, NoAuthGuard } from './guards/auth.guard';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 
 export const routes: Routes = [
-  {path: 'home', component: HomeComponent,canActivate:[NoAuthGuard]
+  {
+    path: '',
+    component: MainLayoutComponent, // Usa el layout principal
+    children: [
+      { path: 'home', component: HomeComponent },
+      { path: 'acerca-de', component: AboutMeComponent },
+      { path: 'servicios', component: ServicesComponent },
+      { path: 'contacto', component: ContactMeComponent },
+      { path: 'login', component: LoginComponent },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+    ]
   },
-  {path: 'acerca-de', component: AboutMeComponent},
-  {path: 'servicios', component: ServicesComponent},
-  {path: 'contacto', component: ContactMeComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'dashboard', component: DashboardComponent,canActivate:[AuthGuard]},
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'home' } // Ruta por defecto si no se encuentra otra
+  {
+    path: 'dashboard',
+    component: DashboardLayoutComponent, // Usa el layout del dashboard
+    canActivate: [AuthGuard], // Protegido con el guard
+    children: [
+      { path: '', component: DashboardComponent }
+    ]
+  },
+  { path: '**', redirectTo: 'home' }
 ];
