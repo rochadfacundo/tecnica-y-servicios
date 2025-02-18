@@ -24,18 +24,18 @@ const handler: Handler = async () => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",  // 🔥 Permite solicitudes desde cualquier origen
+        "Access-Control-Allow-Origin": "*",  // Permite solicitudes desde cualquier origen
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify(response.data),
     };
   } catch (error: any) {
-    console.error("❌ Error en la petición:", error.response?.data || error.message);
+    console.error(" Error en la petición:", error.response?.data || error.message);
     return {
       statusCode: error.response?.status || 500,
       headers: {
-        "Access-Control-Allow-Origin": "*",  // 🔥 También en caso de error
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       },
