@@ -57,12 +57,12 @@ const handler: Handler = async () => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
       headers: {
-        "Access-Control-Allow-Origin": "*",  // Permite peticiones de cualquier origen
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      }
+        "Access-Control-Allow-Origin": "*", // Permitir solicitudes desde cualquier origen
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS", // Métodos permitidos
+        "Access-Control-Allow-Headers": "Content-Type", // Encabezados permitidos
+      },
+      body: response.data,
     };
   } catch (error: any) {
     console.error("❌ Error en la petición:", error.message);
