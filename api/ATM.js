@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from 'axios/dist/node/axios.cjs';
+
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
