@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Team } from '../../interfaces/team';
-import teamData from '../../../assets/team.json'; // Asegúrate de ajustar la ruta según tu estructura de carpetas
+import teamData from '../../../assets/team.json';
 import { CommonModule } from '@angular/common';
 
 @Component({
