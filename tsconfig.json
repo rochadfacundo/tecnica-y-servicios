@@ -15,11 +15,11 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "NodeNext",
+ "moduleResolution": "node",
     "importHelpers": true,
     "resolveJsonModule": true,
     "target": "ES2022",
-    "module": "NodeNext",
+  "module": "esnext",
     "lib": [
       "ES2022",
       "dom"

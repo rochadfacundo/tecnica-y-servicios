@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
-import { routeAnimations } from '../../animations/animations';
 
 
 declare var bootstrap: any; // 👈 Esto va antes de la clase

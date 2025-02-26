@@ -1,1 +1,54 @@
-<p>multicotizador works!</p>
+<div class="container mt-4">
+  <form [formGroup]="cotizacionForm">
+    <!-- Tipo de Vehículo -->
+    <div class="mb-3">
+      <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
+      <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
+        <option [ngValue]="null" disabled>Seleccione un tipo</option>
+        <option *ngFor="let tipo of tiposVehiculo" [value]="tipo.id">{{ tipo.nombre }}</option>
+      </select>
+    </div>
+
+    <!-- Marca -->
+    <div class="mb-3">
+      <label for="marcaVehiculo" class="form-label">Marca</label>
+      <select id="marcaVehiculo" class="form-select" formControlName="marca">
+        <option [ngValue]="null" disabled>Seleccione una marca</option>
+        <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.descripcion }}</option>
+      </select>
+    </div>
+
+    <!-- Año -->
+    <div class="mb-3">
+      <label for="anioVehiculo" class="form-label">Año</label>
+      <select id="anioVehiculo" class="form-select" formControlName="anio">
+        <option [ngValue]="null" disabled>Seleccione un año</option>
+        <option *ngFor="let anio of anios" [value]="anio">{{ anio }}</option>
+      </select>
+    </div>
+
+    <!-- Modelo -->
+    <div class="mb-3">
+      <label for="modeloVehiculo" class="form-label">Modelo</label>
+      <select id="modeloVehiculo" class="form-select" formControlName="modelo">
+        <option [ngValue]="null" disabled>Seleccione un modelo</option>
+        <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.descripcion }}</option>
+      </select>
+    </div>
+
+    <!-- Version -->
+  <div class="mb-3">
+    <label for="versionVehiculo" class="form-label">Versión</label>
+    <select id="versionVehiculo" class="form-select" formControlName="version">
+      <option [ngValue]="null" disabled>Seleccione una versión</option>
+      <option *ngFor="let version of versiones" [value]="version.id">{{ version.descripcion }}</option>
+    </select>
+  </div>
+
+
+    <!-- Botón Cotizar -->
+    <div class="d-grid gap-2">
+      <button type="button" class="btn btn-primary">Cotizar</button>
+    </div>
+  </form>
+</div>
