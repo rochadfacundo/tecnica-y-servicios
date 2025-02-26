@@ -1,85 +1,82 @@
 import * as functions from "firebase-functions";
-import { getMarcas, getModelos, getVersiones } from "./rus-service";
+import express, { Request, Response } from "express";
+import cors from "cors";
+import { cotizarRus, getMarcas, getModelos, getVersiones } from "./rus-service";
 
-export const obtenerMarcas = functions.https.onRequest(async (req, res) => {
-  // Configuración de CORS
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+const app = express();
+// Habilitar CORS para todas las solicitudes
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+app.use(express.json());
 
-  if (req.method === "OPTIONS") {
-    res.status(204).send("");
-    return;
-  }
-
+// ✅ Obtener marcas
+app.get("/marcas", async (req: Request, res: Response) => {
   try {
     const tipoUnidad = Number(req.query.tipoUnidad);
     if (!tipoUnidad) {
-      res.status(400).json({ error: "tipoUnidad es requerido" });
-      return;
+      return res.status(400).json({ error: "tipoUnidad es requerido" });
     }
 
     const marcas = await getMarcas(tipoUnidad);
-    res.status(200).json(marcas);
-  } catch (error: unknown) {
-    res.status(500).json({ error });
+    return res.status(200).json(marcas);
+  } catch (error) {
+    console.error("Error obteniendo marcas:", error);
+    return res.status(500).json({ error: "Error interno al obtener marcas" });
   }
 });
 
-export const obtenerModelos = functions.https.onRequest(async (req, res) => {
-  // Configuración de CORS
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    res.status(204).send("");
-    return;
-  }
-
+// ✅ Obtener modelos
+app.get("/modelos", async (req: Request, res: Response) => {
   try {
     const marca = Number(req.query.marca);
     const anio = Number(req.query.anio);
-
     if (!marca || !anio) {
-      res.status(400).json({ error: "marca y anio son requeridos" });
-      return;
+      return res.status(400).json({ error: "marca y anio son requeridos" });
     }
 
     const modelos = await getModelos(marca, anio);
-    res.status(200).json(modelos);
-  } catch (error: unknown) {
-    res.status(500).json({ error });
+    return res.status(200).json(modelos);
+  } catch (error) {
+    console.error("Error obteniendo modelos:", error);
+    return res.status(500).json({ error: "Error interno al obtener modelos" });
   }
 });
 
-export const obtenerVersiones = functions.https.onRequest(async (req, res) => {
-  // Configuración de CORS
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    res.status(204).send("");
-    return;
-  }
-
+// ✅ Obtener versiones
+app.get("/versiones", async (req: Request, res: Response) => {
   try {
-    const idModelo = req.query.idGrupoModelo;
-    const idMod = idModelo ? Number(idModelo) : undefined;
+    const idMod=req.query.idGrupoModelo;
+
+    const idModelo = idMod ? Number(idMod) : undefined;
     const anio = req.query.anio ? Number(req.query.anio) : undefined;
     const idMarca = req.query.idMarca ? Number(req.query.idMarca) : undefined;
 
-    // Validación según la API
-    if (!idMod && (!idMarca || !anio)) {
-      res.status(400).json({ error: "Debe indicar un modelo o marca y año." });
-      return;
+    if (!idModelo && (!idMarca || !anio)) {
+      return res.status(400).json({error: "Indicar modelo o marca y año"});
     }
 
-    const versiones = idMod ? await getVersiones(idMod, anio) : undefined;
-
-    res.status(200).json(versiones);
-  } catch (error: unknown) {
-    res.status(500).json({ error });
+    const versiones = idModelo ? await getVersiones(idModelo, anio) : undefined;
+    return res.status(200).json(versiones);
+  } catch (error) {
+    console.error("Error obteniendo versiones:", error);
+    return res.status(500).json({error: "Error interno al obtener versiones"});
   }
 });
+
+// ✅ Cotización de seguros
+app.put("/cotizaciones/autos", async (req: Request, res: Response) => {
+  try {
+    const cotizacion = await cotizarRus(req.body);
+    return res.status(200).json(cotizacion);
+  } catch (error) {
+    console.error("Error realizando cotización:", error);
+    return res.status(500).json({ error: "Error interno en la cotización" });
+  }
+});
+
+// ✅ Exportamos la función principal
+export const api = functions.https.onRequest(app);

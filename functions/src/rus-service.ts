@@ -112,3 +112,21 @@ export async function getVersiones(
     throw new Error("No se pudieron obtener las versiones del vehículo");
   }
 }
+
+/**
+ * Realiza una cotización de seguro de vehículo.
+ * @param cotizacionData Datos de la cotización.
+ */
+export async function cotizarRus(cotizacionData: any): Promise<any> {
+  try {
+    const token = await getToken();
+    const response = await axios.put(`${API_URL}/cotizaciones/autos`, cotizacionData, {
+      headers: { Authorization: token},
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error realizando cotización:", error.response?.data || error.message);
+    throw new Error("No se pudo realizar la cotización");
+  }
+}
