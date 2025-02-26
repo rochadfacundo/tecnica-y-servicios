@@ -49,17 +49,19 @@ app.get("/modelos", async (req: Request, res: Response) => {
 // ✅ Obtener versiones
 app.get("/versiones", async (req: Request, res: Response) => {
   try {
-    const idMod=req.query.idGrupoModelo;
+    const idModelo=req.query.idGrupoModelo;
+    const tipoU=req.query.tipoUnidad;
 
-    const idModelo = idMod ? Number(idMod) : undefined;
+    const idMod = idModelo ? Number(idModelo) : undefined;
     const anio = req.query.anio ? Number(req.query.anio) : undefined;
     const idMarca = req.query.idMarca ? Number(req.query.idMarca) : undefined;
+    const uni = tipoU? Number(tipoU) : undefined;
 
     if (!idModelo && (!idMarca || !anio)) {
       return res.status(400).json({error: "Indicar modelo o marca y año"});
     }
 
-    const versiones = idModelo ? await getVersiones(idModelo, anio) : undefined;
+    const versiones = idMod ? await getVersiones(idMod, anio, uni) : undefined;
     return res.status(200).json(versiones);
   } catch (error) {
     console.error("Error obteniendo versiones:", error);

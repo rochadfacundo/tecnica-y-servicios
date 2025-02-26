@@ -36,19 +36,79 @@
       </select>
     </div>
 
-    <!-- Version -->
-  <div class="mb-3">
-    <label for="versionVehiculo" class="form-label">Versión</label>
-    <select id="versionVehiculo" class="form-select" formControlName="version">
-      <option [ngValue]="null" disabled>Seleccione una versión</option>
-      <option *ngFor="let version of versiones" [value]="version.id">{{ version.descripcion }}</option>
-    </select>
-  </div>
+    <!-- Versión -->
+    <div class="mb-3">
+      <label for="versionVehiculo" class="form-label">Versión</label>
+      <select id="versionVehiculo" class="form-select" formControlName="version"  (change)="onVersionChange($event)">
+        <option [ngValue]="null" disabled>Seleccione una versión</option>
+        <option *ngFor="let version of versiones" [value]="version.id">{{ version.descripcion }}</option>
+      </select>
+    </div>
 
+
+
+
+
+ <!-- Código Tipo Interés -->
+<div class="mb-3">
+  <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
+  <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
+    <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
+    <option *ngFor="let tipo of tipoInteresOpciones" [value]="tipo.id">{{ tipo.nombre }}</option>
+  </select>
+</div>
+
+    <!-- Cuotas -->
+    <div class="mb-3">
+      <label for="cuotas" class="form-label">Cuotas</label>
+      <input type="number" id="cuotas" class="form-control" formControlName="cuotas">
+    </div>
+
+    <!-- Condición Fiscal -->
+    <div class="mb-3">
+      <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
+      <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
+        <option *ngFor="let condicion of condicionesFiscales" [value]="condicion.id">{{ condicion.condicion }}</option>
+      </select>
+    </div>
+
+    <!-- Código Postal -->
+    <div class="mb-3">
+      <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
+      <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
+    </div>
+
+    <!-- Control Satelital -->
+    <div class="mb-3">
+      <label for="controlSatelital" class="form-label">Control Satelital</label>
+      <select id="controlSatelital" class="form-select" formControlName="controlSatelital">
+        <option *ngFor="let opcion of opcionesSiNo" [value]="opcion.id">{{ opcion.opcion }}</option>
+      </select>
+    </div>
+
+    <!-- GNC -->
+    <div class="mb-3">
+      <label for="gnc" class="form-label">GNC</label>
+      <select id="gnc" class="form-select" formControlName="gnc">
+        <option *ngFor="let opcion of opcionesSiNo" [value]="opcion.id">{{ opcion.opcion }}</option>
+      </select>
+    </div>
+
+    <!-- Vigencia Desde -->
+    <div class="mb-3">
+      <label for="vigenciaDesde" class="form-label">Vigencia Desde</label>
+      <input type="date" id="vigenciaDesde" class="form-control" formControlName="vigenciaDesde">
+    </div>
+
+    <!-- Vigencia Hasta -->
+    <div class="mb-3">
+      <label for="vigenciaHasta" class="form-label">Vigencia Hasta</label>
+      <input type="date" id="vigenciaHasta" class="form-control" formControlName="vigenciaHasta">
+    </div>
 
     <!-- Botón Cotizar -->
     <div class="d-grid gap-2">
-      <button type="button" class="btn btn-primary">Cotizar</button>
+      <button type="button" class="btn btn-primary" (click)="cotizar()">Cotizar</button>
     </div>
   </form>
 </div>
