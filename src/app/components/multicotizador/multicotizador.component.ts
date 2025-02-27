@@ -240,7 +240,7 @@ export class MulticotizadorComponent implements OnInit {
   {
     this.cotizarRUS();
 
-    this.cotizarMercantil();
+   // this.cotizarMercantil();
   }
 
 
