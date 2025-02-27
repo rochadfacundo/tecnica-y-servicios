@@ -21,3 +21,26 @@ export interface VehiculosRus
   uso:string;
   codia?:number;
 }
+
+export interface RusCotizado {
+  id: number | null;
+  responsabilidadCivil: string | null;
+  descripcionComercial: string;
+  numeroSolicitud: string | null;
+  codigoRC: string;
+  descripcionRC: string;
+  detalleCoberturaRC: string;
+  codigoCasco: string;
+  descripcionCasco: string;
+  detalleCoberturaCasco: string;
+  prima: number;
+  premio: number;
+  iva: number;
+  sumaAsegurada: number;
+  ajusteAutomatico: string;
+  ajustesAutomaticosPosibles: string[];
+  franquicia: number;
+  auxilioMecanico: string;
+  paisesLimitrofes: string;
+  coberturaVida: string;
+}

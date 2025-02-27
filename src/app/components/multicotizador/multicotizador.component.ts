@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
-import { CotizacionRioUruguay, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
+import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
 
 @Component({
   selector: 'app-multicotizador',
@@ -22,6 +22,7 @@ export class MulticotizadorComponent implements OnInit {
   versiones: any[] = [];
   usos: any[] = [];
   codigosUso: any[] = [];
+  cotizacionesRus: RusCotizado[] = [];
 
   public readonly tiposVehiculo = [
     { id: 1, nombre: 'AUTO' },
@@ -269,7 +270,11 @@ export class MulticotizadorComponent implements OnInit {
     this.s_rus.cotizar(cotizacionData).subscribe({
       next: (response) => {
         console.log('Cotización exitosa:', response);
-        // Acá podés manejar la respuesta, por ejemplo, mostrar un mensaje o actualizar la UI
+
+        this.cotizacionesRus = response.dtoList;
+
+
+    console.log('Cotizaciones procesadas:', this.cotizacionesRus);
       },
       error: (error) => {
         console.error('Error en la cotización:', error);
