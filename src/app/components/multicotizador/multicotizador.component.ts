@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
+import { CotizacionMercantil } from '../../interfaces/cotizacionMercantil';
 
 @Component({
   selector: 'app-multicotizador',
@@ -18,6 +19,7 @@ export class MulticotizadorComponent implements OnInit {
   marcas: any[] = [];
   anios: number[] = [];
   codModelo:number=0;
+  gnc:boolean=false;
   modelos: any[] = [];
   versiones: any[] = [];
   usos: any[] = [];
@@ -169,6 +171,7 @@ export class MulticotizadorComponent implements OnInit {
     this.s_rus.getModelos(marca, anio).subscribe(
       (data: any) => {
         this.modelos = data.dtoList;
+        console.log(this.modelos);
         this.cotizacionForm.get('modelo')?.enable();
       },
       (error) => {
@@ -232,7 +235,43 @@ export class MulticotizadorComponent implements OnInit {
     );
   }
 
-  cotizar(): void {
+
+  cotizar()
+  {
+    this.cotizarRUS();
+
+    this.cotizarMercantil();
+  }
+
+
+  cotizarMercantil()
+  {
+    const formValues = this.cotizacionForm.value;
+
+    const getGNC= this.getSiNo(formValues.gnc);
+
+    if(getGNC=='SI')
+    {
+      this.gnc=true;
+    }else
+    {
+      this.gnc=false;
+    }
+
+    const cotizacionData: CotizacionMercantil = {
+      canal: 78,
+      localidad: { codigo_postal: Number(formValues.cpLocalidadGuarda) },
+      vehiculo:
+      { infoauto: 170761,
+        anio: formValues.anio,
+        uso: 1,
+        gnc: this.gnc,
+        rastreo: 0 },
+      productor: { id: 86322 }
+    };
+  }
+
+  cotizarRUS(): void {
     if (this.cotizacionForm.invalid) {
       console.warn('El formulario no es válido');
       return;
