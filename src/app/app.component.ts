@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   isNavigating = false;
 
   constructor(
+
     private router: Router,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
