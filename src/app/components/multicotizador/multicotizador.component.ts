@@ -51,22 +51,58 @@ export class MulticotizadorComponent implements OnInit {
     { id: 5, nombre: 'IMPLEMENTOS'},
   ];
 
+  public readonly clausulasAjuste=
+  [
+    { id: 0, nombre: '0%' },
+    { id: 10, nombre: '10%' },
+    { id: 20, nombre: '20%' },
+    { id: 30, nombre: '30%'}
+  ];
+
+  public readonly tiposDeUso=
+  [
+    { id: 1, uso: 'PARTICULAR' },
+    { id: 2, uso: 'COMERCIAL' },
+  ];
+
+  private getTiposUso(id: number): string {
+    const tipoUso = this.tiposDeUso.find(item => item.id === id);
+    return tipoUso ? tipoUso.uso : 'PARTICULAR';
+  }
+
   public readonly opcionesSiNo = [
     { id: 1, opcion: 'SI' },
     { id: 2, opcion: 'NO' }
   ];
 
-  public readonly condicionesFiscales = [
-    { id: 1, condicion: 'CF' },
-    { id: 2, condicion: 'EX' },
-    { id: 3, condicion: 'FM' },
-    { id: 4, condicion: 'GC' },
-    { id: 5, condicion: 'RI' },
-    { id: 6, condicion: 'RMT' },
-    { id: 7, condicion: 'RNI' },
-    { id: 8, condicion: 'SSF' },
-    { id: 9, condicion: 'CDE' }
+  public readonly tiposVigencia = [
+    { id: 1, opcion: 'TRIMESTRAL' },
+    { id: 2, opcion: 'SEMESTRAL' },
+    { id: 3, opcion: 'ANUAL' }
   ];
+
+  private getTiposVigencia(id: number): string {
+    const tipoVigencia = this.tiposVigencia.find(item => item.id === id);
+    return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
+  }
+
+  public readonly condicionesFiscales = [
+    { id: 1, condicion: 'CF', descripcion: 'Consumidor final'},
+    { id: 2, condicion: 'EX', descripcion: 'Exento'},
+    { id: 3, condicion: 'FM', descripcion: 'Resp. Inscp. Fac. M'},
+    { id: 4, condicion: 'GC', descripcion: 'Gran contribuyente'},
+    { id: 5, condicion: 'RI', descripcion: 'Responsable inscripto'},
+    { id: 6, condicion: 'RMT', descripcion: 'Responsable monotributo'},
+    { id: 7, condicion: 'RNI', descripcion: 'No inscripto'},
+    { id: 8, condicion: 'SSF', descripcion: 'Sin situación fiscal'},
+    { id: 9, condicion: 'CDE', descripcion: 'Cliente del exterior'}
+  ];
+
+  private getCondicionFiscal(id: number): string {
+    const condicion = this.condicionesFiscales.find(cf => cf.id === id);
+    return condicion ? condicion.condicion : 'CF';
+  }
+
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -79,10 +115,7 @@ export class MulticotizadorComponent implements OnInit {
     this.setupValueChanges();
   }
 
-  private getCondicionFiscal(id: number): string {
-    const condicion = this.condicionesFiscales.find(cf => cf.id === id);
-    return condicion ? condicion.condicion : 'CF';
-  }
+
 
   private getSiNo(id: number): string {
     return id === 1 ? 'SI' : 'NO';
@@ -90,26 +123,38 @@ export class MulticotizadorComponent implements OnInit {
 
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
-      tipoVehiculo: [null],
+      codigoTipoInteres: [{value:null}],
+      tipoVehiculo: [{ value: null, disabled: true }],
       marca: [{ value: null, disabled: true }],
       anio: [{ value: null, disabled: true }],
       modelo: [{ value: null, disabled: true }],
       version: [{ value: null, disabled: true }],
-      uso: [{ value: null, disabled: true }],
+      uso: [{ value: null}],
       codigoUso: [{ value: null, disabled: true }],
-      codigoTipoInteres: [null],
+      tipoVigencia:[{value:null}],
       cuotas:[{value:null}],
+      clausulaAjuste: [{value:null}],
       condicionFiscal:[{value:null}],
       cpLocalidadGuarda:[{value:null}],
       controlSatelital:[{value:null}],
       gnc:[{value:null}],
-      vigenciaDesde:[{value:null}],
+      vigenciaDesde:[this.formatDate(new Date())],
       vigenciaHasta:[{value:null}]
 
     });
   }
 
   private setupValueChanges(): void {
+
+    this.cotizacionForm.get('codigoTipoInteres')?.valueChanges.subscribe((tipo) => {
+
+      if (tipo==1) {
+        this.cotizacionForm.get('tipoVehiculo')?.enable();
+      } else {
+        this.cotizacionForm.get('tipoVehiculo')?.disable();
+      }
+    });
+
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       if (tipo) {
         this.obtenerMarcas(tipo);
@@ -153,6 +198,14 @@ export class MulticotizadorComponent implements OnInit {
     const anioActual = new Date().getFullYear();
     this.anios = Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
   }
+
+  // Función para formatear la fecha en 'yyyy-MM-dd'
+  private formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agregar 0 si es necesario
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
   private obtenerMarcas(tipo: number): void {
     this.s_rus.getMarcas(tipo).subscribe(
@@ -286,7 +339,7 @@ export class MulticotizadorComponent implements OnInit {
         cpLocalidadGuarda:Number(formValues.cpLocalidadGuarda),
         gnc: this.getSiNo(formValues.gnc),
         modeloVehiculo: this.codModelo,
-        uso: 'PARTICULAR'
+        uso: this.getTiposUso(formValues.uso)
     }];
 
     const cotizacionData: CotizacionRioUruguay = {
@@ -294,7 +347,9 @@ export class MulticotizadorComponent implements OnInit {
       codigoSolicitante: 4504,
       codigoTipoInteres: this.getTipo(formValues.tipoVehiculo),
       cuotas: Number(formValues.cuotas),
+      ajusteAutomatico:Number(formValues.clausulaAjuste),
       condicionFiscal: this.getCondicionFiscal(formValues.condicionFiscal),
+      tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
       vehiculos: vehiculos,
       vigenciaDesde: formValues.vigenciaDesde,
       vigenciaHasta: formValues.vigenciaHasta,

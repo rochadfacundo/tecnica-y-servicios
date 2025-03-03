@@ -78,10 +78,26 @@
     "photo": "../assets/asesoramiento.png"
   },
   {
-    "email": "sponce@tecnicayseguros.com.ar",
-    "role": "Administración Siniestros",
-    "name": "Silvia",
-    "surName": "Ponce",
+    "email": "abarber@tecnicayseguros.com.ar",
+    "role": "Desarrollo comercial",
+    "name": "Adriana",
+    "surName": "Barber",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "brocha@tecnicayseguros.com.ar",
+    "role": "Community manager",
+    "name": "Belen",
+    "surName": "Rocha",
     "photo": "../assets/asesoramiento.png"
   }
+  ,
+  {
+    "email": "facundodrocha@gmail.com",
+    "role": "Sistemas",
+    "name": "Facundo",
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
+  }
+
 ]

@@ -3,7 +3,9 @@ export interface CotizacionRioUruguay{
   codigoSolicitante: number;
   codigoTipoInteres:string,
   cuotas:number;
+  ajusteAutomatico:number;
   condicionFiscal:string;
+  tipoVigencia:string;
   vehiculos:VehiculosRus[];
   vigenciaDesde:string;
   vigenciaHasta:string;

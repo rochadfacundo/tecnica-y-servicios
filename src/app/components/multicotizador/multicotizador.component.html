@@ -1,5 +1,19 @@
 <div class="container mt-4">
   <form [formGroup]="cotizacionForm">
+
+ <!-- Código Tipo Interés -->
+<div class="mb-3">
+  <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
+  <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
+    <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
+    <option *ngFor="let tipo of tipoInteresOpciones" [value]="tipo.id">{{ tipo.nombre }}</option>
+  </select>
+</div>
+
+    <!-- SECCION VEHICULOS -->
+
+<div class="" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
+
     <!-- Tipo de Vehículo -->
     <div class="mb-3">
       <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
@@ -46,17 +60,14 @@
     </div>
 
 
+    <!-- Tipo Vigencia -->
+    <div class="mb-3">
+      <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
+      <select id="tipoVigencia" class="form-select" formControlName="tipoVigencia">
+        <option *ngFor="let vigencia of tiposVigencia" [value]="vigencia.id">{{ vigencia.opcion }}</option>
+      </select>
+    </div>
 
-
-
- <!-- Código Tipo Interés -->
-<div class="mb-3">
-  <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
-  <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
-    <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
-    <option *ngFor="let tipo of tipoInteresOpciones" [value]="tipo.id">{{ tipo.nombre }}</option>
-  </select>
-</div>
 
     <!-- Cuotas -->
     <div class="mb-3">
@@ -64,11 +75,24 @@
       <input type="number" id="cuotas" class="form-control" formControlName="cuotas">
     </div>
 
+ <!-- Clausula de ajuste -->
+ <div class="mb-3">
+  <label for="clausulaAjuste" class="form-label">Clausula de ajuste</label>
+  <select id="clausulaAjuste" class="form-select" formControlName="clausulaAjuste">
+    <option [ngValue]="null" disabled>Seleccione una clausula de ajuste</option>
+    <option *ngFor="let ajuste of clausulasAjuste" [value]="ajuste.id">{{ ajuste.nombre }}</option>
+  </select>
+</div>
+
+
+
     <!-- Condición Fiscal -->
     <div class="mb-3">
       <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
       <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
-        <option *ngFor="let condicion of condicionesFiscales" [value]="condicion.id">{{ condicion.condicion }}</option>
+        <option *ngFor="let condicion of condicionesFiscales" [value]="condicion.id">
+          {{ condicion.condicion }} -   {{ condicion.descripcion }}
+        </option>
       </select>
     </div>
 
@@ -94,6 +118,16 @@
       </select>
     </div>
 
+    <!-- TIpo de uso -->
+    <div class="mb-3">
+      <label for="uso" class="form-label">Tipo de uso</label>
+      <select id="uso" class="form-select" formControlName="uso">
+        <option *ngFor="let uso of tiposDeUso" [value]="uso.id">
+          {{ uso.uso }}
+        </option>
+      </select>
+    </div>
+
     <!-- Vigencia Desde -->
     <div class="mb-3">
       <label for="vigenciaDesde" class="form-label">Vigencia Desde</label>
@@ -110,9 +144,15 @@
     <div class="d-grid gap-2">
       <button type="button" class="btn btn-primary" (click)="cotizar()">Cotizar</button>
     </div>
+
+  </div>
+
   </form>
 </div>
 
+
+
+<!--TABLA COTIZADORA-->
 
 <div  *ngIf="this.cotizacionesRus.length">
 <h3 class="m-3 p-3">RIO URUGUAY</h3>
