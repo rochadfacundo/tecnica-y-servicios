@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
-import { CanDeactivateFn, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map } from 'rxjs';
+import { first, map, tap } from 'rxjs';
 import { CanActivateFn } from '@angular/router';
 
 export const AuthGuard: CanActivateFn = (route, state) => {
@@ -9,40 +9,27 @@ export const AuthGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   return authState.authState$.pipe(
-    map(state=>{
-      console.log(state);
-      if(!state)
-        {
-          //router.navigateByUrl('dashboard');
-          return false;
-        }
-
-        return true;
-
-    }
-
-    )
-  )
+    first(), // En lugar de take(1), maneja mejor si no hay emisiones
+    tap(state => {
+      if (!state) {
+        router.navigateByUrl('/home');
+      }
+    }),
+    map(state => !!state)
+  );
 };
 
-export const NoAuthGuard:  CanActivateFn = (route, state) => {
-
+export const NoAuthGuard: CanActivateFn = (route, state) => {
   const authState = inject(AuthService);
   const router = inject(Router);
 
   return authState.authState$.pipe(
-    map(state=>{
-      console.log(state);
-      if(!state)
-        {
-          return true;
-        }
-
-      router.navigateByUrl('dashboard');
-      return false;
-
-    }
-
-    )
-  )
+    first(),
+    tap(state => {
+      if (state) {
+        router.navigateByUrl('/dashboard');
+      }
+    }),
+    map(state => !state)
+  );
 };

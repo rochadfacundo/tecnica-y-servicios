@@ -13,6 +13,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent, // Usa el layout principal
+    canActivate: [NoAuthGuard], // Protegido con el guard
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'acerca-de', component: AboutMeComponent },
