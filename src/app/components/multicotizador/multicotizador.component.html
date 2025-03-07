@@ -23,12 +23,12 @@
       </select>
     </div>
 
-    <!-- Marca -->
+    <!-- Marca     rio  uruguay  [value]="marca.id">{{ marca.descripcion }}  -->
     <div class="mb-3">
       <label for="marcaVehiculo" class="form-label">Marca</label>
       <select id="marcaVehiculo" class="form-select" formControlName="marca">
         <option [ngValue]="null" disabled>Seleccione una marca</option>
-        <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.descripcion }}</option>
+        <option *ngFor="let marca of marcas" [value]="marca.codigo">{{ marca.desc }}</option>
       </select>
     </div>
 
@@ -41,12 +41,12 @@
       </select>
     </div>
 
-    <!-- Modelo -->
+    <!-- Modelo rio uruguay [value]="modelo.id">{{ modelo.descripcion }}-->
     <div class="mb-3">
       <label for="modeloVehiculo" class="form-label">Modelo</label>
       <select id="modeloVehiculo" class="form-select" formControlName="modelo">
         <option [ngValue]="null" disabled>Seleccione un modelo</option>
-        <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.descripcion }}</option>
+        <option *ngFor="let modelo of modelos">{{ modelo }}</option>
       </select>
     </div>
 

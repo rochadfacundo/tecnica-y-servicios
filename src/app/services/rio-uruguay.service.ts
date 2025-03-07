@@ -24,12 +24,19 @@ export class RioUruguayService {
     if (tipoUnidad) params.tipoUnidad = tipoUnidad;
     if (idMarca) params.idMarca = idMarca;
 
+    console.log(params);
     return this.http.get(`${this.apiBaseUrl}/versiones`, { params });
   }
 
-  cotizar(data: any): Observable<any> {
+  cotizarAutos(data: any): Observable<any> {
 
     console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
     return this.http.put(`${this.apiBaseUrl}/cotizaciones/autos`, data);
+  }
+
+  cotizarMotos(data: any): Observable<any> {
+
+    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
+    return this.http.put(`${this.apiBaseUrl}/cotizaciones/motos`, data);
   }
 }

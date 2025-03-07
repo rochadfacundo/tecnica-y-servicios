@@ -4,6 +4,7 @@
 import axios from "axios";
 
 const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
+// const API_URLMOTO="https://uat4.sis.rus.com.ar/api-rus";
 const USERNAME = "18291036ws";
 const PASSWORD = "cambiar";
 
@@ -101,6 +102,7 @@ export async function getVersiones(
     if (tipoUnidad) params.TipoUnidad = tipoUnidad;
     if (idMarca) params.IdMarca = idMarca;
 
+
     const response = await axios.get(`${API_URL}/vehiculos/modelos`, {
       headers: { Authorization: token },
       params,
@@ -117,7 +119,7 @@ export async function getVersiones(
  * Realiza una cotización de seguro de vehículo.
  * @param cotizacionData Datos de la cotización.
  */
-export async function cotizarRus(cotizacionData: any): Promise<any> {
+export async function cotizarRusAutos(cotizacionData: any): Promise<any> {
   try {
     const token = await getToken();
     const response = await axios.put(`${API_URL}/cotizaciones/autos`, cotizacionData, {
@@ -130,3 +132,22 @@ export async function cotizarRus(cotizacionData: any): Promise<any> {
     throw new Error("No se pudo realizar la cotización");
   }
 }
+
+/**
+ * Realiza una cotización de seguro de vehículo.
+ * @param cotizacionData Datos de la cotización.
+ */
+export async function cotizarRusMotos(cotizacionData: any): Promise<any> {
+  try {
+    const token = await getToken();
+    const response = await axios.put(`${API_URL}/cotizaciones/motos`, cotizacionData, {
+      headers: { Authorization: token},
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error realizando cotización:", error.response?.data || error.message);
+    throw new Error("No se pudo realizar la cotización");
+  }
+}
+

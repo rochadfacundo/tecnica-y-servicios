@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
 import { CotizacionMercantil } from '../../interfaces/cotizacionMercantil';
+import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 
 @Component({
   selector: 'app-multicotizador',
@@ -18,6 +19,8 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionForm!: FormGroup;
   marcas: any[] = [];
   anios: number[] = [];
+  tipoVehiculo:string="";
+  codigoTipoInteres:string='';
   codModelo:number=0;
   gnc:boolean=false;
   modelos: any[] = [];
@@ -27,6 +30,8 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionesRus: RusCotizado[] = [];
 
   public readonly tiposVehiculo = [
+    { id: 7, nombre: 'MOTO MENOS 50 CC' },
+    { id: 8, nombre: 'MOTO MAS 50 CC' },
     { id: 1, nombre: 'AUTO' },
     { id: 2, nombre: 'PICK-UP "A"' },
     { id: 3, nombre: 'PICK-UP "B"' },
@@ -34,7 +39,7 @@ export class MulticotizadorComponent implements OnInit {
     { id: 5, nombre: 'CAMION HASTA 10 TN' },
     { id: 6, nombre: 'CAMION MAS 10 TN' },
     { id: 25, nombre: 'MOTORHOME' },
-    { id: 26, nombre: 'M3 OMNIBUS' }
+    { id: 26, nombre: 'M3 OMNIBUS' },
   ];
 
   private getTipo(id: number): string {
@@ -106,10 +111,12 @@ export class MulticotizadorComponent implements OnInit {
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
+    @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
     private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
@@ -157,7 +164,9 @@ export class MulticotizadorComponent implements OnInit {
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       if (tipo) {
-        this.obtenerMarcas(tipo);
+
+       // this.obtenerMarcasRUS(tipo);
+        this.obtenerMarcasMA();
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
@@ -176,7 +185,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (anio) {
-        this.obtenerModelos();
+        //this.obtenerModelosRUS();
+        this.obtenerModelosMA();
       } else {
         this.modelos = [];
         this.cotizacionForm.get('modelo')?.disable();
@@ -186,7 +196,7 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('modelo')?.valueChanges.subscribe((modelo) => {
       this.cotizacionForm.get('version')?.setValue(null);
       if (modelo) {
-        this.obtenerVersiones();
+        this.obtenerVersionesRUS();
       } else {
         this.versiones = [];
         this.cotizacionForm.get('version')?.disable();
@@ -207,32 +217,75 @@ export class MulticotizadorComponent implements OnInit {
   return `${year}-${month}-${day}`;
 }
 
-  private obtenerMarcas(tipo: number): void {
-    this.s_rus.getMarcas(tipo).subscribe(
-      (data: any) => {
+  private obtenerMarcasRUS(tipo: number): void {
+
+
+
+
+    /*
+    this.s_rus.getMarcas(tipo).subscribe({
+      next: (data: any) => {
         this.marcas = data.dtoList;
+        console.log(this.marcas);
         this.cotizacionForm.get('marca')?.enable();
       },
-      (error) => console.error('Error al obtener las marcas:', error)
-    );
+      error: (error) => console.error('Error al obtener las marcas:', error)
+    });*/
+
   }
 
-  private obtenerModelos(): void {
+  private obtenerMarcasMA() {
+    this.s_ma.obtenerMarcas().subscribe({
+      next: (data: any) => {
+        // Excluimos las primeras 11 marcas sugeridas
+        const marcasFiltradas = data.slice(11);
+
+        this.marcas = marcasFiltradas;
+
+        console.log(this.marcas); // Verificar las marcas filtradas
+        this.cotizacionForm.get('marca')?.enable();
+      },
+      error: (error) => console.error("Error al obtener las marcas:", error),
+    });
+  }
+
+  obtenerModelosMA(): void {
     const { marca, anio } = this.cotizacionForm.value;
     if (!marca || !anio) return;
 
-    this.s_rus.getModelos(marca, anio).subscribe(
-      (data: any) => {
+    const marcaInt= Number(marca);
+    const anioInt= Number(anio);
+    console.log(marcaInt, anioInt);
+    this.s_ma.obtenerModelos(marcaInt,anioInt).subscribe({
+      next: (data) => {
+       this.modelos = data;
+        console.log(this.modelos); // Asignamos los modelos recibidos a la variable
+        this.cotizacionForm.get('modelo')?.enable();
+      },
+      error: (error) => {
+        console.error("Error al obtener los modelos:", error);
+      }
+    });
+
+  }
+
+  private obtenerModelosRUS(): void {
+    const { marca, anio } = this.cotizacionForm.value;
+    if (!marca || !anio) return;
+
+
+    this.s_rus.getModelos(marca, anio).subscribe({
+      next: (data: any) => {
         this.modelos = data.dtoList;
         console.log(this.modelos);
         this.cotizacionForm.get('modelo')?.enable();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al obtener los modelos:', error);
         this.modelos = [];
         this.cotizacionForm.get('modelo')?.disable();
       }
-    );
+    });
   }
 
   onVersionChange(event: Event): void {
@@ -268,24 +321,25 @@ export class MulticotizadorComponent implements OnInit {
 
 
 
-  private obtenerVersiones(): void {
+  private obtenerVersionesRUS(): void {
     const { modelo, anio, tipoVehiculo, marca } = this.cotizacionForm.value;
     if (!modelo) return;
 
-    this.s_rus.getVersiones(modelo, anio, tipoVehiculo, marca).subscribe(
-      (data: any) => {
+    this.tipoVehiculo=tipoVehiculo;
 
-
+    console.log(modelo,anio,tipoVehiculo,marca);
+    this.s_rus.getVersiones(modelo, anio, tipoVehiculo, marca).subscribe({
+      next: (data: any) => {
         this.versiones = data.dtoList;
-        console.log(this.versiones);
+
         this.cotizacionForm.get('version')?.enable();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al obtener las versiones:', error);
         this.versiones = [];
         this.cotizacionForm.get('version')?.disable();
       }
-    );
+    });
   }
 
 
@@ -324,6 +378,9 @@ export class MulticotizadorComponent implements OnInit {
     };
   }
 
+
+
+
   cotizarRUS(): void {
     if (this.cotizacionForm.invalid) {
       console.warn('El formulario no es válido');
@@ -332,6 +389,12 @@ export class MulticotizadorComponent implements OnInit {
 
     const formValues = this.cotizacionForm.value;
 
+    if(this.tipoVehiculo=='7' ||this.tipoVehiculo=='8')
+    {
+      this.codigoTipoInteres='MOTOVEHICULO';
+    }else{
+      this.codigoTipoInteres='VEHICULO';
+    }
 
     const vehiculos: VehiculosRus[]=[{
         anio: String(formValues.anio),
@@ -342,10 +405,12 @@ export class MulticotizadorComponent implements OnInit {
         uso: this.getTiposUso(formValues.uso)
     }];
 
+
+
     const cotizacionData: CotizacionRioUruguay = {
       codigoProductor: 4504,
       codigoSolicitante: 4504,
-      codigoTipoInteres: this.getTipo(formValues.tipoVehiculo),
+      codigoTipoInteres: this.codigoTipoInteres,
       cuotas: Number(formValues.cuotas),
       ajusteAutomatico:Number(formValues.clausulaAjuste),
       condicionFiscal: this.getCondicionFiscal(formValues.condicionFiscal),
@@ -361,18 +426,43 @@ export class MulticotizadorComponent implements OnInit {
     console.log(cotizacionData);
 
 
-    this.s_rus.cotizar(cotizacionData).subscribe({
-      next: (response) => {
-        console.log('Cotización exitosa:', response);
+    if(this.codigoTipoInteres=='VEHICULO')
+    {
 
-        this.cotizacionesRus = response.dtoList;
+      console.log('cotizo auto');
+
+      this.s_rus.cotizarAutos(cotizacionData).subscribe({
+        next: (response) => {
+          console.log('Cotización exitosa:', response);
+
+          this.cotizacionesRus = response.dtoList;
 
 
-    console.log('Cotizaciones procesadas:', this.cotizacionesRus);
-      },
-      error: (error) => {
-        console.error('Error en la cotización:', error);
-      }
-    });
+      console.log('Cotizaciones procesadas:', this.cotizacionesRus);
+        },
+        error: (error) => {
+          console.error('Error en la cotización:', error);
+        }
+      });
+
+    }else
+    {
+      console.log('cotizo moto');
+      this.s_rus.cotizarMotos(cotizacionData).subscribe({
+        next: (response) => {
+          console.log('Cotización exitosa:', response);
+
+          this.cotizacionesRus = response.dtoList;
+
+
+      console.log('Cotizaciones procesadas:', this.cotizacionesRus);
+        },
+        error: (error) => {
+          console.error('Error en la cotización:', error);
+        }
+      });
+    }
+
+
   }
 }
