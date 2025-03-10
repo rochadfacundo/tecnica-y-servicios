@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -14,9 +14,15 @@ export class RioUruguayService {
     return this.http.get(`${this.apiBaseUrl}/marcas?tipoUnidad=${tipoUnidad}`);
   }
 
-  getModelos(marca: number, anio: number): Observable<any> {
-    return this.http.get(`${this.apiBaseUrl}/modelos?marca=${marca}&anio=${anio}`);
+  getModelos(marca: number, anio: number, tipoUnidad?: number): Observable<any> {
+    let params = new HttpParams().set("marca", marca).set("anio", anio);
+    if (tipoUnidad !== undefined) {
+      params = params.set("tipoUnidad", tipoUnidad);
+    }
+
+    return this.http.get(`${this.apiBaseUrl}/modelos`, { params });
   }
+
 
   getVersiones(idGrupoModelo: number, anio?: number, tipoUnidad?: number, idMarca?: number): Observable<any> {
     let params: any = { idGrupoModelo };

@@ -62,20 +62,26 @@ export async function getMarcas(tipoUnidad: number): Promise<any> {
 }
 
 /**
- * Obtiene los modelos de vehículos según la marca y el año.
+ * Obtiene los modelos de vehículos según la marca, el año y el tipo de unidad.
  * @param marca Código de la marca del vehículo.
  * @param anio Año de fabricación del vehículo.
+ * @param tipoUnidad Tipo de unidad (ej: 8 para motos).
  */
-export async function getModelos(marca: number, anio: number): Promise<any> {
+export async function getModelos(marca: number, anio: number, tipoUnidad?: number): Promise<any> {
   if (!marca || !anio) {
     throw new Error("Se requieren los parámetros marca y anio");
   }
 
   try {
     const token = await getToken();
+    const params: any = { Marca: marca, Año: anio };
+    if (tipoUnidad !== undefined) {
+      params.TipoUnidad = tipoUnidad; // Solo agrega si está definido
+    }
+
     const response = await axios.get(`${API_URL}/vehiculos/gruposModelo`, {
-      headers: {Authorization: token},
-      params: { Marca: marca, Año: anio },
+      headers: { Authorization: token },
+      params, // Se envían los parámetros correctamente
     });
 
     return response.data;
@@ -84,6 +90,7 @@ export async function getModelos(marca: number, anio: number): Promise<any> {
     throw new Error("No se pudieron obtener los modelos");
   }
 }
+
 
 /**
  * Obtiene los modelos de vehículos según la marca y el año.

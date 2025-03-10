@@ -2,7 +2,7 @@
 import * as functions from "firebase-functions";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil } from "./ma-service";
+import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil } from "./ma-service";
 import { cotizarRusAutos, cotizarRusMotos, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
@@ -38,17 +38,20 @@ app.get("/modelos", async (req: Request, res: Response) => {
   try {
     const marca = Number(req.query.marca);
     const anio = Number(req.query.anio);
+    const tipoUnidad = Number(req.query.tipoUnidad);
+
     if (!marca || !anio) {
       return res.status(400).json({ error: "marca y anio son requeridos" });
     }
 
-    const modelos = await getModelos(marca, anio);
+    const modelos = await getModelos(marca, anio, tipoUnidad);
     return res.status(200).json(modelos);
   } catch (error) {
     console.error("Error obteniendo modelos:", error);
     return res.status(500).json({ error: "Error interno al obtener modelos" });
   }
 });
+
 
 // ✅ Obtener versiones
 app.get("/versiones", async (req: Request, res: Response) => {
@@ -136,6 +139,24 @@ app.get("/mercantil/modelos", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error obteniendo modelos de Mercantil Andina:", error);
     return res.status(500).json({ error: "Error al obtener modelos" });
+  }
+});
+
+// ✅ Obtener vehículos de Mercantil Andina
+app.get("/mercantil/vehiculos", async (req: Request, res: Response) => {
+  const { marca, año, tipo } = req.query;
+
+  if (!marca || !año || !tipo) {
+    return res.status(400).json({ error: "Marca, año y tipo son requeridos" });
+  }
+
+  try {
+    const token = await obtenerTokenMercantil(); // Obtener token
+    const vehiculos = await obtenerVehiculosMercantil(marca.toString(), Number(año), tipo.toString(), token);
+    return res.status(200).json(vehiculos);
+  } catch (error) {
+    console.error("Error obteniendo vehículos de Mercantil Andina:", error);
+    return res.status(500).json({ error: "Error al obtener vehículos" });
   }
 });
 

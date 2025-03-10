@@ -5,6 +5,7 @@ import qs from "qs";
 const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
 
 const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
+const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
 const SUBSCRIPTION_KEY = "5a51821ce0134a54ad1f46c3f5736f0b";
 const USERNAME = "ROCHATST";
 const PASS = "rochatst24";
@@ -74,5 +75,30 @@ export const obtenerModelosMercantil = async (
   } catch (error: any) {
     console.error("Error modelos:", error.response?.data || error.message);
     throw new Error("No se pudieron obtener los modelos");
+  }
+};
+
+// ✅ Función para obtener vehículos de Mercantil Andina
+export const obtenerVehiculosMercantil = async (
+  marca: string,
+  año: number,
+  tipo: string,
+  token: string
+) => {
+  try {
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Content-Type": "application/json",
+    };
+
+    const params = { q: marca, anio: año, tipo };
+
+    const response = await axios.get(API_URL_VEHICULOS, { headers, params });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error obtener vehículos:", error.response?.data || error.message);
+    throw new Error("No se pudieron obtener los vehículos");
   }
 };

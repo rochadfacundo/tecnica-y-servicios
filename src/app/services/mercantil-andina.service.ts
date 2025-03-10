@@ -27,5 +27,10 @@ export class MercantilAndinaService {
     });
   }
 
+  obtenerVehiculos(marca: string, año: number, tipo: string): Observable<any> {
+    return this.http.get(`${this.API_URL}/vehiculos`, {
+      params: {marca, año, tipo}
+    });
+  }
 
 }
