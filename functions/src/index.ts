@@ -2,7 +2,7 @@
 import * as functions from "firebase-functions";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil } from "./ma-service";
+import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
 import { cotizarRusAutos, cotizarRusMotos, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
@@ -161,5 +161,24 @@ app.get("/mercantil/vehiculos", async (req: Request, res: Response) => {
 });
 
 
+// ✅ Obtener versiones de Mercantil Andina
+app.get("/mercantil/versiones", async (req: Request, res: Response) => {
+  const { marca, año, modelo } = req.query;
+
+  if (!marca || !año || !modelo) {
+    return res.status(400).json({ error: "Marca, año y modelo son requeridos" });
+  }
+
+  try {
+    const token = await obtenerTokenMercantil(); // Obtener token
+    const vehiculos = await obtenerVersionesMercantil(Number(marca), Number(año), modelo.toString(), token);
+    return res.status(200).json(vehiculos);
+  } catch (error) {
+    console.error("Error obteniendo vehículos de Mercantil Andina:", error);
+    return res.status(500).json({ error: "Error al obtener vehículos" });
+  }
+});
+
 // ✅ Exportamos la función principal
 export const api = functions.https.onRequest(app);
+

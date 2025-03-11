@@ -102,3 +102,28 @@ export const obtenerVehiculosMercantil = async (
     throw new Error("No se pudieron obtener los vehículos");
   }
 };
+
+// ✅ Función para obtener vehículos de Mercantil Andina
+export const obtenerVersionesMercantil = async (
+  marca: number,
+  año: number,
+  modelo: string,
+  token: string
+) => {
+  try {
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Content-Type": "application/json",
+    };
+
+    const params = { marca, año, modelo };
+
+    const response = await axios.get(API_URL_MARCAS+"/", { headers, params });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error obtener vehículos:", error.response?.data || error.message);
+    throw new Error("No se pudieron obtener los vehículos");
+  }
+};

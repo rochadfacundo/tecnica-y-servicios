@@ -165,8 +165,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       if (tipo) {
 
-       this.obtenerMarcasRUS(tipo);
-        //this.obtenerMarcasMA();
+       //this.obtenerMarcasRUS(tipo);
+        this.obtenerMarcasMA();
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
@@ -185,8 +185,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (anio) {
-        this.obtenerModelosRUS();
-        //this.obtenerModelosMA();
+        //this.obtenerModelosRUS();
+        this.obtenerModelosMA();
        // this.obtenerVersionesMA();
       } else {
         this.modelos = [];
@@ -197,8 +197,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('modelo')?.valueChanges.subscribe((modelo) => {
       this.cotizacionForm.get('version')?.setValue(null);
       if (modelo) {
-        this.obtenerVersionesRUS();
-       //this.obtenerVersionesMA();
+        //this.obtenerVersionesRUS();
+       this.obtenerVersionesMA();
       } else {
         this.versiones = [];
         this.cotizacionForm.get('version')?.disable();
@@ -268,46 +268,29 @@ export class MulticotizadorComponent implements OnInit {
   }
 
    obtenerVersionesMA(): void {
-    const { marca, anio, tipoVehiculo} = this.cotizacionForm.value;
+    const { marca, anio, modelo} = this.cotizacionForm.value;
     if (!marca || !anio) return;
 
     console.log("solo pruebo y" + marca);
 
     const marcaFiltrada = this.marcas.find(m => m.codigo == marca);
 
-    const marcaSeleccionada= marcaFiltrada.desc;
+    const codMarca= marcaFiltrada.codigo;
     const anioInt= Number(anio);
-    const tipo = Number(this.cotizacionForm.value.tipoVehiculo);
-    switch (tipo) {
-      case 1:
-      case 2:
-      case 3:
-        this.tipoVehiculo='AUTO';
-        break;
-      case 4:
-      case 5:
-      case 6:
-        this.tipoVehiculo='CAMION';
-        break;
-      case 7:
-      case 8:
-        this.tipoVehiculo='MOTO';
-        break;
-      default:
-        break;
-    }
-    console.log(marcaSeleccionada);
-    console.log(anioInt);
-    console.log(this.tipoVehiculo);
+    const mod = modelo;
 
-    this.s_ma.obtenerVehiculos(marcaSeleccionada,anioInt,this.tipoVehiculo).subscribe({
+    console.log(codMarca);
+    console.log(anioInt);
+    console.log(mod);
+
+    this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
       next: (data) => {
         console.log(data);
-        this.modelos=data.datos;
-        this.cotizacionForm.get('modelo')?.enable();
+        //this.versiones=data.datos;
+        this.cotizacionForm.get('version')?.enable();
       },
       error: (error) => {
-        console.error("Error al obtener los modelos:", error);
+        console.error("Error al obtener las versiones:", error);
       }
     });
 
