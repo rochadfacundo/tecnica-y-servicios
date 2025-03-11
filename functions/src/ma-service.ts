@@ -118,8 +118,9 @@ export const obtenerVersionesMercantil = async (
     };
 
     const params = { marca, año, modelo };
+    const url = `${API_URL_MARCAS}/${marca}/${año}/${modelo}`;
 
-    const response = await axios.get(API_URL_MARCAS+"/", { headers, params });
+    const response = await axios.get(url, { headers, params });
 
     return response.data;
   } catch (error: any) {
