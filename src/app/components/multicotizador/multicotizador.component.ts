@@ -161,7 +161,7 @@ export class MulticotizadorComponent implements OnInit {
   // Función para formatear la fecha en 'yyyy-MM-dd'
   private formatDate(date: Date): string {
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agregar 0 si es necesario
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
@@ -296,9 +296,6 @@ export class MulticotizadorComponent implements OnInit {
     this.codModelo=versionSeleccionada.id;
   }
 
-
-
-
   private obtenerVersionesRUS(): void {
     const { modelo, anio, tipoVehiculo, marca } = this.cotizacionForm.value;
     if (!modelo) return;
@@ -319,10 +316,6 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
-
-
-
 
   cotizarRUS(): void {
     if (this.cotizacionForm.invalid) {
@@ -364,14 +357,10 @@ export class MulticotizadorComponent implements OnInit {
       vigenciaPolizaId: 65 //autos
     };
 
-
-
     console.log(cotizacionData);
-
 
     if(this.codigoTipoInteres=='VEHICULO')
     {
-
       console.log('cotizo auto');
 
       this.s_rus.cotizarAutos(cotizacionData).subscribe({
@@ -407,11 +396,7 @@ export class MulticotizadorComponent implements OnInit {
         }
       });
     }
-
-
   }
-
-
 
 
 
