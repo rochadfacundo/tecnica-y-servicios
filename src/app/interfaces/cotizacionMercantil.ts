@@ -3,13 +3,7 @@ export interface CotizacionMercantil {
   localidad: {
     codigo_postal: number;
   };
-  vehiculo: {
-    infoauto: number;
-    anio: number;
-    uso: number;
-    gnc: boolean;
-    rastreo: number;
-  };
+  vehiculo: CotizacionVehiculo;
   productor: {
     id: number;
   };

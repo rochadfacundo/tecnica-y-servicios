@@ -29,6 +29,15 @@ export class MulticotizadorComponent implements OnInit {
   codigosUso: any[] = [];
   cotizacionesRus: RusCotizado[] = [];
 
+
+
+  constructor(
+    @Inject(RioUruguayService) private s_rus: RioUruguayService,
+    @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
+    private fb: FormBuilder
+  ) {}
+
+
   public readonly tiposVehiculo = [
     { id: 7, nombre: 'MOTO MENOS 50 CC' },
     { id: 8, nombre: 'MOTO MAS 50 CC' },
@@ -41,11 +50,6 @@ export class MulticotizadorComponent implements OnInit {
     { id: 25, nombre: 'MOTORHOME' },
     { id: 26, nombre: 'M3 OMNIBUS' },
   ];
-
-  private getTipo(id: number): string {
-    const tipo = this.tipoInteresOpciones.find(cf => cf.id === id);
-    return tipo ? tipo.nombre : 'VEHICULO';
-  }
 
   public readonly tipoInteresOpciones=
   [
@@ -75,11 +79,6 @@ export class MulticotizadorComponent implements OnInit {
     { id: 2, uso: 'COMERCIAL' },
   ];
 
-  private getTiposUso(id: number): string {
-    const tipoUso = this.tiposDeUso.find(item => item.id === id);
-    return tipoUso ? tipoUso.uso : 'PARTICULAR';
-  }
-
   public readonly opcionesSiNo = [
     { id: 1, opcion: 'SI' },
     { id: 2, opcion: 'NO' }
@@ -90,11 +89,6 @@ export class MulticotizadorComponent implements OnInit {
     { id: 2, opcion: 'SEMESTRAL' },
     { id: 3, opcion: 'ANUAL' }
   ];
-
-  private getTiposVigencia(id: number): string {
-    const tipoVigencia = this.tiposVigencia.find(item => item.id === id);
-    return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
-  }
 
   public readonly condicionesFiscales = [
     { id: 1, condicion: 'CF', descripcion: 'Consumidor final'},
@@ -108,29 +102,37 @@ export class MulticotizadorComponent implements OnInit {
     { id: 9, condicion: 'CDE', descripcion: 'Cliente del exterior'}
   ];
 
+  private getTipo(id: number): string {
+    const tipo = this.tipoInteresOpciones.find(cf => cf.id === id);
+    return tipo ? tipo.nombre : 'VEHICULO';
+  }
+
+
+  private getTiposUso(id: number): string {
+    const tipoUso = this.tiposDeUso.find(item => item.id === id);
+    return tipoUso ? tipoUso.uso : 'PARTICULAR';
+  }
+
+
+  private getTiposVigencia(id: number): string {
+    const tipoVigencia = this.tiposVigencia.find(item => item.id === id);
+    return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
+  }
+
   private getCondicionFiscal(id: number): string {
     const condicion = this.condicionesFiscales.find(cf => cf.id === id);
     return condicion ? condicion.condicion : 'CF';
   }
 
-
-  constructor(
-    @Inject(RioUruguayService) private s_rus: RioUruguayService,
-    @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
-    private fb: FormBuilder
-  ) {}
+  private getSiNo(id: number): string {
+    return id === 1 ? 'SI' : 'NO';
+  }
 
   ngOnInit(): void {
 
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
-  }
-
-
-
-  private getSiNo(id: number): string {
-    return id === 1 ? 'SI' : 'NO';
   }
 
   private initForm(): void {
@@ -156,6 +158,22 @@ export class MulticotizadorComponent implements OnInit {
     });
   }
 
+  // Función para formatear la fecha en 'yyyy-MM-dd'
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agregar 0 si es necesario
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  //anios
+  private loadYears(): void {
+    const anioActual = new Date().getFullYear();
+    this.anios = Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
+  }
+
+
+  //subscripciones a form
   private setupValueChanges(): void {
 
     this.cotizacionForm.get('codigoTipoInteres')?.valueChanges.subscribe((tipo) => {
@@ -211,18 +229,8 @@ export class MulticotizadorComponent implements OnInit {
     });
   }
 
-  private loadYears(): void {
-    const anioActual = new Date().getFullYear();
-    this.anios = Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
-  }
 
-  // Función para formatear la fecha en 'yyyy-MM-dd'
-  private formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agregar 0 si es necesario
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+  //RIO URUGUAY
 
   private obtenerMarcasRUS(tipo: number): void {
 
@@ -233,68 +241,6 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionForm.get('marca')?.enable();
       },
       error: (error) => console.error('Error al obtener las marcas:', error)
-    });
-
-  }
-
-  private obtenerMarcasMA() {
-    this.s_ma.obtenerMarcas().subscribe({
-      next: (data: any) => {
-        // Excluimos las primeras 11 marcas sugeridas
-        const marcasFiltradas = data.slice(11);
-
-        this.marcas = marcasFiltradas;
-
-        console.log(this.marcas); // Verificar las marcas filtradas
-        this.cotizacionForm.get('marca')?.enable();
-      },
-      error: (error) => console.error("Error al obtener las marcas:", error),
-    });
-  }
-
-  obtenerModelosMA(): void {
-    const { marca, anio } = this.cotizacionForm.value;
-    if (!marca || !anio) return;
-
-    const marcaInt= Number(marca);
-    const anioInt= Number(anio);
-    console.log(marcaInt, anioInt);
-    this.s_ma.obtenerModelos(marcaInt,anioInt).subscribe({
-      next: (data) => {
-       this.modelos = data;
-        console.log(this.modelos); // Asignamos los modelos recibidos a la variable
-        this.cotizacionForm.get('modelo')?.enable();
-      },
-      error: (error) => {
-        console.error("Error al obtener los modelos:", error);
-      }
-    });
-
-  }
-
-   obtenerVersionesMA(): void {
-    const { marca, anio, modelo} = this.cotizacionForm.value;
-    if (!marca || !anio) return;
-
-    const marcaFiltrada = this.marcas.find(m => m.codigo == marca);
-
-    const codMarca= marcaFiltrada.codigo;
-    const anioInt= Number(anio);
-    const mod = modelo;
-
-    console.log(codMarca);
-    console.log(anioInt);
-    console.log(mod);
-
-    this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.versiones=data;
-        this.cotizacionForm.get('version')?.enable();
-      },
-      error: (error) => {
-        console.error("Error al obtener las versiones:", error);
-      }
     });
 
   }
@@ -375,41 +321,6 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
-  cotizar()
-  {
-    this.cotizarRUS();
-
-   // this.cotizarMercantil();
-  }
-
-
-  cotizarMercantil()
-  {
-    const formValues = this.cotizacionForm.value;
-
-    const getGNC= this.getSiNo(formValues.gnc);
-
-    if(getGNC=='SI')
-    {
-      this.gnc=true;
-    }else
-    {
-      this.gnc=false;
-    }
-
-    const cotizacionData: CotizacionMercantil = {
-      canal: 78,
-      localidad: { codigo_postal: Number(formValues.cpLocalidadGuarda) },
-      vehiculo:
-      { infoauto: 170761,
-        anio: formValues.anio,
-        uso: 1,
-        gnc: this.gnc,
-        rastreo: 0 },
-      productor: { id: 86322 }
-    };
-  }
-
 
 
 
@@ -479,7 +390,7 @@ export class MulticotizadorComponent implements OnInit {
 
     }else
     {
-      cotizacionData.vigenciaPolizaId=70;
+      cotizacionData.vigenciaPolizaId=70; //motos
 
       console.log('cotizo moto');
       this.s_rus.cotizarMotos(cotizacionData).subscribe({
@@ -499,4 +410,112 @@ export class MulticotizadorComponent implements OnInit {
 
 
   }
+
+
+
+
+
+  //MERCANTIL ANDINA
+
+  private obtenerMarcasMA() {
+    this.s_ma.obtenerMarcas().subscribe({
+      next: (data: any) => {
+        // Excluimos las primeras 11 marcas sugeridas
+        const marcasFiltradas = data.slice(11);
+
+        this.marcas = marcasFiltradas;
+
+        console.log(this.marcas); // Verificar las marcas filtradas
+        this.cotizacionForm.get('marca')?.enable();
+      },
+      error: (error) => console.error("Error al obtener las marcas:", error),
+    });
+  }
+
+  obtenerModelosMA(): void {
+    const { marca, anio } = this.cotizacionForm.value;
+    if (!marca || !anio) return;
+
+    const marcaInt= Number(marca);
+    const anioInt= Number(anio);
+    console.log(marcaInt, anioInt);
+    this.s_ma.obtenerModelos(marcaInt,anioInt).subscribe({
+      next: (data) => {
+       this.modelos = data;
+        console.log(this.modelos); // Asignamos los modelos recibidos a la variable
+        this.cotizacionForm.get('modelo')?.enable();
+      },
+      error: (error) => {
+        console.error("Error al obtener los modelos:", error);
+      }
+    });
+
+  }
+
+   obtenerVersionesMA(): void {
+    const { marca, anio, modelo} = this.cotizacionForm.value;
+    if (!marca || !anio) return;
+
+    const marcaFiltrada = this.marcas.find(m => m.codigo == marca);
+
+    const codMarca= marcaFiltrada.codigo;
+    const anioInt= Number(anio);
+    const mod = modelo;
+
+    console.log(codMarca);
+    console.log(anioInt);
+    console.log(mod);
+
+    this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
+      next: (data) => {
+        console.log(data);
+        this.versiones=data;
+        this.cotizacionForm.get('version')?.enable();
+      },
+      error: (error) => {
+        console.error("Error al obtener las versiones:", error);
+      }
+    });
+
+  }
+
+
+  cotizarMercantil()
+  {
+    const formValues = this.cotizacionForm.value;
+
+    const getGNC= this.getSiNo(formValues.gnc);
+
+    if(getGNC=='SI')
+    {
+      this.gnc=true;
+    }else
+    {
+      this.gnc=false;
+    }
+
+    /*A
+    const cotizacionData: CotizacionMercantil = {
+      canal: 78,
+      localidad: { codigo_postal: Number(formValues.cpLocalidadGuarda) },
+      vehiculo:
+      { infoauto: 170761,
+        anio: formValues.anio,
+        uso: 1,
+        gnc: this.gnc,
+        rastreo: 0 },
+      productor: { id: 86322 }
+    };*/
+  }
+
+
+  cotizar()
+  {
+    this.cotizarRUS();
+
+   // this.cotizarMercantil();
+  }
+
+
+
 }
