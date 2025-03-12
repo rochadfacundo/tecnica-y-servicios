@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
@@ -54,6 +54,11 @@ export class MulticotizadorComponent implements OnInit {
     { id: 3, nombre: 'ACOPLADOS' },
     { id: 4, nombre: 'TRAILERS'},
     { id: 5, nombre: 'IMPLEMENTOS'},
+  ];
+
+  public readonly cuotas=
+  [
+    1,2,3
   ];
 
   public readonly clausulasAjuste=
@@ -139,7 +144,7 @@ export class MulticotizadorComponent implements OnInit {
       uso: [{ value: null}],
       codigoUso: [{ value: null, disabled: true }],
       tipoVigencia:[{value:null}],
-      cuotas:[{value:null}],
+      cuotas: [{ value: null }],
       clausulaAjuste: [{value:null}],
       condicionFiscal:[{value:null}],
       cpLocalidadGuarda:[{value:null}],
@@ -165,8 +170,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       if (tipo) {
 
-       //this.obtenerMarcasRUS(tipo);
-        this.obtenerMarcasMA();
+       this.obtenerMarcasRUS(tipo);
+        //this.obtenerMarcasMA();
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
@@ -185,8 +190,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (anio) {
-        //this.obtenerModelosRUS();
-        this.obtenerModelosMA();
+        this.obtenerModelosRUS();
+        //this.obtenerModelosMA();
        // this.obtenerVersionesMA();
       } else {
         this.modelos = [];
@@ -197,8 +202,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('modelo')?.valueChanges.subscribe((modelo) => {
       this.cotizacionForm.get('version')?.setValue(null);
       if (modelo) {
-        //this.obtenerVersionesRUS();
-       this.obtenerVersionesMA();
+        this.obtenerVersionesRUS();
+       //this.obtenerVersionesMA();
       } else {
         this.versiones = [];
         this.cotizacionForm.get('version')?.disable();
@@ -271,8 +276,6 @@ export class MulticotizadorComponent implements OnInit {
     const { marca, anio, modelo} = this.cotizacionForm.value;
     if (!marca || !anio) return;
 
-    console.log("solo pruebo y" + marca);
-
     const marcaFiltrada = this.marcas.find(m => m.codigo == marca);
 
     const codMarca= marcaFiltrada.codigo;
@@ -286,7 +289,7 @@ export class MulticotizadorComponent implements OnInit {
     this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
       next: (data) => {
         console.log(data);
-        //this.versiones=data.datos;
+        this.versiones=data;
         this.cotizacionForm.get('version')?.enable();
       },
       error: (error) => {
@@ -316,7 +319,7 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
+ //solo con rus creo
   onVersionChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement?.value?.trim(); // Trim para evitar espacios vacíos
@@ -440,14 +443,14 @@ export class MulticotizadorComponent implements OnInit {
       codigoProductor: 4504,
       codigoSolicitante: 4504,
       codigoTipoInteres: this.codigoTipoInteres,
-      cuotas: Number(formValues.cuotas),
+      cuotas: Number(formValues.cuotas), //solo permite hasta 3
       ajusteAutomatico:Number(formValues.clausulaAjuste),
       condicionFiscal: this.getCondicionFiscal(formValues.condicionFiscal),
       tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
       vehiculos: vehiculos,
       vigenciaDesde: formValues.vigenciaDesde,
       vigenciaHasta: formValues.vigenciaHasta,
-      vigenciaPolizaId: 65
+      vigenciaPolizaId: 65 //autos
     };
 
 
@@ -476,6 +479,8 @@ export class MulticotizadorComponent implements OnInit {
 
     }else
     {
+      cotizacionData.vigenciaPolizaId=70;
+
       console.log('cotizo moto');
       this.s_rus.cotizarMotos(cotizacionData).subscribe({
         next: (response) => {
