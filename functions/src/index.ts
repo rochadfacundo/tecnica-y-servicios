@@ -81,9 +81,10 @@ app.put("/cotizaciones/autos", async (req: Request, res: Response) => {
   try {
     const cotizacion = await cotizarRusAutos(req.body);
     return res.status(200).json(cotizacion);
-  } catch (error) {
-    console.error("Error realizando cotización:", error);
-    return res.status(500).json({ error: "Error interno en la cotización" });
+  } catch (error:any) {
+    console.error("Error realizando cotización:", error.message);
+
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -94,7 +95,11 @@ app.put("/cotizaciones/motos", async (req: Request, res: Response) => {
     return res.status(200).json(cotizacion);
   } catch (error) {
     console.error("Error realizando cotización:", error);
-    return res.status(500).json({ error: "Error interno en la cotización" });
+
+    // Verifica si el error tiene una propiedad `message`
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+
+    return res.status(500).json({ error: errorMessage });
   }
 });
 

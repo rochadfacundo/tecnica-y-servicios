@@ -28,6 +28,8 @@ export class MulticotizadorComponent implements OnInit {
   usos: any[] = [];
   codigosUso: any[] = [];
   cotizacionesRus: RusCotizado[] = [];
+  cotizacion:boolean=true;
+  cotizacionError:string='';
 
 
 
@@ -75,8 +77,20 @@ export class MulticotizadorComponent implements OnInit {
 
   public readonly tiposDeUso=
   [
-    { id: 1, uso: 'PARTICULAR' },
-    { id: 2, uso: 'COMERCIAL' },
+    {id: 1, uso: 'PARTICULAR',desc: 'PARTICULAR'},
+    {id: 2, uso: 'AGCIA. DE ALQUILER S/CHOFER',  desc:"AGCIA. DE ALQUILER S/CHOFER-COMERCIAL"},
+    {id: 3, uso: 'AUTOBOMBA', desc: 'AUTOBOMBA'},
+    {id: 4, uso: 'AUXILIO MECANICO', desc: 'AUXILIO MECANICO-COMERCIAL'},
+    {id: 5, uso: 'BOMBERO', desc: 'BOMBERO'},
+    {id: 6, uso: 'POLICIAL', desc: 'POLICIAL'},
+    {id: 7, uso: 'PORTAVOLQUETE', desc: 'PORTAVOLQUETE'},
+    {id: 8, uso: 'RADIO URBANO (NO > A 100KM)', desc: 'RADIO URBANO (NO > A 100KM)-COMERCIAL'},
+    {id: 9, uso: 'TRANS. PROD. ALIMENTICIOS', desc: 'TRANS. PROD. ALIMENTICIOS-COMERCIAL'},
+    {id: 10, uso: 'TRANS. CARGAS GRALES', desc: 'TRANS. CARGAS GRALES-COMERCIAL'},
+    {id: 11, uso: 'TRANS. COMB. GASEOSO', desc: 'TRANS. COMB. GASEOSO-COMERCIAL'},
+    {id: 12, uso: 'TRANS. COMB. LIQUIDOS', desc: 'TRANS. COMB. LIQUIDOS-COMERCIAL'},
+    {id: 13, uso: 'TRANS. DE HACIENDA', desc: 'TRANS. DE HACIENDA-COMERCIAL'},
+    {id: 14, uso: 'TRANS. PROD. QUIMICOS', desc: 'TRANS. PROD. QUIMICOS-COMERCIAL'}
   ];
 
   public readonly opcionesSiNo = [
@@ -338,7 +352,7 @@ export class MulticotizadorComponent implements OnInit {
         cpLocalidadGuarda:Number(formValues.cpLocalidadGuarda),
         gnc: this.getSiNo(formValues.gnc),
         modeloVehiculo: this.codModelo,
-        uso: this.getTiposUso(formValues.uso)
+        uso: String(formValues.uso)
     }];
 
 
@@ -366,14 +380,18 @@ export class MulticotizadorComponent implements OnInit {
       this.s_rus.cotizarAutos(cotizacionData).subscribe({
         next: (response) => {
           console.log('Cotización exitosa:', response);
-
+          this.cotizacion = true;
+          this.cotizacionError='';
           this.cotizacionesRus = response.dtoList;
 
 
       console.log('Cotizaciones procesadas:', this.cotizacionesRus);
         },
         error: (error) => {
-          console.error('Error en la cotización:', error);
+          this.cotizacion = false;
+          this.cotizacionError = error.error?.error || "Error desconocido";
+          console.error("Error en la cotización:", this.cotizacionError);
+
         }
       });
 
@@ -385,14 +403,17 @@ export class MulticotizadorComponent implements OnInit {
       this.s_rus.cotizarMotos(cotizacionData).subscribe({
         next: (response) => {
           console.log('Cotización exitosa:', response);
-
+          this.cotizacion=true;
+          this.cotizacionError='';
           this.cotizacionesRus = response.dtoList;
 
 
       console.log('Cotizaciones procesadas:', this.cotizacionesRus);
         },
         error: (error) => {
-          console.error('Error en la cotización:', error);
+          this.cotizacion=false;
+          this.cotizacionError= error.error?.error || "Error desconocido";
+          console.error('Error en la cotización:', this.cotizacionError);
         }
       });
     }

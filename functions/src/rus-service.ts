@@ -136,7 +136,14 @@ export async function cotizarRusAutos(cotizacionData: any): Promise<any> {
     return response.data;
   } catch (error: any) {
     console.error("Error realizando cotización:", error.response?.data || error.message);
-    throw new Error("No se pudo realizar la cotización");
+
+    const errorMessage =
+        error.response?.data?.validationErrors?.[0]?.message ||
+        error.response?.data?.cause ||
+        error.message ||
+        "Error desconocido";
+
+    throw new Error(errorMessage);
   }
 }
 
