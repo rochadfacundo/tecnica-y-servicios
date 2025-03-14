@@ -2,9 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable valid-jsdoc */
 import axios from "axios";
+import { CotizacionRioUruguay } from "./interfaces/CotizacionRioUruguay";
 
 const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
-// const API_URLMOTO="https://uat4.sis.rus.com.ar/api-rus";
+
 const USERNAME = "18291036ws";
 const PASSWORD = "cambiar";
 
@@ -30,7 +31,7 @@ export async function getToken(): Promise<string|null> {
 
     cachedToken = response.data.message;
     tokenExpiration = Date.now() + 60 * 60 * 1000; // Suponiendo que dura 1 hora
-    console.log("Nuevo token obtenido:", cachedToken);
+
     return cachedToken;
   } catch (error: any) {
     console.error("Error obteniendo token:", error.response?.data || error.message);
@@ -123,17 +124,26 @@ export async function getVersiones(
 }
 
 /**
- * Realiza una cotización de seguro de vehículo.
+ * Realiza una cotización de seguro.
  * @param cotizacionData Datos de la cotización.
  */
-export async function cotizarRusAutos(cotizacionData: any): Promise<any> {
+export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<any> {
   try {
     const token = await getToken();
-    const response = await axios.put(`${API_URL}/cotizaciones/autos`, cotizacionData, {
-      headers: { Authorization: token},
-    });
 
-    return response.data;
+    const apiUrlCotizacion=`${API_URL}/cotizaciones`;
+
+    if (cotizacionData.vigenciaPolizaId==65) {
+      const response = await axios.put(`${apiUrlCotizacion}/autos`, cotizacionData, {
+        headers: { Authorization: token},
+      });
+      return response.data;
+    } else if (cotizacionData.vigenciaPolizaId==70) {
+      const response = await axios.put(`${apiUrlCotizacion}/motos`, cotizacionData, {
+        headers: { Authorization: token},
+      });
+      return response.data;
+    }
   } catch (error: any) {
     console.error("Error realizando cotización:", error.response?.data || error.message);
 
@@ -146,22 +156,3 @@ export async function cotizarRusAutos(cotizacionData: any): Promise<any> {
     throw new Error(errorMessage);
   }
 }
-
-/**
- * Realiza una cotización de seguro de vehículo.
- * @param cotizacionData Datos de la cotización.
- */
-export async function cotizarRusMotos(cotizacionData: any): Promise<any> {
-  try {
-    const token = await getToken();
-    const response = await axios.put(`${API_URL}/cotizaciones/motos`, cotizacionData, {
-      headers: { Authorization: token},
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Error realizando cotización:", error.response?.data || error.message);
-    throw new Error("No se pudo realizar la cotización");
-  }
-}
-

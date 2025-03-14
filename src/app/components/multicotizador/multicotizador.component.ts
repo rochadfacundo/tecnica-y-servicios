@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
-import { CotizacionMercantil } from '../../interfaces/cotizacionMercantil';
+import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,Productor } from '../../interfaces/cotizacionMercantil';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
-
+import { TipoDeUso } from '../../interfaces/tiposDeUso';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -15,7 +16,6 @@ import { MercantilAndinaService } from '../../services/mercantil-andina.service'
 })
 export class MulticotizadorComponent implements OnInit {
 
-  apiUrl = 'https://sandbox.sis.rus.com.ar/api-rus/vehiculos/gruposModelo';
   cotizacionForm!: FormGroup;
   marcas: any[] = [];
   anios: number[] = [];
@@ -30,14 +30,18 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
   cotizacionError:string='';
+  tiposDeUso: TipoDeUso[]= [];
 
 
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
     @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
+
+  }
 
 
   public readonly tiposVehiculo = [
@@ -75,24 +79,6 @@ export class MulticotizadorComponent implements OnInit {
     { id: 30, nombre: '30%'}
   ];
 
-  public readonly tiposDeUso=
-  [
-    {id: 1, uso: 'PARTICULAR',desc: 'PARTICULAR'},
-    {id: 2, uso: 'AGCIA. DE ALQUILER S/CHOFER',  desc:"AGCIA. DE ALQUILER S/CHOFER-COMERCIAL"},
-    {id: 3, uso: 'AUTOBOMBA', desc: 'AUTOBOMBA'},
-    {id: 4, uso: 'AUXILIO MECANICO', desc: 'AUXILIO MECANICO-COMERCIAL'},
-    {id: 5, uso: 'BOMBERO', desc: 'BOMBERO'},
-    {id: 6, uso: 'POLICIAL', desc: 'POLICIAL'},
-    {id: 7, uso: 'PORTAVOLQUETE', desc: 'PORTAVOLQUETE'},
-    {id: 8, uso: 'RADIO URBANO (NO > A 100KM)', desc: 'RADIO URBANO (NO > A 100KM)-COMERCIAL'},
-    {id: 9, uso: 'TRANS. PROD. ALIMENTICIOS', desc: 'TRANS. PROD. ALIMENTICIOS-COMERCIAL'},
-    {id: 10, uso: 'TRANS. CARGAS GRALES', desc: 'TRANS. CARGAS GRALES-COMERCIAL'},
-    {id: 11, uso: 'TRANS. COMB. GASEOSO', desc: 'TRANS. COMB. GASEOSO-COMERCIAL'},
-    {id: 12, uso: 'TRANS. COMB. LIQUIDOS', desc: 'TRANS. COMB. LIQUIDOS-COMERCIAL'},
-    {id: 13, uso: 'TRANS. DE HACIENDA', desc: 'TRANS. DE HACIENDA-COMERCIAL'},
-    {id: 14, uso: 'TRANS. PROD. QUIMICOS', desc: 'TRANS. PROD. QUIMICOS-COMERCIAL'}
-  ];
-
   public readonly opcionesSiNo = [
     { id: 1, opcion: 'SI' },
     { id: 2, opcion: 'NO' }
@@ -122,14 +108,61 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
-  private getTiposUso(id: number): string {
-    const tipoUso = this.tiposDeUso.find(item => item.id === id);
-    return tipoUso ? tipoUso.uso : 'PARTICULAR';
+  private setTiposUso(id: number) {
+
+
+      switch (id) {
+        case 1:   //auto
+        case 2:   //pick-up A
+        case 3:   //pick-up B
+        case 7:   //Moto menos 50 CC
+        case 8:   //Moto mas 50 CC
+        case 25:   //MOTORHOME
+          this.tiposDeUso=[
+            {id: 1, uso: 'PARTICULAR',desc: 'PARTICULAR'},
+            {id: 22, uso: 'COMERCIAL',desc: 'COMERCIAL'}
+          ];
+
+          break;
+        case 4:    //CAMION HASTA 5 TN
+        case 5:    //CAMION HASTA 10 TN
+        case 6:    //CAMION MAS DE 10 TN
+        this.tiposDeUso=[
+          {id: 2, uso: 'AGCIA. DE ALQUILER S/CHOFER',  desc:"AGCIA. DE ALQUILER S/CHOFER-COMERCIAL"},
+          {id: 3, uso: 'AUTOBOMBA', desc: 'AUTOBOMBA'},
+          {id: 4, uso: 'AUXILIO MECANICO', desc: 'AUXILIO MECANICO-COMERCIAL'},
+          {id: 5, uso: 'BOMBERO', desc: 'BOMBERO'},
+          {id: 6, uso: 'POLICIAL', desc: 'POLICIAL'},
+          {id: 7, uso: 'PORTAVOLQUETE', desc: 'PORTAVOLQUETE'},
+          {id: 8, uso: 'RADIO URBANO (NO > A 100KM)', desc: 'RADIO URBANO (NO > A 100KM)-COMERCIAL'},
+          {id: 9, uso: 'TRANS. PROD. ALIMENTICIOS', desc: 'TRANS. PROD. ALIMENTICIOS-COMERCIAL'},
+          {id: 10, uso: 'TRANS. CARGAS GRALES', desc: 'TRANS. CARGAS GRALES-COMERCIAL'},
+          {id: 11, uso: 'TRANS. COMB. GASEOSO', desc: 'TRANS. COMB. GASEOSO-COMERCIAL'},
+          {id: 12, uso: 'TRANS. COMB. LIQUIDOS', desc: 'TRANS. COMB. LIQUIDOS-COMERCIAL'},
+          {id: 13, uso: 'TRANS. DE HACIENDA', desc: 'TRANS. DE HACIENDA-COMERCIAL'},
+          {id: 14, uso: 'TRANS. PROD. QUIMICOS', desc: 'TRANS. PROD. QUIMICOS-COMERCIAL'}
+        ];
+
+          break;
+        case 26:   //M3 OMNIBUS
+
+        this.tiposDeUso=[
+          {id: 15, uso: 'ESCOLAR + 18 AS.', desc: 'ESCOLAR + 18 AS.'},
+          {id: 16, uso: 'ESCOLAR 16A A 18 AS.', desc: 'ESCOLAR 16A A 18 AS.'},
+          {id: 17, uso: 'FOOD TRUCK', desc: 'FOOD TRUCK'},
+          {id: 18, uso: 'PARTICULAR', desc: 'PARTICULAR'},
+          {id: 19, uso: 'POLICIAL', desc: 'POLICIAL'},
+          {id: 20, uso: 'SERVICIO ESPECIAL', desc: 'SERVICIO ESPECIAL-COMERCIAL'},
+          {id: 21, uso: 'TRASLADO DE PERSONAL PROPIO', desc: 'TRASLADO DE PERSONAL PROPIO'}
+        ];
+          break;
+      }
+
+      this.cdr.detectChanges(); // Fuerza la actualización del template
   }
 
-
   private getTiposVigencia(id: number): string {
-    const tipoVigencia = this.tiposVigencia.find(item => item.id === id);
+    const tipoVigencia = this.tiposVigencia.find(item => item.id == id);
     return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
   }
 
@@ -147,6 +180,7 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
+
   }
 
   private initForm(): void {
@@ -157,7 +191,7 @@ export class MulticotizadorComponent implements OnInit {
       anio: [{ value: null, disabled: true }],
       modelo: [{ value: null, disabled: true }],
       version: [{ value: null, disabled: true }],
-      uso: [{ value: null}],
+      uso: [{ value: null, disabled: true }],
       codigoUso: [{ value: null, disabled: true }],
       tipoVigencia:[{value:null}],
       cuotas: [{ value: null }],
@@ -200,15 +234,17 @@ export class MulticotizadorComponent implements OnInit {
     });
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
+      this.setTiposUso(Number(tipo));
       if (tipo) {
-
-       this.obtenerMarcasRUS(tipo);
-        //this.obtenerMarcasMA();
+        this.obtenerMarcasRUS(tipo);
+        this.cotizacionForm.get('uso')?.enable();
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
+        this.cotizacionForm.get('uso')?.disable();
       }
     });
+
 
     this.cotizacionForm.get('marca')?.valueChanges.subscribe((marca) => {
       this.cotizacionForm.get('anio')?.setValue(null);
@@ -241,6 +277,7 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionForm.get('version')?.disable();
       }
     });
+
   }
 
 
@@ -265,8 +302,7 @@ export class MulticotizadorComponent implements OnInit {
 
     const tipo=Number(tipoVehiculo);
 
-
-    this.s_rus.getModelos(marca, anio,tipo).subscribe({
+    this.s_rus.getModelos(marca.id, anio,tipo).subscribe({
       next: (data: any) => {
         this.modelos = data.dtoList;
         console.log(this.modelos);
@@ -316,7 +352,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.tipoVehiculo=tipoVehiculo;
 
-    console.log(modelo,anio,tipoVehiculo,marca);
+    console.log(modelo,anio,tipoVehiculo,marca.id);
     this.s_rus.getVersiones(modelo, anio, tipoVehiculo, marca).subscribe({
       next: (data: any) => {
         this.versiones = data.dtoList;
@@ -371,52 +407,30 @@ export class MulticotizadorComponent implements OnInit {
       vigenciaPolizaId: 65 //autos
     };
 
-    console.log(cotizacionData);
-
-    if(this.codigoTipoInteres=='VEHICULO')
-    {
-      console.log('cotizo auto');
-
-      this.s_rus.cotizarAutos(cotizacionData).subscribe({
-        next: (response) => {
-          console.log('Cotización exitosa:', response);
-          this.cotizacion = true;
-          this.cotizacionError='';
-          this.cotizacionesRus = response.dtoList;
-
-
-      console.log('Cotizaciones procesadas:', this.cotizacionesRus);
-        },
-        error: (error) => {
-          this.cotizacion = false;
-          this.cotizacionError = error.error?.error || "Error desconocido";
-          console.error("Error en la cotización:", this.cotizacionError);
-
-        }
-      });
-
-    }else
+    if(this.codigoTipoInteres!='VEHICULO')
     {
       cotizacionData.vigenciaPolizaId=70; //motos
-
-      console.log('cotizo moto');
-      this.s_rus.cotizarMotos(cotizacionData).subscribe({
-        next: (response) => {
-          console.log('Cotización exitosa:', response);
-          this.cotizacion=true;
-          this.cotizacionError='';
-          this.cotizacionesRus = response.dtoList;
-
-
-      console.log('Cotizaciones procesadas:', this.cotizacionesRus);
-        },
-        error: (error) => {
-          this.cotizacion=false;
-          this.cotizacionError= error.error?.error || "Error desconocido";
-          console.error('Error en la cotización:', this.cotizacionError);
-        }
-      });
     }
+
+    console.log(cotizacionData);
+
+    this.s_rus.cotizar(cotizacionData).subscribe({
+      next: (response) => {
+        console.log('Cotización exitosa:', response);
+        this.cotizacion = true;
+        this.cotizacionError='';
+        this.cotizacionesRus = response.dtoList;
+
+
+    console.log('Cotizaciones procesadas:', this.cotizacionesRus);
+      },
+      error: (error) => {
+        this.cotizacion = false;
+        this.cotizacionError = error.error?.error || "Error desconocido";
+        console.error("Error en la cotización:", this.cotizacionError);
+
+      }
+    });
   }
 
 
@@ -468,10 +482,6 @@ export class MulticotizadorComponent implements OnInit {
     const anioInt= Number(anio);
     const mod = modelo;
 
-    console.log(codMarca);
-    console.log(anioInt);
-    console.log(mod);
-
     this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
       next: (data) => {
         console.log(data);
@@ -486,13 +496,29 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
+
   cotizarMercantil()
   {
     const formValues = this.cotizacionForm.value;
 
-    const getGNC= this.getSiNo(formValues.gnc);
+    const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
+    const TIPO_VEHICULO = formValues.tipoVehiculo;
+    const MARCA = formValues.marca;
+    const ANIO = Number(formValues.anio);
+    const MODELO = formValues.modelo;
+    const VERSION = formValues.version;
+    const USO = formValues.uso;
+    const TIPO_VIGENCIA = formValues.tipoVigencia;
+    const CUOTAS = Number(formValues.cuotas);
+    const CLAUSULA_AJUSTE = formValues.clausulaAjuste;
+    const CONDICION_FISCAL = formValues.condicionFiscal;
+    const CONTROL_SATELITAL = formValues.controlSatelital;
+    const GNC = this.getSiNo(formValues.gnc);
+    const PRODUCTOR:Productor={ id: 86322 };
+    const LOCALIDAD:CotizacionLocalidad=
+    { codigo_postal: Number(formValues.cpLocalidadGuarda) };
 
-    if(getGNC=='SI')
+    if(GNC=='SI')
     {
       this.gnc=true;
     }else
@@ -500,26 +526,34 @@ export class MulticotizadorComponent implements OnInit {
       this.gnc=false;
     }
 
-    /*A
+    const VEHICULO:CotizacionVehiculo=  {
+      infoauto: 170761,
+      anio: ANIO,
+      uso: 1,   //por ahora solo particular
+      gnc: this.gnc,
+      rastreo: 0 };
+
     const cotizacionData: CotizacionMercantil = {
       canal: 78,
-      localidad: { codigo_postal: Number(formValues.cpLocalidadGuarda) },
-      vehiculo:
-      { infoauto: 170761,
-        anio: formValues.anio,
-        uso: 1,
-        gnc: this.gnc,
-        rastreo: 0 },
-      productor: { id: 86322 }
-    };*/
-  }
+      localidad: LOCALIDAD,
+      vehiculo:VEHICULO,
+      productor: PRODUCTOR,
+      periodo: 2,         //Refacturacion
+      cuotas:CUOTAS,
+   //   comision: nose,
+   //   bonificacion: nose,
+   //    ajuste_suma?:number;  //10,25,50
+      desglose:true     //desglose de montos totales y cuotas
+    };
 
+    console.log(cotizacionData);
+  }
 
   cotizar()
   {
-    this.cotizarRUS();
+   // this.cotizarRUS();
 
-   // this.cotizarMercantil();
+    this.cotizarMercantil();
   }
 
 

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CotizacionRioUruguay } from '../interfaces/cotizacionRioUruguay';
 
 @Injectable({
   providedIn: 'root'
@@ -34,15 +35,8 @@ export class RioUruguayService {
     return this.http.get(`${this.apiBaseUrl}/versiones`, { params });
   }
 
-  cotizarAutos(data: any): Observable<any> {
-
+  cotizar(data: CotizacionRioUruguay): Observable<any> {
     console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
-    return this.http.put(`${this.apiBaseUrl}/cotizaciones/autos`, data);
-  }
-
-  cotizarMotos(data: any): Observable<any> {
-
-    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
-    return this.http.put(`${this.apiBaseUrl}/cotizaciones/motos`, data);
+    return this.http.put(`${this.apiBaseUrl}/cotizaciones`, data);
   }
 }

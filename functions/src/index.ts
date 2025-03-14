@@ -3,7 +3,7 @@ import * as functions from "firebase-functions";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
-import { cotizarRusAutos, cotizarRusMotos, getMarcas,
+import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
 
@@ -77,29 +77,14 @@ app.get("/versiones", async (req: Request, res: Response) => {
 });
 
 // ✅ Cotización de seguros RUS
-app.put("/cotizaciones/autos", async (req: Request, res: Response) => {
+app.put("/cotizaciones", async (req: Request, res: Response) => {
   try {
-    const cotizacion = await cotizarRusAutos(req.body);
+    const cotizacion = await cotizarRus(req.body);
     return res.status(200).json(cotizacion);
   } catch (error:any) {
     console.error("Error realizando cotización:", error.message);
 
     return res.status(500).json({ error: error.message });
-  }
-});
-
-// ✅ Cotización de seguros RUS
-app.put("/cotizaciones/motos", async (req: Request, res: Response) => {
-  try {
-    const cotizacion = await cotizarRusMotos(req.body);
-    return res.status(200).json(cotizacion);
-  } catch (error) {
-    console.error("Error realizando cotización:", error);
-
-    // Verifica si el error tiene una propiedad `message`
-    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-
-    return res.status(500).json({ error: errorMessage });
   }
 });
 
@@ -137,8 +122,7 @@ app.get("/mercantil/modelos", async (req: Request, res: Response) => {
 
   try {
     const token = await obtenerTokenMercantil(); // Obtener token primero
-    console.log("QUIERO OBTENER");
-    console.log(marca, año, token);
+
     const modelos = await obtenerModelosMercantil(Number(marca), Number(año), token);
     return res.status(200).json(modelos);
   } catch (error) {

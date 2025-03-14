@@ -22,7 +22,7 @@ export interface VehiculosRus
   controlSatelital?:string;
   cpLocalidadGuarda?: number;
   gnc:string;
-  modeloVehiculo?: number; //modelo vehiculo o codia
+  modeloVehiculo?: number;
   codia?:number;
   localidadGuarda?: number;
   sumaAseguradaVehiculo?: number;
@@ -30,27 +30,4 @@ export interface VehiculosRus
   sumaAseguradaAccesorios?: number;
   rastreadorSatelital?: string;
   rastreoACargoRUS?: string;
-}
-
-export interface RusCotizado {
-  id: number | null;
-  responsabilidadCivil: string | null;
-  descripcionComercial: string;
-  numeroSolicitud: string | null;
-  codigoRC: string;
-  descripcionRC: string;
-  detalleCoberturaRC: string;
-  codigoCasco: string;
-  descripcionCasco: string;
-  detalleCoberturaCasco: string;
-  prima: number;
-  premio: number;
-  iva: number;
-  sumaAsegurada: number;
-  ajusteAutomatico: string;
-  ajustesAutomaticosPosibles: string[];
-  franquicia: number;
-  auxilioMecanico: string;
-  paisesLimitrofes: string;
-  coberturaVida: string;
 }

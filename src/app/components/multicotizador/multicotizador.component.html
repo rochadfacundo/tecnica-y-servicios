@@ -28,7 +28,7 @@
       <label for="marcaVehiculo" class="form-label">Marca</label>
       <select id="marcaVehiculo" class="form-select" formControlName="marca">
         <option [ngValue]="null" disabled>Seleccione una marca</option>
-        <option *ngFor="let marca of marcas"   [value]="marca.id">{{ marca.descripcion }}  </option>
+        <option *ngFor="let marca of marcas"   [ngValue]="marca">{{ marca.descripcion }}  </option>
       </select>
     </div>
 
@@ -59,6 +59,16 @@
         <option *ngFor="let version of versiones" [value]="version.id">{{ version.descripcion }}</option>
       </select>
     </div>
+
+      <!-- TIpo de uso -->
+      <div class="mb-3">
+        <label for="uso" class="form-label">Tipo de uso</label>
+        <select id="uso" class="form-select" formControlName="uso">
+          <option *ngFor="let uso of tiposDeUso" [value]="uso.uso">
+            {{ uso.desc }}
+          </option>
+        </select>
+      </div>
 
 
     <!-- Tipo Vigencia -->
@@ -118,16 +128,6 @@
       <label for="gnc" class="form-label">GNC</label>
       <select id="gnc" class="form-select" formControlName="gnc">
         <option *ngFor="let opcion of opcionesSiNo" [value]="opcion.id">{{ opcion.opcion }}</option>
-      </select>
-    </div>
-
-    <!-- TIpo de uso -->
-    <div class="mb-3">
-      <label for="uso" class="form-label">Tipo de uso</label>
-      <select id="uso" class="form-select" formControlName="uso">
-        <option *ngFor="let uso of tiposDeUso" [value]="uso.uso">
-          {{ uso.desc }}
-        </option>
       </select>
     </div>
 
