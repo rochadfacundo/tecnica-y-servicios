@@ -2,7 +2,7 @@
 import * as functions from "firebase-functions";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
+import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
@@ -165,6 +165,18 @@ app.get("/mercantil/versiones", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error obteniendo vehículos de Mercantil Andina:", error);
     return res.status(500).json({ error: "Error al obtener vehículos" });
+  }
+});
+
+//COTIZAR MERCANTIL
+app.post("/cotizar-mercantil", async (req, res) => {
+  try {
+    const data = req.body;
+    const token = await obtenerTokenMercantil(); // Obtener token
+    const response = await cotizarMercantil(data,token);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: "Error al cotizar" });
   }
 });
 

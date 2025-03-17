@@ -15,6 +15,11 @@ export interface CotizacionRioUruguay{
 
 }
 
+export interface VehiculoRioUruguay{
+  id:number;
+  descripcion:string;
+}
+
 export interface VehiculosRus
 {
   anio:string;

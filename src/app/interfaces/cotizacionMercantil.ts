@@ -13,6 +13,11 @@ export interface CotizacionMercantil {
 
 }
 
+export interface VehiculoMarcaMercantil{
+  codigo:number;
+  desc:string;
+}
+
 export interface CotizacionLocalidad {
   codigo_postal: number;
   id?: number;

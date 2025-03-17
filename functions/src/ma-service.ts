@@ -7,6 +7,7 @@ const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
 const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
 const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
 const SUBSCRIPTION_KEY = "5a51821ce0134a54ad1f46c3f5736f0b";
+const API_URL_COTIZAR="https://apidev.mercantilandina.com.ar/cotizaciones/v2/auto";
 const USERNAME = "ROCHATST";
 const PASS = "rochatst24";
 
@@ -128,3 +129,21 @@ export const obtenerVersionesMercantil = async (
     throw new Error("No se pudieron obtener los vehículos");
   }
 };
+
+//Metodo Cotizar mercantil
+export async function cotizarMercantil(data: any,token: string) {
+  try {
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Content-Type": "application/json",
+    };
+
+    const response = await axios.post(API_URL_COTIZAR, data, {
+  headers
+    });
+    return response.data;
+  } catch (error:any) {
+    throw new Error(error.response?.data || "Error en la solicitud");
+  }
+}

@@ -352,8 +352,8 @@ export class MulticotizadorComponent implements OnInit {
 
     this.tipoVehiculo=tipoVehiculo;
 
-    console.log(modelo,anio,tipoVehiculo,marca.id);
-    this.s_rus.getVersiones(modelo, anio, tipoVehiculo, marca).subscribe({
+
+    this.s_rus.getVersiones(modelo.id, anio, tipoVehiculo, marca).subscribe({
       next: (data: any) => {
         this.versiones = data.dtoList;
 
@@ -437,68 +437,85 @@ export class MulticotizadorComponent implements OnInit {
 
   //MERCANTIL ANDINA
 
-  private obtenerMarcasMA() {
+
+  obtenerCotizacionMercantil(
+    cotizacion:CotizacionMercantil,
+    marca:string,
+    modelo:string,
+    anio:number,
+    version:string)
+  {
+    /*
+    console.log(marca);
+    console.log(modelo);
+    console.log(anio);
+     console.log(version);
+    */
+
     this.s_ma.obtenerMarcas().subscribe({
       next: (data: any) => {
         // Excluimos las primeras 11 marcas sugeridas
         const marcasFiltradas = data.slice(11);
 
-        this.marcas = marcasFiltradas;
 
-        console.log(this.marcas); // Verificar las marcas filtradas
-        this.cotizacionForm.get('marca')?.enable();
+      const marcaEncontrada = marcasFiltradas.find(
+        (m: any) => m.desc.toLowerCase() === marca.toLowerCase());
+
+      if (marcaEncontrada)
+      {
+
+        const marcaNumber= Number(marcaEncontrada.codigo);
+
+        console.log('marca numero '+ marcaNumber);
+
+        this.s_ma.obtenerModelos(marcaNumber,anio).subscribe({
+          next: (data) => {
+
+            const modeloEncontrado = data.find(
+              (m: any) => m.toLowerCase() === modelo.toLowerCase());
+
+
+          this.s_ma.obtenerVehiculosPorModelo(marcaNumber,anio,modeloEncontrado).subscribe({
+                next: (data) => {
+
+
+                const versionEncontrada = data.find(
+                (m: any) => m.desc.toLowerCase() === version.toLowerCase());
+
+                if(versionEncontrada)
+                {
+
+                  cotizacion.vehiculo.infoauto=versionEncontrada.codigo;
+                  console.log(cotizacion);
+
+                }
+
+                },
+                error: (error) => {
+                  console.error("Error al obtener las versiones:", error);
+                }
+              });
+
+
+
+
+          },
+          error: (error) => {
+            console.error("Error al obtener los modelos:", error);
+          }
+        });
+
+      }
+
       },
       error: (error) => console.error("Error al obtener las marcas:", error),
     });
-  }
-
-  obtenerModelosMA(): void {
-    const { marca, anio } = this.cotizacionForm.value;
-    if (!marca || !anio) return;
-
-    const marcaInt= Number(marca);
-    const anioInt= Number(anio);
-    console.log(marcaInt, anioInt);
-    this.s_ma.obtenerModelos(marcaInt,anioInt).subscribe({
-      next: (data) => {
-       this.modelos = data;
-        console.log(this.modelos); // Asignamos los modelos recibidos a la variable
-        this.cotizacionForm.get('modelo')?.enable();
-      },
-      error: (error) => {
-        console.error("Error al obtener los modelos:", error);
-      }
-    });
 
   }
-
-   obtenerVersionesMA(): void {
-    const { marca, anio, modelo} = this.cotizacionForm.value;
-    if (!marca || !anio) return;
-
-    const marcaFiltrada = this.marcas.find(m => m.codigo == marca);
-
-    const codMarca= marcaFiltrada.codigo;
-    const anioInt= Number(anio);
-    const mod = modelo;
-
-    this.s_ma.obtenerVehiculosPorModelo(codMarca,anioInt,mod).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.versiones=data;
-        this.cotizacionForm.get('version')?.enable();
-      },
-      error: (error) => {
-        console.error("Error al obtener las versiones:", error);
-      }
-    });
-
-  }
-
-
 
   cotizarMercantil()
   {
+
     const formValues = this.cotizacionForm.value;
 
     const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
@@ -508,11 +525,8 @@ export class MulticotizadorComponent implements OnInit {
     const MODELO = formValues.modelo;
     const VERSION = formValues.version;
     const USO = formValues.uso;
-    const TIPO_VIGENCIA = formValues.tipoVigencia;
     const CUOTAS = Number(formValues.cuotas);
-    const CLAUSULA_AJUSTE = formValues.clausulaAjuste;
-    const CONDICION_FISCAL = formValues.condicionFiscal;
-    const CONTROL_SATELITAL = formValues.controlSatelital;
+
     const GNC = this.getSiNo(formValues.gnc);
     const PRODUCTOR:Productor={ id: 86322 };
     const LOCALIDAD:CotizacionLocalidad=
@@ -547,11 +561,26 @@ export class MulticotizadorComponent implements OnInit {
     };
 
     console.log(cotizacionData);
+
+    const marcaPrueba='CHEVROLET';
+    const modeloPrueba='CELTA';
+    const versionPrueba='CELTA 1.4 3 PTAS LT';
+    const anioPrueba =2013;
+
+    this.obtenerCotizacionMercantil(
+      cotizacionData,
+      marcaPrueba,
+      modeloPrueba,
+      anioPrueba,
+      versionPrueba);
+
+    //this.obtenerVehiculoMercantil(MARCA.descripcion,MODELO,ANIO);
+
   }
 
   cotizar()
   {
-   // this.cotizarRUS();
+    // this.cotizarRUS();
 
     this.cotizarMercantil();
   }
