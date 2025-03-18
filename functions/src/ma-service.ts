@@ -26,7 +26,7 @@ export const obtenerTokenMercantil = async () => {
     });
 
     const response = await axios.post(API_URL, body, { headers });
-    console.log("mi token"+ response.data.access_token);
+
     return response.data.access_token;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -44,6 +44,7 @@ export const obtenerMarcasMercantil = async () => {
     };
 
     const response = await axios.get(API_URL_MARCAS, { headers });
+    console.log("obtener marcas ok");
     return response.data;
   } catch (error: any) {
     console.error("Error marcas:", error.response?.data || error.message);
@@ -71,7 +72,7 @@ export const obtenerModelosMercantil = async (
       headers,
       params: { marca, año }, // Los parámetros se envían como query string
     });
-
+    console.log("obtener modelos ok");
     return response.data; // Devuelve los modelos
   } catch (error: any) {
     console.error("Error modelos:", error.response?.data || error.message);
@@ -96,7 +97,7 @@ export const obtenerVehiculosMercantil = async (
     const params = { q: marca, anio: año, tipo };
 
     const response = await axios.get(API_URL_VEHICULOS, { headers, params });
-
+    console.log("obtener vehiculo ok");
     return response.data;
   } catch (error: any) {
     console.error("Error obtener vehículos:", error.response?.data || error.message);
@@ -122,7 +123,7 @@ export const obtenerVersionesMercantil = async (
     const url = `${API_URL_MARCAS}/${marca}/${año}/${modelo}`;
 
     const response = await axios.get(url, { headers, params });
-
+    console.log("obtener version ok");
     return response.data;
   } catch (error: any) {
     console.error("Error obtener vehículos:", error.response?.data || error.message);
@@ -130,8 +131,9 @@ export const obtenerVersionesMercantil = async (
   }
 };
 
-//Metodo Cotizar mercantil
-export async function cotizarMercantil(data: any,token: string) {
+//  Metodo Cotizar mercantil
+export const cotizarMercantil = async (
+  data: any, token: string)=> {
   try {
     const headers = {
       "Authorization": `Bearer ${token}`,
@@ -140,10 +142,14 @@ export async function cotizarMercantil(data: any,token: string) {
     };
 
     const response = await axios.post(API_URL_COTIZAR, data, {
-  headers
+      headers,
     });
+    console.log("cotiza MA ok");
     return response.data;
   } catch (error:any) {
-    throw new Error(error.response?.data || "Error en la solicitud");
+    console.error("❌ Error en la cotización:", error.response?.data);
+
+
+    throw error.response?.data || { mensaje: "Error desconocido" };
   }
-}
+};

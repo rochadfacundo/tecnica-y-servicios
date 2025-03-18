@@ -168,15 +168,16 @@ app.get("/mercantil/versiones", async (req: Request, res: Response) => {
   }
 });
 
-//COTIZAR MERCANTIL
-app.post("/cotizar-mercantil", async (req, res) => {
+// COTIZAR MERCANTIL
+app.post("/mercantil/cotizaciones", async (req, res) => {
   try {
     const data = req.body;
     const token = await obtenerTokenMercantil(); // Obtener token
-    const response = await cotizarMercantil(data,token);
+    const response = await cotizarMercantil(data, token);
     res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ error: "Error al cotizar" });
+    console.error("❌ Error al cotizar:", error);
+    res.status(500).json(error);
   }
 });
 

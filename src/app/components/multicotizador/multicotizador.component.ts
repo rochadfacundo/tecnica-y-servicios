@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
-import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,Productor } from '../../interfaces/cotizacionMercantil';
+import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,MercantilCotizado,Productor } from '../../interfaces/cotizacionMercantil';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
@@ -315,36 +315,6 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
- //solo con rus creo
-  onVersionChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedValue = selectElement?.value?.trim(); // Trim para evitar espacios vacíos
-
-    if (!selectedValue) {
-      console.warn("⚠ No se seleccionó ninguna versión válida.");
-      return;
-    }
-
-    const versionId = Number(selectedValue);
-
-    if (isNaN(versionId)) {
-      console.error("🚨 Error: El valor seleccionado no es un número válido.", selectedValue);
-      return;
-    }
-
-    const versionSeleccionada = this.versiones.find(v => v.id === versionId);
-
-    if (!versionSeleccionada) {
-      console.error("⚠ La versión seleccionada no existe en la lista.");
-      return;
-    }
-
-    console.log(versionSeleccionada);
-
-    console.log("✅ Versión seleccionada:", versionSeleccionada);
-    console.log(versionSeleccionada.id);
-    this.codModelo=versionSeleccionada.id;
-  }
 
   private obtenerVersionesRUS(): void {
     const { modelo, anio, tipoVehiculo, marca } = this.cotizacionForm.value;
@@ -356,7 +326,7 @@ export class MulticotizadorComponent implements OnInit {
     this.s_rus.getVersiones(modelo.id, anio, tipoVehiculo, marca).subscribe({
       next: (data: any) => {
         this.versiones = data.dtoList;
-
+        console.log(data.dtoList);
         this.cotizacionForm.get('version')?.enable();
       },
       error: (error) => {
@@ -382,12 +352,14 @@ export class MulticotizadorComponent implements OnInit {
       this.codigoTipoInteres='VEHICULO';
     }
 
+    formValues.cpLocalidadGuarda
+
     const vehiculos: VehiculosRus[]=[{
         anio: String(formValues.anio),
         controlSatelital: this.getSiNo(formValues.controlSatelital),
         cpLocalidadGuarda:Number(formValues.cpLocalidadGuarda),
         gnc: this.getSiNo(formValues.gnc),
-        modeloVehiculo: this.codModelo,
+        modeloVehiculo: Number(formValues.version.id),
         uso: String(formValues.uso)
     }];
 
@@ -445,18 +417,20 @@ export class MulticotizadorComponent implements OnInit {
     anio:number,
     version:string)
   {
-    /*
+
     console.log(marca);
     console.log(modelo);
     console.log(anio);
-     console.log(version);
-    */
+    console.log(version);
+
 
     this.s_ma.obtenerMarcas().subscribe({
       next: (data: any) => {
         // Excluimos las primeras 11 marcas sugeridas
         const marcasFiltradas = data.slice(11);
 
+        marcasFiltradas.push({ desc: "VOLKSWAGEN", codigo: 46 });
+        console.log(marcasFiltradas);
 
       const marcaEncontrada = marcasFiltradas.find(
         (m: any) => m.desc.toLowerCase() === marca.toLowerCase());
@@ -474,7 +448,6 @@ export class MulticotizadorComponent implements OnInit {
             const modeloEncontrado = data.find(
               (m: any) => m.toLowerCase() === modelo.toLowerCase());
 
-
           this.s_ma.obtenerVehiculosPorModelo(marcaNumber,anio,modeloEncontrado).subscribe({
                 next: (data) => {
 
@@ -483,28 +456,34 @@ export class MulticotizadorComponent implements OnInit {
                 (m: any) => m.desc.toLowerCase() === version.toLowerCase());
 
                 if(versionEncontrada)
-                {
-
+                {;
                   cotizacion.vehiculo.infoauto=versionEncontrada.codigo;
-                  console.log(cotizacion);
+
+                  this.s_ma.cotizar(cotizacion).subscribe({
+                    next: (response) => {
+                      console.log("✅ Respuesta de la API:");
+
+                      const mercantilCotizado:MercantilCotizado=response;
+
+                      console.log(mercantilCotizado);
+
+                    },
+                    error: (error) => {
+                      console.error("❌ Error al cotizar:", error);
+                    }
+                  });
 
                 }
-
                 },
                 error: (error) => {
                   console.error("Error al obtener las versiones:", error);
                 }
               });
-
-
-
-
           },
           error: (error) => {
             console.error("Error al obtener los modelos:", error);
           }
         });
-
       }
 
       },
@@ -520,10 +499,10 @@ export class MulticotizadorComponent implements OnInit {
 
     const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
     const TIPO_VEHICULO = formValues.tipoVehiculo;
-    const MARCA = formValues.marca;
+    const MARCA = formValues.marca.descripcion;
     const ANIO = Number(formValues.anio);
-    const MODELO = formValues.modelo;
-    const VERSION = formValues.version;
+    const MODELO = formValues.modelo.descripcion;
+    const VERSION = formValues.version.descripcion;
     const USO = formValues.uso;
     const CUOTAS = Number(formValues.cuotas);
 
@@ -552,7 +531,6 @@ export class MulticotizadorComponent implements OnInit {
       localidad: LOCALIDAD,
       vehiculo:VEHICULO,
       productor: PRODUCTOR,
-      periodo: 2,         //Refacturacion
       cuotas:CUOTAS,
    //   comision: nose,
    //   bonificacion: nose,
@@ -562,19 +540,7 @@ export class MulticotizadorComponent implements OnInit {
 
     console.log(cotizacionData);
 
-    const marcaPrueba='CHEVROLET';
-    const modeloPrueba='CELTA';
-    const versionPrueba='CELTA 1.4 3 PTAS LT';
-    const anioPrueba =2013;
-
-    this.obtenerCotizacionMercantil(
-      cotizacionData,
-      marcaPrueba,
-      modeloPrueba,
-      anioPrueba,
-      versionPrueba);
-
-    //this.obtenerVehiculoMercantil(MARCA.descripcion,MODELO,ANIO);
+    this.obtenerCotizacionMercantil(cotizacionData,MARCA,MODELO,ANIO,VERSION);
 
   }
 

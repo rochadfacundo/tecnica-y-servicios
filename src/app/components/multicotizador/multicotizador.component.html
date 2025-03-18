@@ -54,9 +54,9 @@
      MA [value]="version.codigo">{{ version.desc}} -->
     <div class="mb-3" >
       <label for="versionVehiculo" class="form-label">Versión</label>
-      <select id="versionVehiculo" class="form-select"   formControlName="version" (change)="onVersionChange($event)" >
+      <select id="versionVehiculo" class="form-select"   formControlName="version">
         <option [ngValue]="null" disabled>Seleccione una versión</option>
-        <option *ngFor="let version of versiones" [value]="version.id">{{ version.descripcion }}</option>
+        <option *ngFor="let version of versiones" [ngValue]="version">{{ version.descripcion }}</option>
       </select>
     </div>
 

@@ -1,6 +1,7 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
+import { CotizacionMercantil } from '../interfaces/cotizacionMercantil';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,16 @@ export class MercantilAndinaService {
     return this.http.get(`${this.API_URL}/versiones`, {
       params: {marca, año, modelo}
     });
+  }
+
+  cotizar(data: CotizacionMercantil): Observable<any> {
+    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
+    return this.http.post(`${this.API_URL}/cotizaciones`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error("❌ Error recibido del backend:", error.error);
+        return throwError(() => error.error);
+      })
+    );
   }
 
 }
