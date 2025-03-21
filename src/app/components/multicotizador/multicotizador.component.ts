@@ -68,7 +68,7 @@ export class MulticotizadorComponent implements OnInit {
 
   public readonly cuotas=
   [
-    1,2,3
+    1,2,3,4,5,6
   ];
 
   public readonly clausulasAjuste=
@@ -399,7 +399,8 @@ export class MulticotizadorComponent implements OnInit {
       error: (error) => {
         this.cotizacion = false;
         this.cotizacionError = error.error?.error || "Error desconocido";
-        console.error("Error en la cotización:", this.cotizacionError);
+        console.error("Rio Uruguay Cotizacion Error:",
+        error.error?.error || "Error desconocido");
 
       }
     });
@@ -469,7 +470,8 @@ export class MulticotizadorComponent implements OnInit {
 
                     },
                     error: (error) => {
-                      console.error("❌ Error al cotizar:", error);
+                      console.error("Mercantil Andina Cotizacion Error:",
+                      error.error?.message || "Error desconocido");
                     }
                   });
 
@@ -546,7 +548,7 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizar()
   {
-    // this.cotizarRUS();
+    this.cotizarRUS();
 
     this.cotizarMercantil();
   }

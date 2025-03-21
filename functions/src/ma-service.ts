@@ -147,9 +147,11 @@ export const cotizarMercantil = async (
     console.log("cotiza MA ok");
     return response.data;
   } catch (error:any) {
-    console.error("❌ Error en la cotización:", error.response?.data);
+    console.error("Error realizando cotización MA:", error.response?.data || error.message);
 
+    const errorMessage =
+        error.response?.data?.errores?.[0]?.mensaje || "Error desconocido";
 
-    throw error.response?.data || { mensaje: "Error desconocido" };
+    throw new Error(errorMessage);
   }
 };

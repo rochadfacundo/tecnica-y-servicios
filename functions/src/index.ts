@@ -175,9 +175,12 @@ app.post("/mercantil/cotizaciones", async (req, res) => {
     const token = await obtenerTokenMercantil(); // Obtener token
     const response = await cotizarMercantil(data, token);
     res.status(200).json(response);
-  } catch (error) {
-    console.error("❌ Error al cotizar:", error);
-    res.status(500).json(error);
+  } catch (error:any) {
+    console.log("Error al cotizar:", error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack, // Solo para depuración, puedes quitarlo después
+    });
   }
 });
 

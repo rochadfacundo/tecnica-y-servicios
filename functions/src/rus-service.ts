@@ -145,7 +145,7 @@ export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<
       return response.data;
     }
   } catch (error: any) {
-    console.error("Error realizando cotización:", error.response?.data || error.message);
+    console.error("Error realizando cotización RUS:", error.response?.data || error.message);
 
     const errorMessage =
         error.response?.data?.validationErrors?.[0]?.message ||

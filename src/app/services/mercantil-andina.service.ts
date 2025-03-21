@@ -42,12 +42,7 @@ export class MercantilAndinaService {
 
   cotizar(data: CotizacionMercantil): Observable<any> {
     console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
-    return this.http.post(`${this.API_URL}/cotizaciones`, data).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error("❌ Error recibido del backend:", error.error);
-        return throwError(() => error.error);
-      })
-    );
+    return this.http.post(`${this.API_URL}/cotizaciones`, data);
   }
 
 }
