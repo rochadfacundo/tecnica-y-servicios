@@ -7,6 +7,7 @@ import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,MercantilCo
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
+import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -42,20 +43,6 @@ export class MulticotizadorComponent implements OnInit {
   ) {
 
   }
-
-
-  public readonly tiposVehiculo = [
-    { id: 7, nombre: 'MOTO MENOS 50 CC' },
-    { id: 8, nombre: 'MOTO MAS 50 CC' },
-    { id: 1, nombre: 'AUTO' },
-    { id: 2, nombre: 'PICK-UP "A"' },
-    { id: 3, nombre: 'PICK-UP "B"' },
-    { id: 4, nombre: 'CAMION HASTA 5 TN' },
-    { id: 5, nombre: 'CAMION HASTA 10 TN' },
-    { id: 6, nombre: 'CAMION MAS 10 TN' },
-    { id: 25, nombre: 'MOTORHOME' },
-    { id: 26, nombre: 'M3 OMNIBUS' },
-  ];
 
   public readonly tipoInteresOpciones=
   [
@@ -102,9 +89,53 @@ export class MulticotizadorComponent implements OnInit {
     { id: 9, condicion: 'CDE', descripcion: 'Cliente del exterior'}
   ];
 
+
+  public readonly tiposVehiculo = [
+    { id: 7, nombre: 'MOTO MENOS 50 CC' },
+    { id: 8, nombre: 'MOTO MAS 50 CC' },
+    { id: 1, nombre: 'AUTO' },
+    { id: 2, nombre: 'PICK-UP "A"' },
+    { id: 3, nombre: 'PICK-UP "B"' },
+    { id: 4, nombre: 'CAMION HASTA 5 TN' },
+    { id: 5, nombre: 'CAMION HASTA 10 TN' },
+    { id: 6, nombre: 'CAMION MAS 10 TN' },
+    { id: 25, nombre: 'MOTORHOME' },
+    { id: 26, nombre: 'M3 OMNIBUS' },
+  ];
+
+
   private getTipo(id: number): string {
-    const tipo = this.tipoInteresOpciones.find(cf => cf.id === id);
-    return tipo ? tipo.nombre : 'VEHICULO';
+
+    let vehiculo='';
+
+    switch (id) {
+      case 1:
+      case 2:
+      case 3:
+      vehiculo='VEHICULO';
+      break;
+      case 4:
+      case 5:
+      case 6:
+      vehiculo='CAMION';
+        break;
+      case 7:
+      case 8:
+      vehiculo='MOTOVEHICULO';
+        break;
+      case 25:
+      vehiculo='MOTORHOME';
+        break;
+      case 26:
+      vehiculo='OMNIBUS';
+       break;
+
+      default:
+        break;
+    }
+
+
+    return vehiculo;
   }
 
 
@@ -424,73 +455,125 @@ export class MulticotizadorComponent implements OnInit {
     console.log(anio);
     console.log(version);
 
+    if(cotizacion.tipo="MOTOVEHICULO")
+    {
 
-    this.s_ma.obtenerMarcas().subscribe({
-      next: (data: any) => {
-        // Excluimos las primeras 11 marcas sugeridas
-        const marcasFiltradas = data.slice(11);
+      const moto=marca+' '+version;
+      this.s_ma.obtenerVehiculos(moto,anio,'MOTO').subscribe({
+        next: (data: any) => {
+          console.log(data.datos);
+          cotizacion.vehiculo.infoauto= data.datos[0].codigo;
 
-        marcasFiltradas.push({ desc: "VOLKSWAGEN", codigo: 46 });
-        console.log(marcasFiltradas);
+          this.s_ma.cotizar(cotizacion).subscribe({
+            next: (response) => {
+              console.log("✅ Respuesta de la API MA moto:");
 
-      const marcaEncontrada = marcasFiltradas.find(
-        (m: any) => m.desc.toLowerCase() === marca.toLowerCase());
+              const mercantilCotizado:MercantilCotizado=response;
 
-      if (marcaEncontrada)
-      {
+              console.log(mercantilCotizado);
 
-        const marcaNumber= Number(marcaEncontrada.codigo);
+            },
+            error: (error) => {
+              console.error("Mercantil Andina Cotizacion Error:",
+              error.error?.message || "Error desconocido");
+            }
+          });
 
-        console.log('marca numero '+ marcaNumber);
+        },
+        error: (error) => console.error("Error al obtener las marcas:", error),
+      });
 
-        this.s_ma.obtenerModelos(marcaNumber,anio).subscribe({
-          next: (data) => {
+        /*
+      //const moto= marca
+      const moto2=marca+' '+modelo+' '+version;
+      const moto ="HONDA";
+      console.log(moto);
+      console.log(moto2);
+      this.s_ma.obtenerVehiculos(moto,anio,'MOTO').subscribe({
+        next:(data:any) => {
+          console.log(data);
+        },
+        error: (error) => {
+          console.error("Error al obtener las motos:", error);
+        }
+      });*/
 
-            const modeloEncontrado = data.find(
-              (m: any) => m.toLowerCase() === modelo.toLowerCase());
-
-          this.s_ma.obtenerVehiculosPorModelo(marcaNumber,anio,modeloEncontrado).subscribe({
-                next: (data) => {
+    }else{
 
 
-                const versionEncontrada = data.find(
-                (m: any) => m.desc.toLowerCase() === version.toLowerCase());
 
-                if(versionEncontrada)
-                {;
-                  cotizacion.vehiculo.infoauto=versionEncontrada.codigo;
+      this.s_ma.obtenerMarcas().subscribe({
+        next: (data: any) => {
+          // Excluimos las primeras 11 marcas sugeridas
+          const marcasFiltradas = data.slice(11);
 
-                  this.s_ma.cotizar(cotizacion).subscribe({
-                    next: (response) => {
-                      console.log("✅ Respuesta de la API:");
+          marcasFiltradas.push({ desc: "VOLKSWAGEN", codigo: 46 });
+          console.log(marcasFiltradas);
 
-                      const mercantilCotizado:MercantilCotizado=response;
+        const marcaEncontrada = marcasFiltradas.find(
+          (m: any) => m.desc.toLowerCase() === marca.toLowerCase());
 
-                      console.log(mercantilCotizado);
+        if (marcaEncontrada)
+        {
 
-                    },
-                    error: (error) => {
-                      console.error("Mercantil Andina Cotizacion Error:",
-                      error.error?.message || "Error desconocido");
-                    }
-                  });
+          const marcaNumber= Number(marcaEncontrada.codigo);
 
-                }
-                },
-                error: (error) => {
-                  console.error("Error al obtener las versiones:", error);
-                }
-              });
-          },
-          error: (error) => {
-            console.error("Error al obtener los modelos:", error);
-          }
-        });
-      }
+          console.log('marca numero '+ marcaNumber);
 
-      },
-      error: (error) => console.error("Error al obtener las marcas:", error),
-    });
+          this.s_ma.obtenerModelos(marcaNumber,anio).subscribe({
+            next: (data) => {
+              console.log(data);
+              const modeloEncontrado = data.find(
+                (m: any) => m.toLowerCase() === modelo.toLowerCase());
+
+            this.s_ma.obtenerVehiculosPorModelo(marcaNumber,anio,modeloEncontrado).subscribe({
+                  next: (data) => {
+
+
+                  const versionEncontrada = data.find(
+                  (m: any) => m.desc.toLowerCase() === version.toLowerCase());
+
+                  if(versionEncontrada)
+                  {;
+                    cotizacion.vehiculo.infoauto=versionEncontrada.codigo;
+
+                    this.s_ma.cotizar(cotizacion).subscribe({
+                      next: (response) => {
+                        console.log("✅ Respuesta de la API:");
+
+                        const mercantilCotizado:MercantilCotizado=response;
+
+                        console.log(mercantilCotizado);
+
+                      },
+                      error: (error) => {
+                        console.error("Mercantil Andina Cotizacion Error:",
+                        error.error?.message || "Error desconocido");
+                      }
+                    });
+
+                  }
+                  },
+                  error: (error) => {
+                    console.error("Error al obtener las versiones:", error);
+                  }
+                });
+            },
+            error: (error) => {
+              console.error("Error al obtener los modelos:", error);
+            }
+          });
+        }
+
+        },
+        error: (error) => console.error("Error al obtener las marcas:", error),
+      });
+
+
+
+    }
+
+
 
   }
 
@@ -534,6 +617,7 @@ export class MulticotizadorComponent implements OnInit {
       vehiculo:VEHICULO,
       productor: PRODUCTOR,
       cuotas:CUOTAS,
+      tipo: this.getTipo(TIPO_VEHICULO),
    //   comision: nose,
    //   bonificacion: nose,
    //    ajuste_suma?:number;  //10,25,50
@@ -542,13 +626,13 @@ export class MulticotizadorComponent implements OnInit {
 
     console.log(cotizacionData);
 
-    this.obtenerCotizacionMercantil(cotizacionData,MARCA,MODELO,ANIO,VERSION);
+   this.obtenerCotizacionMercantil(cotizacionData,MARCA,MODELO,ANIO,VERSION);
 
   }
 
   cotizar()
   {
-    this.cotizarRUS();
+   // this.cotizarRUS();
 
     this.cotizarMercantil();
   }

@@ -1,13 +1,14 @@
 /* eslint-disable max-len */
 import axios from "axios";
 import qs from "qs";
+import { CotizacionMercantil } from "./interfaces/CotizacionMercantil";
 
 const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
 
 const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
 const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
 const SUBSCRIPTION_KEY = "5a51821ce0134a54ad1f46c3f5736f0b";
-const API_URL_COTIZAR="https://apidev.mercantilandina.com.ar/cotizaciones/v2/auto";
+
 const USERNAME = "ROCHATST";
 const PASS = "rochatst24";
 
@@ -133,14 +134,28 @@ export const obtenerVersionesMercantil = async (
 
 //  Metodo Cotizar mercantil
 export const cotizarMercantil = async (
-  data: any, token: string)=> {
+  data: CotizacionMercantil)=> {
   try {
+    const token = await obtenerTokenMercantil(); // Obtener token
     const headers = {
       "Authorization": `Bearer ${token}`,
       "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
       "Content-Type": "application/json",
     };
-
+    let API_URL_COTIZAR="https://apidev.mercantilandina.com.ar/cotizaciones/v2/";
+    switch (data.tipo) {
+    case "VEHICULO":
+      API_URL_COTIZAR+="auto";
+      break;
+    case "MOTOVEHICULO":
+      API_URL_COTIZAR+="moto";
+      data.canal=81;
+      break;
+    case "CAMION":
+      API_URL_COTIZAR+="camion";
+      break;
+    }
+    console.log("La api pedida es: ", API_URL_COTIZAR);
     const response = await axios.post(API_URL_COTIZAR, data, {
       headers,
     });
@@ -150,7 +165,9 @@ export const cotizarMercantil = async (
     console.error("Error realizando cotización MA:", error.response?.data || error.message);
 
     const errorMessage =
-        error.response?.data?.errores?.[0]?.mensaje || "Error desconocido";
+        error.response?.data?.errores?.[0]?.mensaje ||
+        error.response?.data?.errores?.[0]?.texto ||
+         "Error desconocido";
 
     throw new Error(errorMessage);
   }

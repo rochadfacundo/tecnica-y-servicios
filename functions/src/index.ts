@@ -172,8 +172,7 @@ app.get("/mercantil/versiones", async (req: Request, res: Response) => {
 app.post("/mercantil/cotizaciones", async (req, res) => {
   try {
     const data = req.body;
-    const token = await obtenerTokenMercantil(); // Obtener token
-    const response = await cotizarMercantil(data, token);
+    const response = await cotizarMercantil(data);
     res.status(200).json(response);
   } catch (error:any) {
     console.log("Error al cotizar:", error);
