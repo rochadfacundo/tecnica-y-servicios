@@ -1,6 +1,6 @@
 export interface CotizacionMercantil {
   localidad: CotizacionLocalidad;
-  vehiculo: CotizacionVehiculo;
+  vehiculo: CotizacionVehiculo | CotizacionVehiculoMoto | null;
   productor: Productor;
   tipo:string;
   canal?: number;
@@ -44,6 +44,19 @@ export interface CotizacionVehiculo {
   id?: number;
   nombre?: string;
   anio?: number;
+  anioFab?: number;
+  valor?: number;
+  uso?: number;
+  gnc?: boolean;
+  rastreo?: number;
+}
+
+
+export interface CotizacionVehiculoMoto {
+  infoauto: number;
+  id?: number;
+  nombre?: string;
+  aniofab?: number;
   valor?: number;
   uso?: number;
   gnc?: boolean;

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
-import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,MercantilCotizado,Productor } from '../../interfaces/cotizacionMercantil';
+import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,CotizacionVehiculoMoto,MercantilCotizado,Productor } from '../../interfaces/cotizacionMercantil';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
@@ -106,9 +106,10 @@ export class MulticotizadorComponent implements OnInit {
 
   private getTipo(id: number): string {
 
+    const idNumber =Number(id);
     let vehiculo='';
-
-    switch (id) {
+    console.log(idNumber);
+    switch (idNumber) {
       case 1:
       case 2:
       case 3:
@@ -133,7 +134,7 @@ export class MulticotizadorComponent implements OnInit {
       default:
         break;
     }
-
+    console.log(vehiculo);
 
     return vehiculo;
   }
@@ -462,7 +463,10 @@ export class MulticotizadorComponent implements OnInit {
       this.s_ma.obtenerVehiculos(moto,anio,'MOTO').subscribe({
         next: (data: any) => {
           console.log(data.datos);
-          cotizacion.vehiculo.infoauto= data.datos[0].codigo;
+
+          if(cotizacion.vehiculo){
+            cotizacion.vehiculo.infoauto= data.datos[0].codigo;
+          }
 
           this.s_ma.cotizar(cotizacion).subscribe({
             next: (response) => {
@@ -534,7 +538,8 @@ export class MulticotizadorComponent implements OnInit {
                   (m: any) => m.desc.toLowerCase() === version.toLowerCase());
 
                   if(versionEncontrada)
-                  {;
+                  {
+                    if(cotizacion.vehiculo)
                     cotizacion.vehiculo.infoauto=versionEncontrada.codigo;
 
                     this.s_ma.cotizar(cotizacion).subscribe({
@@ -583,14 +588,13 @@ export class MulticotizadorComponent implements OnInit {
     const formValues = this.cotizacionForm.value;
 
     const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
-    const TIPO_VEHICULO = formValues.tipoVehiculo;
+    const TIPO_VEHICULO = this.getTipo(formValues.tipoVehiculo);
     const MARCA = formValues.marca.descripcion;
     const ANIO = Number(formValues.anio);
     const MODELO = formValues.modelo.descripcion;
     const VERSION = formValues.version.descripcion;
     const USO = formValues.uso;
     const CUOTAS = Number(formValues.cuotas);
-
     const GNC = this.getSiNo(formValues.gnc);
     const PRODUCTOR:Productor={ id: 86322 };
     const LOCALIDAD:CotizacionLocalidad=
@@ -604,25 +608,42 @@ export class MulticotizadorComponent implements OnInit {
       this.gnc=false;
     }
 
-    const VEHICULO:CotizacionVehiculo=  {
-      infoauto: 170761,
-      anio: ANIO,
-      uso: 1,   //por ahora solo particular
-      gnc: this.gnc,
-      rastreo: 0 };
 
-    const cotizacionData: CotizacionMercantil = {
+
+    let cotizacionData: CotizacionMercantil = {
       canal: 78,
       localidad: LOCALIDAD,
-      vehiculo:VEHICULO,
+      vehiculo:null,
       productor: PRODUCTOR,
       cuotas:CUOTAS,
-      tipo: this.getTipo(TIPO_VEHICULO),
+      tipo: TIPO_VEHICULO,
    //   comision: nose,
    //   bonificacion: nose,
    //    ajuste_suma?:number;  //10,25,50
       desglose:true     //desglose de montos totales y cuotas
     };
+
+    if(cotizacionData.tipo=="MOTOVEHICULO"){
+      console.log('entramo');
+      const MOTOVEHICULO:CotizacionVehiculoMoto=  {
+        infoauto: 0,
+        aniofab: ANIO,
+        uso: 1,   //por ahora solo particular
+        gnc: this.gnc,
+        rastreo: 0 };
+       cotizacionData.vehiculo=MOTOVEHICULO;
+       cotizacionData.canal=81;
+
+    }else
+    {
+      const VEHICULO:CotizacionVehiculo=  {
+        infoauto: 0,
+        anio: ANIO,
+        uso: 1,   //por ahora solo particular
+        gnc: this.gnc,
+        rastreo: 0 };
+        cotizacionData.vehiculo=VEHICULO;
+    }
 
     console.log(cotizacionData);
 
