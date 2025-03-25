@@ -143,9 +143,12 @@ app.get("/mercantil/vehiculos", async (req: Request, res: Response) => {
     const token = await obtenerTokenMercantil(); // Obtener token
     const vehiculos = await obtenerVehiculosMercantil(marca.toString(), Number(año), tipo.toString(), token);
     return res.status(200).json(vehiculos);
-  } catch (error) {
-    console.error("Error obteniendo vehículos de Mercantil Andina:", error);
-    return res.status(500).json({ error: "Error al obtener vehículos" });
+  } catch (error:any) {
+    console.log("Error al cotizar:", error);
+    return res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack, // Solo para depuración, puedes quitarlo después
+    });
   }
 });
 

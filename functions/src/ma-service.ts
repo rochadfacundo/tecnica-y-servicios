@@ -101,8 +101,14 @@ export const obtenerVehiculosMercantil = async (
     console.log("obtener vehiculo ok");
     return response.data;
   } catch (error: any) {
-    console.error("Error obtener vehículos:", error.response?.data || error.message);
-    throw new Error("No se pudieron obtener los vehículos");
+    console.error("Error obterner VEhiculo MA:", error.response?.data || error.message);
+
+    const errorMessage =
+        error.response?.data?.errores?.[0]?.texto ||
+        error.response?.data?.errores?.[0]?.mensaje ||
+         "Error desconocido";
+
+    throw new Error(errorMessage);
   }
 };
 

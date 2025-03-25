@@ -438,7 +438,9 @@ export class MulticotizadorComponent implements OnInit {
     });
   }
 
-
+  limpiarEspacios(texto: string): string {
+    return texto.replace(/\s+/g, ' ').trim();
+}
 
   //MERCANTIL ANDINA
 
@@ -454,10 +456,18 @@ export class MulticotizadorComponent implements OnInit {
     console.log(marca);
     console.log(modelo);
     console.log(anio);
-    console.log(version);
+    console.log('antes: ',version);
 
-    if(cotizacion.tipo="MOTOVEHICULO")
+    version=this.limpiarEspacios(version);
+    console.log('despues: ',version);
+    if(cotizacion.tipo=="MOTOVEHICULO")
     {
+
+      this.s_ma.obtenerMarcas().subscribe({
+        next:(data:any)=> {
+          console.log(data);
+        }
+      });
 
       const moto=marca+' '+version;
       this.s_ma.obtenerVehiculos(moto,anio,'MOTO').subscribe({
@@ -502,7 +512,44 @@ export class MulticotizadorComponent implements OnInit {
         }
       });*/
 
-    }else{
+    }else if(cotizacion.tipo=="CAMION")
+    {
+
+
+         const camion=marca+''+version;
+      this.s_ma.obtenerVehiculos(camion,anio,'CAMION').subscribe({
+        next: (data: any) => {
+          console.log(data.datos);
+
+          if(cotizacion.vehiculo){
+            cotizacion.vehiculo.infoauto= data.datos[0].codigo;
+          }
+
+          /*
+          this.s_ma.cotizar(cotizacion).subscribe({
+            next: (response) => {
+              console.log("✅ Respuesta de la API MA camion:");
+
+              const mercantilCotizado:MercantilCotizado=response;
+
+              console.log(mercantilCotizado);
+
+            },
+            error: (error) => {
+              console.error("Mercantil Andina Cotizacion Error:",
+              error.error?.message || "Error desconocido");
+            }
+          });*/
+
+        },
+        error: (error) => console.error("Error al obtener las marcas:", error.error),
+      });
+
+
+
+
+    }
+    else{
 
 
 
@@ -598,7 +645,9 @@ export class MulticotizadorComponent implements OnInit {
     const GNC = this.getSiNo(formValues.gnc);
     const PRODUCTOR:Productor={ id: 86322 };
     const LOCALIDAD:CotizacionLocalidad=
-    { codigo_postal: Number(formValues.cpLocalidadGuarda) };
+    { codigo_postal: Number(formValues.cpLocalidadGuarda)
+      ,id:10407
+    };
 
     if(GNC=='SI')
     {
