@@ -9,6 +9,7 @@ import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
 import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
 import { InfoautoService } from '../../services/infoauto.service';
+import { Brand, Group } from '../../classes/infoauto';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -19,12 +20,14 @@ import { InfoautoService } from '../../services/infoauto.service';
 export class MulticotizadorComponent implements OnInit {
 
   cotizacionForm!: FormGroup;
-  marcas: any[] = [];
+  marcas: Brand[] = [];
+  brand_idSelected:number=0;
   anios: number[] = [];
   tipoVehiculo:string="";
   codigoTipoInteres:string='';
   codModelo:number=0;
   gnc:boolean=false;
+  grupos: Group[] = [];
   modelos: any[] = [];
   versiones: any[] = [];
   usos: any[] = [];
@@ -57,17 +60,6 @@ export class MulticotizadorComponent implements OnInit {
         console.log('error en token:',error);
       }
     });*/
-
-    this.s_infoauto.obtenerMarcas().subscribe({
-      next: (response) => {
-        console.log(response);
-      },
-      error: (error) => {
-        console.error('Error:', error);
-
-      }
-    });
-
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
@@ -277,6 +269,35 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
+  private getMarcasInfoAuto()
+  {
+    this.s_infoauto.getMarcas().subscribe({
+      next: (response:Brand[]) => {
+        console.log(response);
+        this.marcas=response;
+        this.cotizacionForm.get('marca')?.enable();
+      },
+      error: (error) => {
+        console.error('Error:', error);
+      },
+    });
+  }
+
+  getGruposPorMarca(brandId: number) {
+
+
+    this.s_infoauto.getGruposPorMarca(brandId).subscribe({
+      next: (response) => {
+        this.grupos = response;
+        this.cotizacionForm.get('modelo')?.enable();
+      },
+      error: (error:any) => {
+        console.error('Error:', error);
+      }
+    });
+  }
+
+
   //subscripciones a form
   private setupValueChanges(): void {
 
@@ -292,7 +313,8 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       this.setTiposUso(Number(tipo));
       if (tipo) {
-        this.obtenerMarcasRUS(tipo);
+        //this.obtenerMarcasRUS(tipo);
+        this.getMarcasInfoAuto();
         this.cotizacionForm.get('uso')?.enable();
       } else {
         this.marcas = [];
@@ -302,9 +324,10 @@ export class MulticotizadorComponent implements OnInit {
     });
 
 
-    this.cotizacionForm.get('marca')?.valueChanges.subscribe((marca) => {
+    this.cotizacionForm.get('marca')?.valueChanges.subscribe((marca:Brand) => {
       this.cotizacionForm.get('anio')?.setValue(null);
       if (marca) {
+        this.brand_idSelected=marca.id;
         this.cotizacionForm.get('anio')?.enable();
       } else {
         this.cotizacionForm.get('anio')?.disable();
@@ -314,9 +337,11 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (anio) {
-        this.obtenerModelosRUS();
+        //this.obtenerModelosRUS();
+        this.getGruposPorMarca(this.brand_idSelected);
         //this.obtenerModelosMA();
        // this.obtenerVersionesMA();
+
       } else {
         this.modelos = [];
         this.cotizacionForm.get('modelo')?.disable();
@@ -345,7 +370,6 @@ export class MulticotizadorComponent implements OnInit {
       next: (data: any) => {
         this.marcas = data.dtoList;
         console.log(this.marcas);
-        this.cotizacionForm.get('marca')?.enable();
       },
       error: (error) => console.error('Error al obtener las marcas:', error)
     });
@@ -362,7 +386,6 @@ export class MulticotizadorComponent implements OnInit {
       next: (data: any) => {
         this.modelos = data.dtoList;
         console.log(this.modelos);
-        this.cotizacionForm.get('modelo')?.enable();
       },
       error: (error) => {
         console.error('Error al obtener los modelos:', error);

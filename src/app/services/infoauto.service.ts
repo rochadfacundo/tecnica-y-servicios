@@ -19,14 +19,26 @@ export class InfoautoService {
 
   }
 
-  // Método para obtener el token de INFOAUTO
-  getToken(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/token`);
-  }
+    // Método para obtener el token de INFOAUTO
+    getToken(): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/token`);
+    }
 
-   // Obtener marcas de Infoauto
-   obtenerMarcas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/marcas`);
-  }
+    // Obtener marcas de Infoauto
+    getMarcas(): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/marcas`);
+    }
+
+    // Obtener grupos de una marca específica
+    getGruposPorMarca(brandId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos`);
+    }
+
+    // Obtener modelos de Infoauto
+    getModelos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/modelos`);
+    }
+
+
 
 }

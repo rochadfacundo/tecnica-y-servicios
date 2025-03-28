@@ -6,7 +6,7 @@ import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obte
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
-import { obtenerMarcasInfoauto, obtenerTokenInfoauto } from "./intoauto-service";
+import { obtenerGruposPorMarca, obtenerMarcasInfoauto, obtenerTokenInfoauto } from "./intoauto-service";
 
 
 const app = express();
@@ -42,6 +42,22 @@ app.get("/infoauto/marcas", async (req: Request, res: Response) => {
     res.status(200).json(marcas);
   } catch (error: any) {
     console.error("Error obteniendo marcas de INFOAUTO:", error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
+
+// ✅ Obtener grupos de una marca específica en INFOAUTO
+app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) => {
+  const { brandId } = req.params;
+
+  try {
+    const grupos = await obtenerGruposPorMarca(brandId);
+    res.status(200).json(grupos);
+  } catch (error: any) {
+    console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);
     res.status(500).json({
       message: error.message || "Error desconocido",
       stack: error.stack,

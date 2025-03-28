@@ -28,7 +28,7 @@
       <label for="marcaVehiculo" class="form-label">Marca</label>
       <select id="marcaVehiculo" class="form-select" formControlName="marca">
         <option [ngValue]="null" disabled>Seleccione una marca</option>
-        <option *ngFor="let marca of marcas"   [ngValue]="marca">{{ marca.descripcion }}  </option>
+        <option *ngFor="let marca of marcas"   [ngValue]="marca">{{ marca.name }}  </option>
       </select>
     </div>
 

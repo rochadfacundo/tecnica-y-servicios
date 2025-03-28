@@ -123,3 +123,19 @@ export const obtenerMarcasInfoauto = async () => {
     throw new Error(errorMessage);
   }
 };
+
+// Función para obtener los grupos de una marca específica
+export const obtenerGruposPorMarca = async (brandId: string) => {
+  try {
+    const url =
+    `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups/`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+    error.response?.data?.message ||
+    error.message ||
+    "Error desconocido";
+    throw new Error(errorMessage);
+  }
+};
