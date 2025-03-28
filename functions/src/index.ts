@@ -6,6 +6,8 @@ import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obte
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
+import { obtenerTokenInfoauto } from "./intoauto-service";
+
 
 const app = express();
 // Habilitar CORS para todas las solicitudes
@@ -16,6 +18,22 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+
+// ✅ Obtener token de INFOAUTO
+app.get("/infoauto/token", async (req: Request, res: Response) => {
+  try {
+    const token = await obtenerTokenInfoauto();
+    res.status(200).json({ access_token: token });
+  } catch (error: any) {
+    console.log("Error al obtener token:", error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
+
 
 // ✅ Obtener marcas
 app.get("/marcas", async (req: Request, res: Response) => {

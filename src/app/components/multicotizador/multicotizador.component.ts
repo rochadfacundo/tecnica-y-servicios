@@ -8,6 +8,7 @@ import { MercantilAndinaService } from '../../services/mercantil-andina.service'
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
 import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
+import { InfoautoService } from '../../services/infoauto.service';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -38,9 +39,28 @@ export class MulticotizadorComponent implements OnInit {
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
     @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
+    @Inject(InfoautoService) private s_infoauto: InfoautoService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
-  ) {
+  ){
+
+
+  }
+
+  ngOnInit(): void {
+
+    this.s_infoauto.getToken().subscribe({
+      next:(data:any)=>{
+        console.log(data);
+      },
+      error:(error)=>{
+        console.log('error en token:',error);
+      }
+    });
+
+    this.initForm();
+    this.loadYears();
+    this.setupValueChanges();
 
   }
 
@@ -207,13 +227,7 @@ export class MulticotizadorComponent implements OnInit {
     return id === 1 ? 'SI' : 'NO';
   }
 
-  ngOnInit(): void {
 
-    this.initForm();
-    this.loadYears();
-    this.setupValueChanges();
-
-  }
 
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
