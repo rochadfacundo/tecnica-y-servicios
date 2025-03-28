@@ -11,7 +11,7 @@ const db = admin.firestore();
 // URL del servicio de autenticación de INFOAUTO
 const AUTH_URL = "https://demo.api.infoauto.com.ar/cars/auth/login";
 const AUTH_URL_REFRESH= "https://demo.api.infoauto.com.ar/cars/auth/refresh";
-
+const BRANDS_URL="https://demo.api.infoauto.com.ar/cars/pub/brands";
 // Credenciales de INFOAUTO
 const CREDENTIALS = {
   usuario: "hrocha@tecnicayseguros.com.ar",
@@ -41,6 +41,11 @@ export const obtenerTokenInfoauto = async () => {
         const refreshResponse = await axios.post(AUTH_URL_REFRESH, {
           grant_type: "refresh_token",
           refresh_token: data.refresh_token,
+        }, {
+          headers: {
+            "Authorization": `Bearer ${data.access_token}`,
+            "Content-Type": "application/json",
+          },
         });
         console.log("Se actualiza exitosamente el nuevo token!");
         const newAccessToken = refreshResponse.data.access_token;
@@ -88,6 +93,28 @@ export const obtenerTokenInfoauto = async () => {
     });
     console.log("Se guardo bien el token NUEVO en firestore!");
     return accessToken;
+  } catch (error: any) {
+    const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Error desconocido";
+    throw new Error(errorMessage);
+  }
+};
+
+
+export const obtenerMarcasInfoauto = async () => {
+  try {
+    const token = await obtenerTokenInfoauto(); // Obtener el token válido
+
+    const response = await axios.get(BRANDS_URL, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
   } catch (error: any) {
     const errorMessage =
         error.response?.data?.message ||

@@ -13,4 +13,8 @@ export class AuthRivadaviaService {
   getToken(): Observable<any> {
     return this.http.get(this.netlifyFunctionUrl);
   }
+
+
+
+
 }

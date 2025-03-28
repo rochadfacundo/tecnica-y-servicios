@@ -48,13 +48,23 @@ export class MulticotizadorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+/*
     this.s_infoauto.getToken().subscribe({
       next:(data:any)=>{
         console.log(data);
       },
       error:(error)=>{
         console.log('error en token:',error);
+      }
+    });*/
+
+    this.s_infoauto.obtenerMarcas().subscribe({
+      next: (response) => {
+        console.log(response);
+      },
+      error: (error) => {
+        console.error('Error:', error);
+
       }
     });
 

@@ -6,7 +6,7 @@ import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obte
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
-import { obtenerTokenInfoauto } from "./intoauto-service";
+import { obtenerMarcasInfoauto, obtenerTokenInfoauto } from "./intoauto-service";
 
 
 const app = express();
@@ -35,7 +35,22 @@ app.get("/infoauto/token", async (req: Request, res: Response) => {
 });
 
 
-// ✅ Obtener marcas
+// ✅ Obtener marcas de INFOAUTO
+app.get("/infoauto/marcas", async (req: Request, res: Response) => {
+  try {
+    const marcas = await obtenerMarcasInfoauto();
+    res.status(200).json(marcas);
+  } catch (error: any) {
+    console.error("Error obteniendo marcas de INFOAUTO:", error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
+
+
+// ✅ Obtener marcas RUS
 app.get("/marcas", async (req: Request, res: Response) => {
   try {
     const tipoUnidad = Number(req.query.tipoUnidad);
@@ -51,7 +66,7 @@ app.get("/marcas", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Obtener modelos
+// ✅ Obtener modelos RUS
 app.get("/modelos", async (req: Request, res: Response) => {
   try {
     const marca = Number(req.query.marca);
@@ -71,7 +86,7 @@ app.get("/modelos", async (req: Request, res: Response) => {
 });
 
 
-// ✅ Obtener versiones
+// ✅ Obtener versiones RUS
 app.get("/versiones", async (req: Request, res: Response) => {
   try {
     const idModelo=req.query.idGrupoModelo;
