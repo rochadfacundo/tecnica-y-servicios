@@ -34,6 +34,12 @@ export class InfoautoService {
     return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos`);
     }
 
+
+    // Obtener modelos de una marca y grupo específico
+    getModelosPorGrupoYMarca(brandId: number,groupId:number): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos/${groupId}/modelos`);
+      }
+
     // Obtener modelos de Infoauto
     getModelos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/modelos`);

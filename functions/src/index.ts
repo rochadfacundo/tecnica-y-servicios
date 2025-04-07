@@ -6,7 +6,7 @@ import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obte
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
-import { obtenerGruposPorMarca, obtenerMarcasInfoauto, obtenerTokenInfoauto } from "./intoauto-service";
+import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
 
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(express.json());
 // ✅ Obtener token de INFOAUTO
 app.get("/infoauto/token", async (req: Request, res: Response) => {
   try {
-    const token = await obtenerTokenInfoauto();
+    const token = await getTokenInfoauto();
     res.status(200).json({ access_token: token });
   } catch (error: any) {
     console.log("Error al obtener token:", error);
@@ -38,7 +38,7 @@ app.get("/infoauto/token", async (req: Request, res: Response) => {
 // ✅ Obtener marcas de INFOAUTO
 app.get("/infoauto/marcas", async (req: Request, res: Response) => {
   try {
-    const marcas = await obtenerMarcasInfoauto();
+    const marcas = await getMarcasInfoauto();
     res.status(200).json(marcas);
   } catch (error: any) {
     console.error("Error obteniendo marcas de INFOAUTO:", error);
@@ -54,7 +54,7 @@ app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) 
   const { brandId } = req.params;
 
   try {
-    const grupos = await obtenerGruposPorMarca(brandId);
+    const grupos = await getGruposPorMarca(brandId);
     res.status(200).json(grupos);
   } catch (error: any) {
     console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);
@@ -65,6 +65,21 @@ app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) 
   }
 });
 
+// ✅ Obtener modelos de una marca y grupo específico en INFOAUTO
+app.get("/infoauto/marcas/:brandId/grupos/:groupId/modelos", async (req: Request, res: Response) => {
+  const { brandId, groupId } = req.params;
+
+  try {
+    const grupos = await getModelosPorMarcaYGrupo(brandId, groupId);
+    res.status(200).json(grupos);
+  } catch (error: any) {
+    console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
 
 // ✅ Obtener marcas RUS
 app.get("/marcas", async (req: Request, res: Response) => {

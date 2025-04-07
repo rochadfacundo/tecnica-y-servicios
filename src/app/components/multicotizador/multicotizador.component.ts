@@ -9,7 +9,7 @@ import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
 import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
 import { InfoautoService } from '../../services/infoauto.service';
-import { Brand, Group } from '../../classes/infoauto';
+import { Brand, Group, Model } from '../../classes/infoauto';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -22,13 +22,14 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionForm!: FormGroup;
   marcas: Brand[] = [];
   brand_idSelected:number=0;
+  group_idSelected:number=0;
   anios: number[] = [];
   tipoVehiculo:string="";
   codigoTipoInteres:string='';
   codModelo:number=0;
   gnc:boolean=false;
   grupos: Group[] = [];
-  modelos: any[] = [];
+  modelos: Model[] = [];
   versiones: any[] = [];
   usos: any[] = [];
   codigosUso: any[] = [];
@@ -288,6 +289,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.s_infoauto.getGruposPorMarca(brandId).subscribe({
       next: (response) => {
+        console.log(response);
         this.grupos = response;
         this.cotizacionForm.get('modelo')?.enable();
       },
@@ -296,6 +298,24 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
+
+  getModelosPorGrupoYMarca(brand_id:number,group_id:number){
+
+
+    this.s_infoauto.getModelosPorGrupoYMarca(brand_id,group_id).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.modelos = response;
+        this.cotizacionForm.get('version')?.enable();
+      },
+      error: (error:any) => {
+        console.error('Error:', error);
+      }
+    });
+  }
+
+
+
 
 
   //subscripciones a form
@@ -351,7 +371,9 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('modelo')?.valueChanges.subscribe((modelo) => {
       this.cotizacionForm.get('version')?.setValue(null);
       if (modelo) {
-        this.obtenerVersionesRUS();
+        //this.obtenerVersionesRUS();
+        this.group_idSelected=modelo.id;
+        this.getModelosPorGrupoYMarca(this.brand_idSelected,this.group_idSelected);
        //this.obtenerVersionesMA();
       } else {
         this.versiones = [];

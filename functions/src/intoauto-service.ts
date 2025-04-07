@@ -19,7 +19,7 @@ const CREDENTIALS = {
 };
 
 // Función para obtener el token de INFOAUTO
-export const obtenerTokenInfoauto = async () => {
+export const getTokenInfoauto = async () => {
   const docRef = db.collection("tokens").doc("infoauto");
   const doc = await docRef.get();
 
@@ -103,9 +103,9 @@ export const obtenerTokenInfoauto = async () => {
 };
 
 
-export const obtenerMarcasInfoauto = async () => {
+export const getMarcasInfoauto = async () => {
   try {
-    const token = await obtenerTokenInfoauto(); // Obtener el token válido
+    const token = await getTokenInfoauto();
 
     const response = await axios.get(BRANDS_URL, {
       headers: {
@@ -125,13 +125,21 @@ export const obtenerMarcasInfoauto = async () => {
 };
 
 // Función para obtener los grupos de una marca específica
-export const obtenerGruposPorMarca = async (brandId: string) => {
+export const getGruposPorMarca = async (brandId: string) => {
   try {
+    const token = await getTokenInfoauto();
     const url =
-    `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups/`;
-    const response = await axios.get(url);
+    `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups`;
+    const response = await axios.get(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error: any) {
+    console.log("error al traer grupos");
+    console.log(error);
     const errorMessage =
     error.response?.data?.message ||
     error.message ||
@@ -139,3 +147,28 @@ export const obtenerGruposPorMarca = async (brandId: string) => {
     throw new Error(errorMessage);
   }
 };
+
+// Función para obtener los grupos de una marca específica
+export const getModelosPorMarcaYGrupo =
+  async (brandId: string, groupId:string) => {
+    try {
+      const token = await getTokenInfoauto();
+      const url =
+      `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups/${groupId}/models`;
+      const response = await axios.get(url, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.log("error al traer modelos");
+      console.log(error);
+      const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Error desconocido";
+      throw new Error(errorMessage);
+    }
+  };
