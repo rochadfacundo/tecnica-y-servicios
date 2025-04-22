@@ -466,6 +466,9 @@ export class MulticotizadorComponent implements OnInit {
   cotizarMercantil()
   {
 
+    //console.log(this.cotizacionForm.value);
+
+
     const formValues = this.cotizacionForm.value;
 
     const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
@@ -473,7 +476,7 @@ export class MulticotizadorComponent implements OnInit {
     const MARCA = formValues.marca.descripcion;
     const ANIO = Number(formValues.anio);
     const MODELO = formValues.modelo.descripcion;
-    const VERSION = formValues.version.descripcion;
+    const CODIGO_INFOAUTO = formValues.version.codia;
     const USO = formValues.uso;
     const CUOTAS = Number(formValues.cuotas);
     const GNC = this.getSiNo(formValues.gnc);
@@ -482,6 +485,7 @@ export class MulticotizadorComponent implements OnInit {
     { codigo_postal: Number(formValues.cpLocalidadGuarda)
       ,id:10407
     };
+
 
     if(GNC=='SI')
     {
@@ -509,7 +513,7 @@ export class MulticotizadorComponent implements OnInit {
     if(cotizacionData.tipo=="MOTOVEHICULO"){
       console.log('entramo');
       const MOTOVEHICULO:CotizacionVehiculoMoto=  {
-        infoauto: 0,
+        infoauto: CODIGO_INFOAUTO,
         aniofab: ANIO,
         uso: 1,   //por ahora solo particular
         gnc: this.gnc,
@@ -520,7 +524,7 @@ export class MulticotizadorComponent implements OnInit {
     }else
     {
       const VEHICULO:CotizacionVehiculo=  {
-        infoauto: 0,
+        infoauto: CODIGO_INFOAUTO,
         anio: ANIO,
         uso: 1,   //por ahora solo particular
         gnc: this.gnc,
@@ -528,10 +532,30 @@ export class MulticotizadorComponent implements OnInit {
         cotizacionData.vehiculo=VEHICULO;
     }
 
+
     console.log(cotizacionData);
 
+    this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
+
+      console.log('Cotización exitosa Mercantil Andina:', response);
+      this.cotizacion = true;
+      /*--TABLA*
+
+      this.cotizacionError='';
+      this.cotizacionesRus = response.dtoList;
 
 
+    console.log('Cotizaciones procesadas:', this.cotizacionesRus);*/
+    },
+    error: (error) => {
+      this.cotizacion = false;
+
+      this.cotizacionError = error.error?.error || "Error desconocido";
+      console.error("Mercantil Andina Cotizacion Error:",
+      error.error?.error || "Error desconocido");
+
+    }
+  });
 
   }
 
