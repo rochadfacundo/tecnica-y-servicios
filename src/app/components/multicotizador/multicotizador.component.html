@@ -64,12 +64,11 @@
       <div class="mb-3">
         <label for="uso" class="form-label">Tipo de uso</label>
         <select id="uso" class="form-select" formControlName="uso">
-          <option *ngFor="let uso of tiposDeUso" [value]="uso.uso">
+          <option *ngFor="let uso of tiposDeUso" [ngValue]="uso">
             {{ uso.desc }}
           </option>
         </select>
       </div>
-
 
     <!-- Tipo Vigencia -->
     <div class="mb-3">
@@ -145,7 +144,7 @@
 
     <!-- Botón Cotizar -->
     <div class="d-grid gap-2">
-      <button type="button" class="btn btn-primary" (click)="cotizar()">Cotizar</button>
+      <button type="button" class="btn btn-primary" (click)="cotizar()" [disabled]="this.cotizacionForm.invalid">Cotizar</button>
     </div>
 
   </div>

@@ -38,8 +38,6 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionError:string='';
   tiposDeUso: TipoDeUso[]= [];
 
-
-
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
     @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
@@ -48,23 +46,12 @@ export class MulticotizadorComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ){
 
-
   }
 
   ngOnInit(): void {
-/*
-    this.s_infoauto.getToken().subscribe({
-      next:(data:any)=>{
-        console.log(data);
-      },
-      error:(error)=>{
-        console.log('error en token:',error);
-      }
-    });*/
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
-
   }
 
   public readonly tipoInteresOpciones=
@@ -76,10 +63,7 @@ export class MulticotizadorComponent implements OnInit {
     { id: 5, nombre: 'IMPLEMENTOS'},
   ];
 
-  public readonly cuotas=
-  [
-    1,2,3,4,5,6
-  ];
+  public readonly cuotas=[1,2,3,4,5,6];
 
   public readonly clausulasAjuste=
   [
@@ -127,11 +111,12 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
 
+
   private getTipo(id: number): string {
 
     const idNumber =Number(id);
     let vehiculo='';
-    console.log(idNumber);
+
     switch (idNumber) {
       case 1:
       case 2:
@@ -161,7 +146,6 @@ export class MulticotizadorComponent implements OnInit {
 
     return vehiculo;
   }
-
 
   private setTiposUso(id: number) {
 
@@ -234,24 +218,23 @@ export class MulticotizadorComponent implements OnInit {
 
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
-      codigoTipoInteres: [{value:null}],
-      tipoVehiculo: [{ value: null, disabled: true }],
-      marca: [{ value: null, disabled: true }],
-      anio: [{ value: null, disabled: true }],
-      modelo: [{ value: null, disabled: true }],
-      version: [{ value: null, disabled: true }],
-      uso: [{ value: null, disabled: true }],
-      codigoUso: [{ value: null, disabled: true }],
-      tipoVigencia:[{value:null}],
-      cuotas: [{ value: null }],
-      clausulaAjuste: [{value:null}],
-      condicionFiscal:[{value:null}],
-      cpLocalidadGuarda:[{value:null}],
-      controlSatelital:[{value:null}],
-      gnc:[{value:null}],
-      vigenciaDesde:[this.formatDate(new Date())],
-      vigenciaHasta:[{value:null}]
-
+      codigoTipoInteres: [{ value: null }, Validators.required],
+      tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
+      marca: [{ value: null, disabled: true }, Validators.required],
+      anio: [{ value: null, disabled: true }, Validators.required],
+      modelo: [{ value: null, disabled: true }, Validators.required],
+      version: [{ value: null, disabled: true }, Validators.required],
+      uso: [{ value: null, disabled: true }, Validators.required],
+      codigoUso: [{ value: null, disabled: true }, Validators.required],
+      tipoVigencia: [{ value: null }, Validators.required],
+      cuotas: [{ value: null }, Validators.required],
+      clausulaAjuste: [{ value: null }],
+      condicionFiscal: [{ value: null }, Validators.required],
+      cpLocalidadGuarda: [{ value: null }, Validators.required],
+      controlSatelital: [{ value: null }],
+      gnc: [{ value: null }],
+      vigenciaDesde: [this.formatDate(new Date()), Validators.required],
+      vigenciaHasta: [{ value: null }]
     });
   }
 
@@ -286,7 +269,6 @@ export class MulticotizadorComponent implements OnInit {
 
   getGruposPorMarca(brandId: number) {
 
-
     this.s_infoauto.getGruposPorMarca(brandId).subscribe({
       next: (response) => {
         console.log(response);
@@ -301,7 +283,6 @@ export class MulticotizadorComponent implements OnInit {
 
   getModelosPorGrupoYMarca(brand_id:number,group_id:number){
 
-
     this.s_infoauto.getModelosPorGrupoYMarca(brand_id,group_id).subscribe({
       next: (response) => {
         console.log(response);
@@ -313,10 +294,6 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
-
-
-
 
   //subscripciones a form
   private setupValueChanges(): void {
@@ -388,96 +365,73 @@ export class MulticotizadorComponent implements OnInit {
 
 
   cotizarRUS(): void {
-    if (this.cotizacionForm.invalid) {
-      console.warn('El formulario no es válido');
-      return;
-    }
 
     const formValues = this.cotizacionForm.value;
+    let codigoTipo= this.getTipo(formValues.tipoVehiculo);
+    const USO:TipoDeUso = formValues.uso;
 
-    if(this.tipoVehiculo=='7' ||this.tipoVehiculo=='8')
-    {
-      this.codigoTipoInteres='MOTOVEHICULO';
-    }else{
-      this.codigoTipoInteres='VEHICULO';
-    }
-
-    formValues.cpLocalidadGuarda
-
-    const vehiculos: VehiculosRus[]=[{
+    const vehiculo: VehiculosRus[]=[{
         anio: String(formValues.anio),
         controlSatelital: this.getSiNo(formValues.controlSatelital),
         cpLocalidadGuarda:Number(formValues.cpLocalidadGuarda),
         gnc: this.getSiNo(formValues.gnc),
-        modeloVehiculo: Number(formValues.version.id),
-        uso: String(formValues.uso)
+        codia:this.getCodigoInfoAuto(),
+        uso: USO.uso
     }];
-
-
 
     const cotizacionData: CotizacionRioUruguay = {
       codigoProductor: 4504,
       codigoSolicitante: 4504,
-      codigoTipoInteres: this.codigoTipoInteres,
+      codigoTipoInteres: codigoTipo,
       cuotas: Number(formValues.cuotas), //solo permite hasta 3
       ajusteAutomatico:Number(formValues.clausulaAjuste),
       condicionFiscal: this.getCondicionFiscal(formValues.condicionFiscal),
       tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
-      vehiculos: vehiculos,
+      vehiculos: vehiculo,
       vigenciaDesde: formValues.vigenciaDesde,
       vigenciaHasta: formValues.vigenciaHasta,
       vigenciaPolizaId: 65 //autos
     };
 
-    if(this.codigoTipoInteres!='VEHICULO')
+    if(codigoTipo!='VEHICULO')
     {
-      cotizacionData.vigenciaPolizaId=70; //motos
+      cotizacionData.vigenciaPolizaId=70; //id para motos
     }
-
-    console.log(cotizacionData);
 
     this.s_rus.cotizar(cotizacionData).subscribe({
       next: (response) => {
-        console.log('Cotización exitosa:', response);
+        console.log('✅ Cotización exitosa en RUS:', response);
         this.cotizacion = true;
         this.cotizacionError='';
         this.cotizacionesRus = response.dtoList;
 
 
-    console.log('Cotizaciones procesadas:', this.cotizacionesRus);
+    //console.log('Cotizaciones procesadas:', this.cotizacionesRus);
       },
       error: (error) => {
         this.cotizacion = false;
-        this.cotizacionError = error.error?.error || "Error desconocido";
-        console.error("Rio Uruguay Cotizacion Error:",
-        error.error?.error || "Error desconocido");
+
+        console.error("❌ Error en cotizacion RUS:",
+        error?.error?.error || "Error desconocido");
 
       }
     });
   }
 
-  limpiarEspacios(texto: string): string {
-    return texto.replace(/\s+/g, ' ').trim();
-}
+  getCodigoInfoAuto():number{
+    return Number(this.cotizacionForm.value.version.codia);
+  }
 
   //MERCANTIL ANDINA
 
 
   cotizarMercantil()
   {
-
-    //console.log(this.cotizacionForm.value);
-
-
     const formValues = this.cotizacionForm.value;
 
-    const CODIGO_TIPO_INTERES = formValues.codigoTipoInteres;
     const TIPO_VEHICULO = this.getTipo(formValues.tipoVehiculo);
-    const MARCA = formValues.marca.descripcion;
     const ANIO = Number(formValues.anio);
-    const MODELO = formValues.modelo.descripcion;
-    const CODIGO_INFOAUTO = formValues.version.codia;
-    const USO = formValues.uso;
+    const USO: TipoDeUso =  formValues.uso;
     const CUOTAS = Number(formValues.cuotas);
     const GNC = this.getSiNo(formValues.gnc);
     const PRODUCTOR:Productor={ id: 86322 };
@@ -503,19 +457,19 @@ export class MulticotizadorComponent implements OnInit {
       vehiculo:null,
       productor: PRODUCTOR,
       cuotas:CUOTAS,
-      tipo: TIPO_VEHICULO,
+      tipo: TIPO_VEHICULO,//este lo agregue yo para validar en el backend el endpoint
    //   comision: nose,
    //   bonificacion: nose,
-   //    ajuste_suma?:number;  //10,25,50
+   //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
       desglose:true     //desglose de montos totales y cuotas
     };
 
     if(cotizacionData.tipo=="MOTOVEHICULO"){
-      console.log('entramo');
+
       const MOTOVEHICULO:CotizacionVehiculoMoto=  {
-        infoauto: CODIGO_INFOAUTO,
+        infoauto: this.getCodigoInfoAuto(),
         aniofab: ANIO,
-        uso: 1,   //por ahora solo particular
+        uso: USO.id,
         gnc: this.gnc,
         rastreo: 0 };
        cotizacionData.vehiculo=MOTOVEHICULO;
@@ -524,9 +478,9 @@ export class MulticotizadorComponent implements OnInit {
     }else
     {
       const VEHICULO:CotizacionVehiculo=  {
-        infoauto: CODIGO_INFOAUTO,
+        infoauto: this.getCodigoInfoAuto(),
         anio: ANIO,
-        uso: 1,   //por ahora solo particular
+        uso: USO.id,
         gnc: this.gnc,
         rastreo: 0 };
         cotizacionData.vehiculo=VEHICULO;
@@ -537,7 +491,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
 
-      console.log('Cotización exitosa Mercantil Andina:', response);
+      console.log('✅ Cotización exitosa Mercantil Andina:', response);
       this.cotizacion = true;
       /*--TABLA*
 
@@ -550,20 +504,24 @@ export class MulticotizadorComponent implements OnInit {
     error: (error) => {
       this.cotizacion = false;
 
-      this.cotizacionError = error.error?.error || "Error desconocido";
-      console.error("Mercantil Andina Cotizacion Error:",
-      error.error?.error || "Error desconocido");
+      console.error("❌ Mercantil Andina Cotizacion Error:",
+      error?.error?.error || "Error desconocido");
 
     }
   });
 
   }
 
+  cotizarRivadavia()
+  {
+
+  }
+
   cotizar()
   {
-   // this.cotizarRUS();
+    this.cotizarRUS();
 
-    this.cotizarMercantil();
+   this.cotizarMercantil();
   }
 
 
