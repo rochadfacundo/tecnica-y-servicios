@@ -142,8 +142,6 @@ export class MulticotizadorComponent implements OnInit {
       default:
         break;
     }
-    console.log(vehiculo);
-
     return vehiculo;
   }
 
@@ -486,9 +484,6 @@ export class MulticotizadorComponent implements OnInit {
         cotizacionData.vehiculo=VEHICULO;
     }
 
-
-    console.log(cotizacionData);
-
     this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
 
       console.log('✅ Cotización exitosa Mercantil Andina:', response);
@@ -497,8 +492,6 @@ export class MulticotizadorComponent implements OnInit {
 
       this.cotizacionError='';
       this.cotizacionesRus = response.dtoList;
-
-
     console.log('Cotizaciones procesadas:', this.cotizacionesRus);*/
     },
     error: (error) => {
@@ -515,13 +508,16 @@ export class MulticotizadorComponent implements OnInit {
   cotizarRivadavia()
   {
 
+
+
   }
 
   cotizar()
   {
-    this.cotizarRUS();
+    this.cotizarRivadavia();
+    //this.cotizarRUS();
 
-   this.cotizarMercantil();
+    //this.cotizarMercantil();
   }
 
 
