@@ -3,10 +3,10 @@ import axios from "axios";
 import qs from "qs";
 import { CotizacionMercantil } from "./interfaces/CotizacionMercantil";
 
-const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
-
 const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
 const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
+
+const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
 const SUBSCRIPTION_KEY = "5a51821ce0134a54ad1f46c3f5736f0b";
 
 const USERNAME = "ROCHATST";
@@ -35,7 +35,6 @@ export const obtenerTokenMercantil = async () => {
     throw new Error("No se pudo obtener el token de Mercantil Andina");
   }
 };
-
 
 export const obtenerMarcasMercantil = async () => {
   try {

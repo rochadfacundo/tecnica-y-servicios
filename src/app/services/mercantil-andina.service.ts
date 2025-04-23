@@ -7,7 +7,7 @@ import { CotizacionMercantil } from '../interfaces/cotizacionMercantil';
   providedIn: 'root'
 })
 export class MercantilAndinaService {
-  private API_URL = "https://api-5cekuonbbq-uc.a.run.app/mercantil"; // Tu endpoint base
+  private API_URL = "https://api-5cekuonbbq-uc.a.run.app/mercantil";
 
   constructor(private http: HttpClient) {}
 

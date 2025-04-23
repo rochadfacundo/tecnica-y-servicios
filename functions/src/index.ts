@@ -7,6 +7,7 @@ import { cotizarRus, getMarcas,
   getModelos,
   getVersiones } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
+import { obtenerTokenRivadavia } from "./rivadavia-service";
 
 
 const app = express();
@@ -247,6 +248,17 @@ app.post("/mercantil/cotizaciones", async (req, res) => {
       message: error.message || "Error desconocido",
       stack: error.stack, // Solo para depuración, puedes quitarlo después
     });
+  }
+});
+
+// ✅ Obtener token de Rivadavia
+app.get("/rivadavia/token", async (req: Request, res: Response) => {
+  try {
+    const token = await obtenerTokenRivadavia();
+    return res.status(200).json({ access_token: token });
+  } catch (error: any) {
+    console.error("Error obteniendo token de Rivadavia:", error);
+    return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
   }
 });
 

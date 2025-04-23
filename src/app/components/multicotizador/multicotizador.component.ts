@@ -10,6 +10,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
+import { RivadaviaService } from '../../services/rivadavia.service';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -42,6 +43,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
     @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
     @Inject(InfoautoService) private s_infoauto: InfoautoService,
+    @Inject(RivadaviaService) private s_riv: RivadaviaService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -52,6 +54,16 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
+
+    this.s_riv.obtenerToken().subscribe({
+      next: (response) => {
+        console.log(response);
+    },
+      error: (error) => {
+        console.log(error);
+    }
+  });
+
   }
 
   public readonly tipoInteresOpciones=

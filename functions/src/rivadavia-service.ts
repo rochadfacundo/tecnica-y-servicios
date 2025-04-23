@@ -1,0 +1,99 @@
+import * as admin from "firebase-admin";
+import axios from "axios";
+import qs from "qs";
+
+// Inicializar Firebase si aún no está
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+
+const db = admin.firestore();
+
+const API_URL = "https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
+
+const USERNAME = "tsgr";
+const PASSWORD = "vbVdGFsWnQ81Dg9";
+const CLIENT_ID = "24bea14a";
+const CLIENT_SECRET = "e946749e9e1cdce8a8709b5604a3e0e5";
+
+export const obtenerTokenRivadavia = async () => {
+  const tokenRef = db.doc("Rivadavia/token");
+  const refreshRef = db.doc("Rivadavia/refreshToken");
+  const now = Date.now();
+
+  const tokenDoc = await tokenRef.get();
+  const refreshDoc = await refreshRef.get();
+
+  // Token válido
+  if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
+    console.log("🔄 Reutilizando access_token de Rivadavia");
+    return tokenDoc.data()?.value;
+  }
+
+  // Intentar refresh
+  if (refreshDoc.exists && refreshDoc.data()?.expiration > now) {
+    try {
+      console.log("♻️ Renovando access_token con refresh_token de Rivadavia");
+      const refreshToken = refreshDoc.data()?.value;
+
+      const refreshBody = qs.stringify({
+        grant_type: "refresh_token",
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        refresh_token: refreshToken,
+      });
+
+      const response = await axios.post(API_URL, refreshBody, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+
+      const newAccessToken = response.data.access_token;
+      const newExpiresIn = response.data.expires_in * 1000;
+      const newExpiration = now + newExpiresIn - 60000;
+
+      await tokenRef.set({
+        value: newAccessToken,
+        expiration: newExpiration,
+      });
+
+      console.log("✅ access_token guardado en Firestore (Rivadavia)");
+      return newAccessToken;
+    } catch (error) {
+      console.error("❌ Error al refrescar token Rivadavia,");
+    }
+  }
+
+  // Login completo
+  try {
+    console.log("🔑 Obteniendo nuevo access_token con login Rivadavia...");
+    const loginBody = qs.stringify({
+      grant_type: "password",
+      username: USERNAME,
+      password: PASSWORD,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+    });
+
+    const response = await axios.post(API_URL, loginBody, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
+
+    const { access_token, refresh_token,
+      expires_in, refresh_expires_in } = response.data;
+
+    const accessExpiration = now + expires_in * 1000 - 60000;
+    const refreshExpiration = now + refresh_expires_in * 1000;
+
+    await tokenRef.set({ value: access_token,
+      expiration: accessExpiration });
+    await refreshRef.set({ value: refresh_token,
+       expiration: refreshExpiration });
+
+    console.log("✅ Token y refresh_token de Rivadavia guardados en Firestore");
+    return access_token;
+  } catch (error: any) {
+    console.error("❌ Error obteniendo token de Rivadavia:",
+       error.response?.data || error.message);
+    throw new Error("No se pudo obtener el token de Rivadavia");
+  }
+};
