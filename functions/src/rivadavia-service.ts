@@ -9,7 +9,8 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-const API_URL = "https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
+const API_URL =
+"https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
 
 const USERNAME = "tsgr";
 const PASSWORD = "vbVdGFsWnQ81Dg9";
@@ -23,6 +24,7 @@ export const obtenerTokenRivadavia = async () => {
 
   const tokenDoc = await tokenRef.get();
   const refreshDoc = await refreshRef.get();
+
 
   // Token válido
   if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
@@ -78,22 +80,24 @@ export const obtenerTokenRivadavia = async () => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
-    const { access_token, refresh_token,
-      expires_in, refresh_expires_in } = response.data;
+    const accessToken = response.data.access_token;
+    const refreshToken = response.data.refresh_token;
+    const expiresIn= response.data.expires_in;
+    const refreshExpiresIn= response.data.refresh_expires_in;
 
-    const accessExpiration = now + expires_in * 1000 - 60000;
-    const refreshExpiration = now + refresh_expires_in * 1000;
+    const accessExpiration = now + expiresIn * 1000 - 60000;
+    const refreshExpiration = now + refreshExpiresIn * 1000;
 
-    await tokenRef.set({ value: access_token,
+    await tokenRef.set({ value: accessToken,
       expiration: accessExpiration });
-    await refreshRef.set({ value: refresh_token,
-       expiration: refreshExpiration });
+    await refreshRef.set({ value: refreshToken,
+      expiration: refreshExpiration });
 
     console.log("✅ Token y refresh_token de Rivadavia guardados en Firestore");
-    return access_token;
+    return accessToken;
   } catch (error: any) {
     console.error("❌ Error obteniendo token de Rivadavia:",
-       error.response?.data || error.message);
+      error.response?.data || error.message);
     throw new Error("No se pudo obtener el token de Rivadavia");
   }
 };
