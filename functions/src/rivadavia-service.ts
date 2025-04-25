@@ -118,10 +118,16 @@ export const cotizarRivadavia = async (datos: any) => {
     });
 
     return response.data;
-  } catch (error: any) {
-    console.error("❌ Error en cotización Rivadavia:",
-      error.response?.data || error.message);
-    throw new Error("Error realizando la cotización con Rivadavia.");
+  } catch (error:any) {
+    console.log(error.response.data);
+    const errorMessage =
+    error.response?.data ||
+    // error.response?.data?.fieldErrors?.[0]?.message ||
+    "Error desconocido";
+
+    console.error("❌ Error en cotización Rivadavia:", errorMessage);
+
+    throw new Error(errorMessage);
   }
 };
 

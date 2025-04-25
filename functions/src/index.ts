@@ -280,7 +280,9 @@ app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
     res.status(200).json(resultado);
   } catch (error: any) {
     console.error("Error al cotizar con Rivadavia:", error);
-    res.status(500).json({ error: error.message || "Error desconocido" });
+    res.status(500).json({
+      message: error.fieldErrors || "Error desconocido",
+    });
   }
 });
 

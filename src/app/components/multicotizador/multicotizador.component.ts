@@ -529,8 +529,8 @@ export class MulticotizadorComponent implements OnInit {
       },
       datoPoliza: {
         nroPoliza: "",
-        fechaVigenciaDesde: "2025-05-01",
-        fechaVigenciaHasta: "2026-05-01",
+        fechaVigenciaDesde: "2025-05-05",
+        fechaVigenciaHasta: "2025-06-06",
         cantidadCuotas: "1",
         tipoFacturacion: TipoFacturacion.MENSUAL,
         provincia: Provincia.BUENOS_AIRES,
@@ -552,7 +552,7 @@ export class MulticotizadorComponent implements OnInit {
        console.log(res);
       },
       error: (err) => {
-        console.error(err);
+        console.log(err);
       }
     });
 
