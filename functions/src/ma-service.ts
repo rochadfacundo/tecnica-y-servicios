@@ -1,7 +1,11 @@
 /* eslint-disable max-len */
 import axios from "axios";
+import * as admin from "firebase-admin";
 import qs from "qs";
 import { CotizacionMercantil } from "./interfaces/CotizacionMercantil";
+
+if (!admin.apps.length) admin.initializeApp();
+const db = admin.firestore();
 
 const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
 const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
@@ -13,6 +17,55 @@ const USERNAME = "ROCHATST";
 const PASS = "rochatst24";
 
 export const obtenerTokenMercantil = async () => {
+  const tokenRef = db.doc("Mercantil/token");
+  const refreshRef = db.doc("Mercantil/refreshToken");
+  const now = Date.now();
+
+  const tokenDoc = await tokenRef.get();
+  const refreshDoc = await refreshRef.get();
+
+  // 🔄 Reutilizar access_token si está vigente
+  if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
+    console.log("🔄 Reutilizando access_token de Mercantil");
+    return tokenDoc.data()?.value;
+  }
+
+  // ♻️ Intentar renovar con refresh_token
+  if (refreshDoc.exists && refreshDoc.data()?.expiration > now) {
+    try {
+      const refreshToken = refreshDoc.data()?.value;
+
+      const body = qs.stringify({
+        grant_type: "refresh_token",
+        client_id: "api-clientes-login",
+        refresh_token: refreshToken,
+      });
+
+      const response = await axios.post(API_URL, body, {
+        headers: {
+          "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": "Basic Uk9DSEFUU1Q6cm9jaGF0c3QyNA==",
+        },
+      });
+
+      const newAccessToken = response.data.access_token;
+      const newExpiresIn = response.data.expires_in * 1000;
+      const newExpiration = now + newExpiresIn - 60000;
+
+      await tokenRef.set({
+        value: newAccessToken,
+        expiration: newExpiration,
+      });
+
+      console.log("✅ Token actualizado con refresh para Mercantil");
+      return newAccessToken;
+    } catch (error:any) {
+      console.error("❌ Error al refrescar token de Mercantil:",
+        error.response?.data || error.message);
+    }
+  }
+
   try {
     const headers = {
       "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
@@ -28,7 +81,20 @@ export const obtenerTokenMercantil = async () => {
 
     const response = await axios.post(API_URL, body, { headers });
 
-    return response.data.access_token;
+    const accessToken = response.data.access_token;
+    const refreshToken = response.data.refresh_token;
+    const expiresIn = response.data.expires_in;
+    const refreshExpiresIn = response.data.refresh_expires_in;
+
+    const accessExpiration = now + expiresIn * 1000 - 60000;
+    const refreshExpiration = now + refreshExpiresIn * 1000;
+
+    await tokenRef.set({ value: accessToken, expiration: accessExpiration });
+    await refreshRef.set({ value: refreshToken, expiration: refreshExpiration });
+
+    console.log("✅ Token y refresh guardados en Firestore para Mercantil");
+    return accessToken;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error token:", error.response?.data || error.message);

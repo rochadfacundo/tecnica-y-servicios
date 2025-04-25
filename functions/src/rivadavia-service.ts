@@ -12,6 +12,9 @@ const db = admin.firestore();
 const API_URL =
 "https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
 
+const API_COTIZACION =
+"https://apibrokerstest.apps.segurosrivadavia.com/solicitud/api/emision/v1/solicitud/cotizacion";
+
 const USERNAME = "tsgr";
 const PASSWORD = "vbVdGFsWnQ81Dg9";
 const CLIENT_ID = "24bea14a";
@@ -101,3 +104,24 @@ export const obtenerTokenRivadavia = async () => {
     throw new Error("No se pudo obtener el token de Rivadavia");
   }
 };
+
+export const cotizarRivadavia = async (datos: any) => {
+  try {
+    const token = await obtenerTokenRivadavia();
+
+    const response = await axios.post(API_COTIZACION, datos, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "accept": "*/*",
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error en cotización Rivadavia:",
+      error.response?.data || error.message);
+    throw new Error("Error realizando la cotización con Rivadavia.");
+  }
+};
+

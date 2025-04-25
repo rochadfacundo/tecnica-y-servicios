@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable valid-jsdoc */
+import * as admin from "firebase-admin";
 import axios from "axios";
 import { CotizacionRioUruguay } from "./interfaces/CotizacionRioUruguay";
 
@@ -9,33 +10,47 @@ const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
 const USERNAME = "18291036ws";
 const PASSWORD = "cambiar";
 
-let cachedToken: string | null = null;
-let tokenExpiration: number | null = null;
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
+const db = admin.firestore();
 /**
  * Obtiene el token de autenticación.
  * Si el token está en caché y no ha expirado, lo reutiliza.
  */
-export async function getToken(): Promise<string|null> {
-  if (cachedToken && tokenExpiration && tokenExpiration > Date.now()) {
-    return cachedToken;
+export async function getTokenRus(): Promise<string | null> {
+  const tokenRef = db.doc("RUS/token");
+  const now = Date.now();
+
+  const tokenDoc = await tokenRef.get();
+
+  // ✅ Reutilizar si aún es válido
+  if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
+    return tokenDoc.data()?.value;
   }
 
+  // 🔐 Solicitar nuevo token
   try {
     const response = await axios.post(`${API_URL}/login/token`, {
       userName: USERNAME,
       password: PASSWORD,
     }, {
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
     });
 
-    cachedToken = response.data.message;
-    tokenExpiration = Date.now() + 60 * 60 * 1000; // Suponiendo que dura 1 hora
+    const accessToken = response.data.message;
+    const expiration = now + (55 * 60 * 1000);
 
-    return cachedToken;
+    await tokenRef.set({
+      value: accessToken,
+      expiration,
+    });
+
+    return accessToken;
   } catch (error: any) {
-    console.error("Error obteniendo token:", error.response?.data || error.message);
-    throw new Error("No se pudo obtener el token");
+    console.error("Error obteniendo token RUS:", error.response?.data || error.message);
+    throw new Error("No se pudo obtener el token de Río Uruguay");
   }
 }
 
@@ -49,7 +64,7 @@ export async function getMarcas(tipoUnidad: number): Promise<any> {
   }
 
   try {
-    const token = await getToken();
+    const token = await getTokenRus();
     const response = await axios.get(`${API_URL}/vehiculos/marcas`, {
       headers: {Authorization: token},
       params: {TipoUnidad: tipoUnidad},
@@ -74,7 +89,7 @@ export async function getModelos(marca: number, anio: number, tipoUnidad?: numbe
   }
 
   try {
-    const token = await getToken();
+    const token = await getTokenRus();
     const params: any = { Marca: marca, Año: anio };
     if (tipoUnidad !== undefined) {
       params.TipoUnidad = tipoUnidad; // Solo agrega si está definido
@@ -103,7 +118,7 @@ export async function getVersiones(
   idMarca?: number
 ): Promise<any> {
   try {
-    const token = await getToken();
+    const token = await getTokenRus();
     const params: any = { IdGrupoModelo: idGrupoModelo };
 
     if (anio) params.Año = anio;
@@ -129,7 +144,7 @@ export async function getVersiones(
  */
 export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<any> {
   try {
-    const token = await getToken();
+    const token = await getTokenRus();
 
     const apiUrlCotizacion=`${API_URL}/cotizaciones`;
 

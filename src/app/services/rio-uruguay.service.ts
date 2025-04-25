@@ -7,9 +7,10 @@ import { CotizacionRioUruguay } from '../interfaces/cotizacionRioUruguay';
   providedIn: 'root'
 })
 export class RioUruguayService {
-  private apiBaseUrl = 'https://api-5cekuonbbq-uc.a.run.app'; // Nueva URL base
+  private apiBaseUrl = 'https://api-5cekuonbbq-uc.a.run.app/RUS'; // Nueva URL base
 
   constructor(private http: HttpClient) {}
+
 
   getMarcas(tipoUnidad: number): Observable<any> {
     return this.http.get(`${this.apiBaseUrl}/marcas?tipoUnidad=${tipoUnidad}`);

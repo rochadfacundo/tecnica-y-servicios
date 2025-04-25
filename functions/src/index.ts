@@ -5,9 +5,10 @@ import cors from "cors";
 import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
 import { cotizarRus, getMarcas,
   getModelos,
-  getVersiones } from "./rus-service";
+  getVersiones,
+  getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
-import { obtenerTokenRivadavia } from "./rivadavia-service";
+import { cotizarRivadavia, obtenerTokenRivadavia } from "./rivadavia-service";
 
 
 const app = express();
@@ -83,7 +84,7 @@ app.get("/infoauto/marcas/:brandId/grupos/:groupId/modelos", async (req: Request
 });
 
 // ✅ Obtener marcas RUS
-app.get("/marcas", async (req: Request, res: Response) => {
+app.get("RUS/marcas", async (req: Request, res: Response) => {
   try {
     const tipoUnidad = Number(req.query.tipoUnidad);
     if (!tipoUnidad) {
@@ -99,7 +100,7 @@ app.get("/marcas", async (req: Request, res: Response) => {
 });
 
 // ✅ Obtener modelos RUS
-app.get("/modelos", async (req: Request, res: Response) => {
+app.get("RUS/modelos", async (req: Request, res: Response) => {
   try {
     const marca = Number(req.query.marca);
     const anio = Number(req.query.anio);
@@ -119,7 +120,7 @@ app.get("/modelos", async (req: Request, res: Response) => {
 
 
 // ✅ Obtener versiones RUS
-app.get("/versiones", async (req: Request, res: Response) => {
+app.get("RUS/versiones", async (req: Request, res: Response) => {
   try {
     const idModelo=req.query.idGrupoModelo;
     const tipoU=req.query.tipoUnidad;
@@ -142,7 +143,7 @@ app.get("/versiones", async (req: Request, res: Response) => {
 });
 
 // ✅ Cotización de seguros RUS
-app.put("/cotizaciones", async (req: Request, res: Response) => {
+app.put("RUS/cotizaciones", async (req: Request, res: Response) => {
   try {
     const cotizacion = await cotizarRus(req.body);
     return res.status(200).json(cotizacion);
@@ -150,6 +151,17 @@ app.put("/cotizaciones", async (req: Request, res: Response) => {
     console.error("Error realizando cotización:", error.message);
 
     return res.status(500).json({ error: error.message });
+  }
+});
+
+// ✅ Obtener token de Rus
+app.get("/RUS/token", async (req: Request, res: Response) => {
+  try {
+    const token = await getTokenRus();
+    return res.status(200).json(token);
+  } catch (error) {
+    console.error("Error obteniendo token de Mercantil Andina:", error);
+    return res.status(500).json({error: "Error token de Mercantil Andina"});
   }
 });
 
@@ -246,7 +258,6 @@ app.post("/mercantil/cotizaciones", async (req, res) => {
     console.log("Error al cotizar:", error);
     res.status(500).json({
       message: error.message || "Error desconocido",
-      stack: error.stack, // Solo para depuración, puedes quitarlo después
     });
   }
 });
@@ -259,6 +270,17 @@ app.get("/rivadavia/token", async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Error obteniendo token de Rivadavia:", error);
     return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
+  }
+});
+
+// ✅ Cotizar con Rivadavia
+app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
+  try {
+    const resultado = await cotizarRivadavia(req.body);
+    res.status(200).json(resultado);
+  } catch (error: any) {
+    console.error("Error al cotizar con Rivadavia:", error);
+    res.status(500).json({ error: error.message || "Error desconocido" });
   }
 });
 

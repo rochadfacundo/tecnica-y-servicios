@@ -11,10 +11,6 @@ export class MercantilAndinaService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerToken(): Observable<any> {
-    return this.http.get(`${this.API_URL}/token`);
-  }
-
   obtenerMarcas(): Observable<any> {
     return this.http.get(`${this.API_URL}/marcas`);
   }

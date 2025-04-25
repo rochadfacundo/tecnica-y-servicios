@@ -1,7 +1,7 @@
 
 // Interfaces
 
-export interface DatosCotizacion {
+export interface DatosCotizacionRivadavia {
   nroProductor: string;
   claveProductor: string;
   datoAsegurado: DatoAsegurado;
@@ -74,6 +74,9 @@ export enum FormaPago{
 
 export enum TipoDocumento {
   LIBRETA_ENROLAMIENTO = 'LIBRETA_ENROLAMIENTO',
+  LIBRETA_CIVICA = 'LIBRETA_CIVICA',
+  DNI= 'DNI',
+  PASAPORTE= 'PASAPORTE'
 }
 
 export enum CondicionIVA {

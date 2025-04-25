@@ -11,6 +11,7 @@ import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboa
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
+import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -54,15 +55,6 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
-
-    this.s_riv.obtenerToken().subscribe({
-      next: (response) => {
-        console.log(response);
-    },
-      error: (error) => {
-        console.log(error);
-    }
-  });
 
   }
 
@@ -519,7 +511,50 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizarRivadavia()
   {
+    const cotizacion: DatosCotizacionRivadavia = {
+      nroProductor: "12345",
+      claveProductor: "clave123",
+      datoAsegurado: {
+        condicionIVA: CondicionIVA.CONSUMIDOR_FINAL,
+        condicionIB: CondicionIB.CONSUMIDOR_FINAL,
+        tipoDocumento: TipoDocumento.DNI,
+        nroDocumento: "12345678"
+      },
+      datoVehiculo: {
+        codigoInfoAuto: String(this.getCodigoInfoAuto()),
+        codigoVehiculo: "ABC123",
+        modeloAnio: "2015",
+        sumaAsegurada: 8500000,
+        porcentajeAjuste: "0"
+      },
+      datoPoliza: {
+        nroPoliza: "",
+        fechaVigenciaDesde: "2025-05-01",
+        fechaVigenciaHasta: "2026-05-01",
+        cantidadCuotas: "1",
+        tipoFacturacion: TipoFacturacion.MENSUAL,
+        provincia: Provincia.BUENOS_AIRES,
+        codigoPostal: "1872",
+        sumaAseguradaAccesorios: 0,
+        sumaAseguradaEquipaje: 0
+      },
+      polizasVinculadas: {
+        accidentePasajeros: "s",
+        accidentePersonales: "s",
+        combinadoFamiliar: "s",
+        incendio: "s",
+        vidaIndividual: "s"
+      }
+    };
 
+    this.s_riv.cotizarRivadavia(cotizacion).subscribe({
+      next: (res) => {
+       console.log(res);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
 
 
   }

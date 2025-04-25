@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { DatosCotizacionRivadavia } from '../interfaces/cotizacionRivadavia';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,8 @@ export class RivadaviaService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerToken(): Observable<any> {
-    return this.http.get(`${this.API_URL}/token`);
+  cotizarRivadavia(data: DatosCotizacionRivadavia): Observable<any> {
+    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
+    return this.http.post(`${this.API_URL}/cotizar`, data);
   }
 }
