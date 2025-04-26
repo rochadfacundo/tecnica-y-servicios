@@ -10,13 +10,8 @@ import { Observable } from 'rxjs';
 export class InfoautoService {
 
   private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/infoauto';
-  private firestore: Firestore;
-  private prueba:string="";
 
   constructor(private http: HttpClient) {
-
-    this.firestore = getFirestore();
-
   }
 
     // Método para obtener el token de INFOAUTO
