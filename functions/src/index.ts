@@ -9,6 +9,7 @@ import { cotizarRus, getMarcas,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
+import { getTokenFederacion } from "./federacion-service";
 
 
 const app = express();
@@ -320,6 +321,17 @@ app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
     res.status(500).json({
       message: error || "Error desconocido",
     });
+  }
+});
+
+// ✅ Obtener token de FEDERACION PATRONAL
+app.get("/federacion/token", async (req: Request, res: Response) => {
+  try {
+    const token = await getTokenFederacion();
+    return res.status(200).json({ access_token: token });
+  } catch (error: any) {
+    console.error("Error obteniendo token de federacion:", error);
+    return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
   }
 });
 

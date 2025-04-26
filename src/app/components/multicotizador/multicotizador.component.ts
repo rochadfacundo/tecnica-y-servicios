@@ -12,6 +12,7 @@ import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import { FederacionService } from '../../services/federacion.service';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -49,6 +50,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(MercantilAndinaService) private s_ma: MercantilAndinaService,
     @Inject(InfoautoService) private s_infoauto: InfoautoService,
     @Inject(RivadaviaService) private s_riv: RivadaviaService,
+    @Inject(FederacionService) private s_fedPat: FederacionService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -60,6 +62,14 @@ export class MulticotizadorComponent implements OnInit {
     this.loadYears();
     this.setupValueChanges();
 
+    this.s_fedPat.getToken().subscribe({
+      next: (res) => {
+       console.log(res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
 
   public readonly tipoInteresOpciones=
@@ -374,18 +384,13 @@ export class MulticotizadorComponent implements OnInit {
 
       this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
         next: (res) => {
-         console.log(res);
          const tipoVehiculo= res.tipoVehiculo;
          this.sumaRivadavia= res.suma;
          const tipoUso= "1";
-          //tambien podriaguardarme sumaAsegurada en componente Rivadavia ojo
           //llamarlo todo cuando se elija el tipo de uso mejor?
-          console.log(nroProductorRiv);
          this.s_riv.getCodigoVehiculo(nroProductorRiv,tipoVehiculo,tipoUso).subscribe({
           next: (res) => {
-            console.log(res);
             this.codigoRivadavia= res.tarifasDto[0].codigoVehiculo;
-            console.log(this.codigoRivadavia);
           },
           error: (err) => {
             console.log(err);
