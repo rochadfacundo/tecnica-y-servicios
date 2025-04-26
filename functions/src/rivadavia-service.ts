@@ -12,6 +12,13 @@ const db = admin.firestore();
 const API_URL =
 "https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
 
+const API_SUMA_ASEGURADA=
+"https://apibrokerstest.apps.segurosrivadavia.com/consulta/api/emision/v1/consulta/suma_asegurada";
+
+const API_CODIGO_VEHICULO=
+"https://apibrokerstest.apps.segurosrivadavia.com/consulta/api/emision/v1/consulta/codigo_vehiculo";
+
+
 const API_COTIZACION =
 "https://apibrokerstest.apps.segurosrivadavia.com/solicitud/api/emision/v1/solicitud/cotizacion";
 
@@ -20,7 +27,7 @@ const PASSWORD = "vbVdGFsWnQ81Dg9";
 const CLIENT_ID = "24bea14a";
 const CLIENT_SECRET = "e946749e9e1cdce8a8709b5604a3e0e5";
 
-export const obtenerTokenRivadavia = async () => {
+export const getTokenRivadavia = async () => {
   const tokenRef = db.doc("Rivadavia/token");
   const refreshRef = db.doc("Rivadavia/refreshToken");
   const now = Date.now();
@@ -107,7 +114,7 @@ export const obtenerTokenRivadavia = async () => {
 
 export const cotizarRivadavia = async (datos: any) => {
   try {
-    const token = await obtenerTokenRivadavia();
+    const token = await getTokenRivadavia();
 
     const response = await axios.post(API_COTIZACION, datos, {
       headers: {
@@ -127,7 +134,82 @@ export const cotizarRivadavia = async (datos: any) => {
 
     console.error("❌ Error en cotización Rivadavia:", errorMessage);
 
-    throw new Error(errorMessage);
+    throw errorMessage;
   }
 };
 
+// ✅ Función para obtener tipo de vehiculo que tiene esa marca y modelo
+export const getSumaAsegurada =
+  async (
+    nroProductor: string,
+    codigoInfoAuto: string,
+    modelo: string // anio
+  ) => {
+    try {
+      const token = await getTokenRivadavia();
+
+      const params: any = {
+        nroProductor: nroProductor,
+        codigoInfoAuto: codigoInfoAuto,
+        modelo: modelo,
+      };
+
+      const response = await axios.get(API_SUMA_ASEGURADA, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "accept": "*/*",
+        },
+        params,
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.log("error al traer modelos", error.response.data);
+      console.log(error);
+      const errorMessage =
+      error.response?.data ||
+      error.message ||
+      "Error desconocido";
+
+      throw new Error(errorMessage);
+    }
+  };
+
+// ✅ Función para obtener Luego con el tipo de vehículo, el codigo_vehiculo:
+export const getCodigoVehiculo =
+async (
+  nroProductor: string,
+  TipoVehiculo: string,
+  tipoUso: string
+) =>{
+  try {
+    const token = await getTokenRivadavia();
+
+    const params: any = {
+      nroProductor: nroProductor,
+      tipo_vehiculo: TipoVehiculo,
+      tipo_uso: tipoUso,
+    };
+
+    const response = await axios.get(API_CODIGO_VEHICULO, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "accept": "*/*",
+      },
+      params,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.log("error al traer modelos", error.response.data);
+    console.log(error);
+    const errorMessage =
+    error.response?.data ||
+    error.message ||
+    "Error desconocido";
+
+    throw new Error(errorMessage);
+  }
+};

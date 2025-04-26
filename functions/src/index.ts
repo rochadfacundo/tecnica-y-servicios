@@ -8,7 +8,7 @@ import { cotizarRus, getMarcas,
   getVersiones,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
-import { cotizarRivadavia, obtenerTokenRivadavia } from "./rivadavia-service";
+import { cotizarRivadavia, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 
 
 const app = express();
@@ -265,13 +265,46 @@ app.post("/mercantil/cotizaciones", async (req, res) => {
 // ✅ Obtener token de Rivadavia
 app.get("/rivadavia/token", async (req: Request, res: Response) => {
   try {
-    const token = await obtenerTokenRivadavia();
+    const token = await getTokenRivadavia();
     return res.status(200).json({ access_token: token });
   } catch (error: any) {
     console.error("Error obteniendo token de Rivadavia:", error);
     return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
   }
 });
+
+// ✅ Suma asegurada en Rivadavia
+app.get("/rivadavia/suma_asegurada", async (req: Request, res: Response) => {
+  try {
+    const nroProductor=String(req.query.nroProductor);
+    const codigoInfoAuto=String(req.query.codigoInfoAuto);
+    const modelo=String(req.query.modelo);
+
+
+    const suma = await getSumaAsegurada(nroProductor, codigoInfoAuto, modelo);
+    return res.status(200).json(suma);
+  } catch (error) {
+    console.error("Error obteniendo versiones:", error);
+    return res.status(500).json({error: "Error interno al obtener versiones"});
+  }
+});
+
+// ✅ Codigo Vehiculo asegurada en Rivadavia
+app.get("/rivadavia/codigo_vehiculo", async (req: Request, res: Response) => {
+  try {
+    const nroProductor=String(req.query.nroProductor);
+    const tipoVehiculo=String(req.query.tipo_vehiculo);
+    const tipoUso=String(req.query.tipo_uso);
+
+
+    const codigoVehiculo = await getSumaAsegurada(nroProductor, tipoVehiculo, tipoUso);
+    return res.status(200).json(codigoVehiculo);
+  } catch (error) {
+    console.error("Error obteniendo versiones:", error);
+    return res.status(500).json({error: "Error interno al obtener versiones"});
+  }
+});
+
 
 // ✅ Cotizar con Rivadavia
 app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
@@ -281,7 +314,7 @@ app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Error al cotizar con Rivadavia:", error);
     res.status(500).json({
-      message: error.fieldErrors || "Error desconocido",
+      message: error || "Error desconocido",
     });
   }
 });
