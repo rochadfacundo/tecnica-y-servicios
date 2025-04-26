@@ -35,6 +35,10 @@ export class MulticotizadorComponent implements OnInit {
   versiones: any[] = [];
   usos: any[] = [];
   codigosUso: any[] = [];
+  anio:number=0;
+  codigoInfoAuto:number=0;
+  codigoRivadavia:String="";
+  sumaRivadavia:String="";
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
   cotizacionError:string='';
@@ -336,6 +340,7 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (anio) {
+        this.anio=anio;
         //this.obtenerModelosRUS();
         this.getGruposPorMarca(this.brand_idSelected);
         //this.obtenerModelosMA();
@@ -359,7 +364,43 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionForm.get('version')?.disable();
       }
     });
+    //Para traer codigo de Rivadavia.
+    this.cotizacionForm.get('version')?.valueChanges.subscribe((version) => {
+      if (version) {
+      console.log(version);
+      this.codigoInfoAuto=version.codia;
+      const nroProductorRiv= String(18922);
+      const anio= String(this.anio);
 
+      this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
+        next: (res) => {
+         console.log(res);
+         const tipoVehiculo= res.tipoVehiculo;
+         this.sumaRivadavia= res.suma;
+         const tipoUso= "1";
+          //tambien podriaguardarme sumaAsegurada en componente Rivadavia ojo
+          //llamarlo todo cuando se elija el tipo de uso mejor?
+          console.log(nroProductorRiv);
+         this.s_riv.getCodigoVehiculo(nroProductorRiv,tipoVehiculo,tipoUso).subscribe({
+          next: (res) => {
+            console.log(res);
+            this.codigoRivadavia= res.tarifasDto[0].codigoVehiculo;
+            console.log(this.codigoRivadavia);
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
+
+
+
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+      }
+    });
   }
 
 
@@ -422,6 +463,10 @@ export class MulticotizadorComponent implements OnInit {
 
   getCodigoInfoAuto():number{
     return Number(this.cotizacionForm.value.version.codia);
+  }
+
+   getAnio():number{
+    return Number(this.cotizacionForm.value.version.anio);
   }
 
   //MERCANTIL ANDINA
@@ -512,8 +557,8 @@ export class MulticotizadorComponent implements OnInit {
   cotizarRivadavia()
   {
     const cotizacion: DatosCotizacionRivadavia = {
-      nroProductor: "12345",
-      claveProductor: "clave123",
+      nroProductor: "18922",
+      claveProductor: "THLV2582",
       datoAsegurado: {
         condicionIVA: CondicionIVA.CONSUMIDOR_FINAL,
         condicionIB: CondicionIB.CONSUMIDOR_FINAL,
@@ -521,14 +566,14 @@ export class MulticotizadorComponent implements OnInit {
         nroDocumento: "12345678"
       },
       datoVehiculo: {
-        codigoInfoAuto: String(this.getCodigoInfoAuto()),
-        codigoVehiculo: "ABC123",
-        modeloAnio: "2015",
-        sumaAsegurada: 8500000,
-        porcentajeAjuste: "0"
+        codigoInfoAuto: String(this.codigoInfoAuto),
+        codigoVehiculo: String(this.codigoRivadavia),
+        modeloAnio: String(this.anio),
+        sumaAsegurada: Number(this.sumaRivadavia),
+        porcentajeAjuste: "5"
       },
       datoPoliza: {
-        nroPoliza: "",
+        nroPoliza: "12322",
         fechaVigenciaDesde: "2025-05-05",
         fechaVigenciaHasta: "2025-06-06",
         cantidadCuotas: "1",

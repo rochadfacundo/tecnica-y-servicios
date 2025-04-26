@@ -8,7 +8,7 @@ import { cotizarRus, getMarcas,
   getVersiones,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
-import { cotizarRivadavia, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
+import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 
 
 const app = express();
@@ -277,31 +277,35 @@ app.get("/rivadavia/token", async (req: Request, res: Response) => {
 app.get("/rivadavia/suma_asegurada", async (req: Request, res: Response) => {
   try {
     const nroProductor=String(req.query.nroProductor);
-    const codigoInfoAuto=String(req.query.codigoInfoAuto);
+    const codigoInfoAuto=Number(req.query.codigoInfoAuto);
     const modelo=String(req.query.modelo);
 
 
     const suma = await getSumaAsegurada(nroProductor, codigoInfoAuto, modelo);
-    return res.status(200).json(suma);
+    res.status(200).json(suma);
   } catch (error) {
-    console.error("Error obteniendo versiones:", error);
-    return res.status(500).json({error: "Error interno al obtener versiones"});
+    console.error("Error al suma asegurada Rivadavia:", error);
+    res.status(500).json({
+      message: error || "Error desconocido",
+    });
   }
 });
 
 // ✅ Codigo Vehiculo asegurada en Rivadavia
 app.get("/rivadavia/codigo_vehiculo", async (req: Request, res: Response) => {
   try {
-    const nroProductor=String(req.query.nroProductor);
+    const nroProductor=String(req.query.nro_productor);
     const tipoVehiculo=String(req.query.tipo_vehiculo);
     const tipoUso=String(req.query.tipo_uso);
 
-
-    const codigoVehiculo = await getSumaAsegurada(nroProductor, tipoVehiculo, tipoUso);
-    return res.status(200).json(codigoVehiculo);
+    console.log("chekeo:"+ nroProductor);
+    const codigoVehiculo = await getCodigoVehiculo(nroProductor, tipoVehiculo, tipoUso);
+    res.status(200).json(codigoVehiculo);
   } catch (error) {
-    console.error("Error obteniendo versiones:", error);
-    return res.status(500).json({error: "Error interno al obtener versiones"});
+    console.error("Error al obtener codigo Rivadavia:", error);
+    res.status(500).json({
+      message: error || "Error desconocido",
+    });
   }
 });
 

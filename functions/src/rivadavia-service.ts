@@ -9,6 +9,9 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+const SUBSCRIPTION_KEY =
+"c6b637fc51";
+
 const API_URL =
 "https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
 
@@ -108,7 +111,8 @@ export const getTokenRivadavia = async () => {
   } catch (error: any) {
     console.error("❌ Error obteniendo token de Rivadavia:",
       error.response?.data || error.message);
-    throw new Error("No se pudo obtener el token de Rivadavia");
+    const errorMessage =error.response?.data || error.message;
+    throw errorMessage;
   }
 };
 
@@ -121,6 +125,7 @@ export const cotizarRivadavia = async (datos: any) => {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
         "accept": "*/*",
+        "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
       },
     });
 
@@ -142,7 +147,7 @@ export const cotizarRivadavia = async (datos: any) => {
 export const getSumaAsegurada =
   async (
     nroProductor: string,
-    codigoInfoAuto: string,
+    codigoInfoAuto: number,
     modelo: string // anio
   ) => {
     try {
@@ -159,20 +164,20 @@ export const getSumaAsegurada =
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
           "accept": "*/*",
+          "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
         },
         params,
       });
 
       return response.data;
     } catch (error: any) {
-      console.log("error al traer modelos", error.response.data);
-      console.log(error);
+      console.log("error al traer suma asegurada", error.response.data);
       const errorMessage =
       error.response?.data ||
       error.message ||
       "Error desconocido";
 
-      throw new Error(errorMessage);
+      throw errorMessage;
     }
   };
 
@@ -187,7 +192,7 @@ async (
     const token = await getTokenRivadavia();
 
     const params: any = {
-      nroProductor: nroProductor,
+      nro_productor: nroProductor,
       tipo_vehiculo: TipoVehiculo,
       tipo_uso: tipoUso,
     };
@@ -197,19 +202,19 @@ async (
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
         "accept": "*/*",
+        "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
       },
       params,
     });
 
     return response.data;
   } catch (error: any) {
-    console.log("error al traer modelos", error.response.data);
+    console.log("error al traer codigo", error.response.data);
     console.log(error);
     const errorMessage =
     error.response?.data ||
-    error.message ||
     "Error desconocido";
 
-    throw new Error(errorMessage);
+    throw errorMessage;
   }
 };
