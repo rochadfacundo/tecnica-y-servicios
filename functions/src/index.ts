@@ -9,7 +9,7 @@ import { cotizarRus, getMarcas,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
-import { getTokenFederacion } from "./federacion-service";
+import { getLocalidadesFederacion, getTokenFederacion } from "./federacion-service";
 
 
 const app = express();
@@ -334,6 +334,18 @@ app.get("/federacion/token", async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
   }
 });
+
+// ✅ Obtener localidades de Federacion patronal
+app.get("/federacion/localidades", async (req: Request, res: Response) => {
+  try {
+    const localidades = await getLocalidadesFederacion();
+    return res.status(200).json(localidades);
+  } catch (error) {
+    console.error("Error obteniendo localidades federacion:", error);
+    return res.status(500).json({ error: "Error al obtener localidades" });
+  }
+});
+
 
 // ✅ Exportamos la función principal
 export const api = functions.https.onRequest(app);
