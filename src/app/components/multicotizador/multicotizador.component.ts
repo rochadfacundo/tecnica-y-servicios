@@ -13,6 +13,7 @@ import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
+import { CondicionIvaFederacion, CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -40,6 +41,9 @@ export class MulticotizadorComponent implements OnInit {
   codigoInfoAuto:number=0;
   codigoRivadavia:String="";
   sumaRivadavia:String="";
+
+  codigoPostalFederacion:String="";
+
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
   cotizacionError:string='';
@@ -61,15 +65,6 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
-
-    this.s_fedPat.getToken().subscribe({
-      next: (res) => {
-       console.log(res);
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
   }
 
   public readonly tipoInteresOpciones=
@@ -374,6 +369,7 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionForm.get('version')?.disable();
       }
     });
+
     //Para traer codigo de Rivadavia.
     this.cotizacionForm.get('version')?.valueChanges.subscribe((version) => {
       if (version) {
@@ -396,14 +392,55 @@ export class MulticotizadorComponent implements OnInit {
             console.log(err);
           }
         });
-
-
-
         },
         error: (err) => {
           console.log(err);
         }
       });
+      }
+    });
+
+    this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe((zipCode) => {
+      if (zipCode) {
+
+        const zipCodeString=String(zipCode);
+
+        console.log(zipCodeString.length);
+
+        if(zipCodeString.length>=4)
+        {
+
+          this.s_fedPat.getLocalidades().subscribe( { next:(resp) => {
+
+
+          const array: LocalidadesFederacion[] = resp.respuesta;
+          console.log('Array completo:', array);
+
+          const localidadEncontrada = array.find(loc => loc.codigoPostal === zipCode);
+
+          if (localidadEncontrada) {
+            console.log('✅ Localidad encontrada:', localidadEncontrada);
+            this.codigoPostalFederacion=localidadEncontrada.codigo;
+          } else {
+            console.log('❌ No se encontró localidad con ese código postal');
+          }
+
+          },
+          error: (error) => {
+
+
+            console.error("❌ ERROR:",
+            error?.error?.error || "Error desconocido");
+
+          }  });
+
+
+        }
+
+
+      } else {
+        this.modelos = [];
+
       }
     });
   }
@@ -609,9 +646,77 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+  cotizarFederacion()
+  {
+    const cotizacionFederacion: CotizacionFederacion = {
+      //numero_cotizacion: 129445013,
+      fecha_desde: '05/05/2025',
+      //descuento_comision: 5,
+      medio_pago: 1, //efectivo
+      //pago_contado: false,
+      razon_social: 21,
+      //cliente_nuevo: false,
+      //refacturaciones: 2,
+      contratante: {
+        //id: 35292858,
+        //tipo_id: 'DNI',
+       // cuit: '20352928587',
+        //nombre: 'Juan',
+        //apellido: 'Perez',
+        //razon_social: '21', //persona fisica 21
+        condicion_iva: CondicionIvaFederacion.CF,
+        //localidad: 0,
+        //matricula: '1125554'
+      },
+      vehiculo: {
+        infoauto: String(this.codigoInfoAuto),
+        anio: String(this.anio),
+        tipo_vehiculo: 46,  //falta traer tipos vehiculo
+        alarma: true,
+        rastreador: 46,
+        gnc: false,
+        volcador: false,
+        suma_asegurada: 1200000,
+        localidad_de_guarda: Number(this.codigoPostalFederacion)
+      },/*
+      coberturas: {
+        rc_conosur: 99,
+        casco_conosur: true,
+        petroliferos_aeropuertos: 99,
+        grua: true,
+        taller_exclusivo: false,
+        interasegurado: true,
+        servicio_petrolero: true,
+        gastos_remediacion: 99,
+        ajuste_automatico: 20,
+        rc_ampliada: 50,
+        plan: 'TD',
+        franquicia: 99
+      },
+      producto_modular: {
+        cant_modulos: 0,
+        codigo_producto: '190001',
+        fecha_nacimiento: '13/07/1998'
+      },
+      asegura2: [
+        {
+          ramo: 1,
+          producto: '10008'
+        }
+      ]*/
+    };
+
+
+    console.log(cotizacionFederacion);
+
+
+  }
+
   cotizar()
   {
-    this.cotizarRivadavia();
+   // this.cotizarRivadavia();
+
+    this.cotizarFederacion();
     //this.cotizarRUS();
 
     //this.cotizarMercantil();

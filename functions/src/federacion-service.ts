@@ -16,6 +16,9 @@ const BASIC_AUTH_PASSWORD = "XS5ysAX$$r_ESI";
 const FEDERACION_USERNAME = "29780";
 const FEDERACION_PASSWORD = "qJP5.PtIJ6PAsI";
 
+const API_LOCALIDADES_URL_FEDPAT=
+"https://api-sandbox.fedpat.com.ar/v1/referencias/localidades/getLocalidades";
+
 export const getTokenFederacion = async () => {
   const tokenRef = db.doc("Federacion/token");
   const now = Date.now();
@@ -56,5 +59,22 @@ export const getTokenFederacion = async () => {
     console.error("Error obteniendo token Federacion:",
       error.response?.data || error.message);
     throw new Error("No se pudo obtener el token de Federacion");
+  }
+};
+
+export const getLocalidadesFederacion = async () => {
+  try {
+    const token= await getTokenFederacion();
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    const response = await axios.get(API_LOCALIDADES_URL_FEDPAT, { headers });
+    console.log("obtener localidades ok");
+    return response.data;
+  } catch (error: any) {
+    console.error("Error marcas:", error.response?.data || error.message);
+    throw new Error("No se pudo obtener las localidades en federacion");
   }
 };

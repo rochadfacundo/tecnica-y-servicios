@@ -16,4 +16,8 @@ export class FederacionService {
       return this.http.get<any>(`${this.apiUrl}/token`);
     }
 
+    getLocalidades(): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/localidades`);
+    }
+
 }
