@@ -226,7 +226,6 @@ export const cotizarMercantil = async (
       API_URL_COTIZAR+="camion";
       break;
     }
-    console.log("La api pedida es: ", API_URL_COTIZAR);
     const response = await axios.post(API_URL_COTIZAR, data, {
       headers,
     });

@@ -9,7 +9,8 @@ import { cotizarRus, getMarcas,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
-import { getLocalidadesFederacion, getTokenFederacion } from "./federacion-service";
+import { cotizarFederacion, getLocalidadesFederacion, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
+import { cotizarATMXML } from "./atm-service";
 
 
 const app = express();
@@ -144,7 +145,7 @@ app.get("RUS/versiones", async (req: Request, res: Response) => {
 });
 
 // ✅ Cotización de seguros RUS
-app.put("RUS/cotizaciones", async (req: Request, res: Response) => {
+app.put("/RUS/cotizaciones", async (req: Request, res: Response) => {
   try {
     const cotizacion = await cotizarRus(req.body);
     return res.status(200).json(cotizacion);
@@ -310,7 +311,6 @@ app.get("/rivadavia/codigo_vehiculo", async (req: Request, res: Response) => {
   }
 });
 
-
 // ✅ Cotizar con Rivadavia
 app.post("/rivadavia/cotizar", async (req: Request, res: Response) => {
   try {
@@ -346,6 +346,42 @@ app.get("/federacion/localidades", async (req: Request, res: Response) => {
   }
 });
 
+// ✅ Obtener localidades de Federacion patronal
+app.get("/federacion/tiposVehiculo/:codInfoAuto", async (req: Request, res: Response) => {
+  try {
+    const { codInfoAuto } = req.params;
+    const tiposVehiculo = await getTipoVehiculoFederacion(Number(codInfoAuto));
+    return res.status(200).json(tiposVehiculo);
+  } catch (error) {
+    console.error("Error obteniendo tipos vehiculo federacion:", error);
+    return res.status(500).json({ error: "Error al obtener tipos vehiculo fedpat" });
+  }
+});
+
+
+// ✅ Cotizar con Federacion
+app.post("/federacion/cotizar", async (req: Request, res: Response) => {
+  try {
+    const resultado = await cotizarFederacion(req.body);
+    res.status(200).json(resultado);
+  } catch (error: any) {
+    console.error("Error al cotizar con Federacion:", error);
+    res.status(500).json({
+      message: error || "Error desconocido",
+    });
+  }
+});
+
+// ✅ Cotizar con ATM
+app.post("/ATM/cotizar", async (req: Request, res: Response) => {
+  try {
+    const resultadoXML = await cotizarATMXML(req.body.xml);
+    console.log("🛰️ Enviando XML a ATM...");
+    return res.status(200).send(resultadoXML);
+  } catch (error: any) {
+    return res.status(500).json({ message: error });
+  }
+});
 
 // ✅ Exportamos la función principal
 export const api = functions.https.onRequest(app);

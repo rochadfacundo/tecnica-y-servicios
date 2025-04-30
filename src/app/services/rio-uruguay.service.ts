@@ -37,7 +37,7 @@ export class RioUruguayService {
   }
 
   cotizar(data: CotizacionRioUruguay): Observable<any> {
-    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
+    console.log("📩 Enviando a la API RUS:", JSON.stringify(data, null, 2));
     return this.http.put(`${this.apiBaseUrl}/cotizaciones`, data);
   }
 }

@@ -12,11 +12,6 @@ export class RivadaviaService {
 
   constructor(private http: HttpClient) {}
 
-  cotizarRivadavia(data: DatosCotizacionRivadavia): Observable<any> {
-    console.log("📩 Enviando a la API:", JSON.stringify(data, null, 2));
-    return this.http.post(`${this.API_URL}/cotizar`, data);
-  }
-
   getSumaAsegurada(nroProductor: string, codigoInfoAuto: number, modelo: string): Observable<any> {
     let params: any = { nroProductor, codigoInfoAuto, modelo };
 
@@ -27,6 +22,11 @@ export class RivadaviaService {
     let params: any = { nro_productor, tipo_vehiculo, tipo_uso };
 
     return this.http.get(`${this.API_URL}/codigo_vehiculo`, { params });
+  }
+
+  cotizarRivadavia(data: DatosCotizacionRivadavia): Observable<any> {
+    console.log("📩 Enviando a la API Riv:", JSON.stringify(data, null, 2));
+    return this.http.post(`${this.API_URL}/cotizar`, data);
   }
 
 }
