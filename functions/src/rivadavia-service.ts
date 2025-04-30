@@ -41,14 +41,12 @@ export const getTokenRivadavia = async () => {
 
   // Token válido
   if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
-    console.log("🔄 Reutilizando access_token de Rivadavia");
     return tokenDoc.data()?.value;
   }
 
   // Intentar refresh
   if (refreshDoc.exists && refreshDoc.data()?.expiration > now) {
     try {
-      console.log("♻️ Renovando access_token con refresh_token de Rivadavia");
       const refreshToken = refreshDoc.data()?.value;
 
       const refreshBody = qs.stringify({
@@ -70,8 +68,6 @@ export const getTokenRivadavia = async () => {
         value: newAccessToken,
         expiration: newExpiration,
       });
-
-      console.log("✅ access_token guardado en Firestore (Rivadavia)");
       return newAccessToken;
     } catch (error) {
       console.error("❌ Error al refrescar token Rivadavia,");
@@ -106,7 +102,6 @@ export const getTokenRivadavia = async () => {
     await refreshRef.set({ value: refreshToken,
       expiration: refreshExpiration });
 
-    console.log("✅ Token y refresh_token de Rivadavia guardados en Firestore");
     return accessToken;
   } catch (error: any) {
     console.error("❌ Error obteniendo token de Rivadavia:",
@@ -128,7 +123,7 @@ export const cotizarRivadavia = async (datos: any) => {
         "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
       },
     });
-
+    console.log("cotiza Riv ok");
     return response.data;
   } catch (error:any) {
     console.log(error.response.data);

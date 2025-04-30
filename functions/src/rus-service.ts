@@ -152,11 +152,13 @@ export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<
       const response = await axios.put(`${apiUrlCotizacion}/autos`, cotizacionData, {
         headers: { Authorization: token},
       });
+      console.log("llegamos a cotizar?", response.data);
       return response.data;
     } else if (cotizacionData.vigenciaPolizaId==70) {
       const response = await axios.put(`${apiUrlCotizacion}/motos`, cotizacionData, {
         headers: { Authorization: token},
       });
+      console.log("cotiza RUS ok");
       return response.data;
     }
   } catch (error: any) {

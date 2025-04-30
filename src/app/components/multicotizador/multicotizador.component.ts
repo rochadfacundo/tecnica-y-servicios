@@ -14,6 +14,7 @@ import { RivadaviaService } from '../../services/rivadavia.service';
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
 import { CondicionIvaFederacion, CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
+import { AtmService } from '../../services/atm.service';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -43,6 +44,7 @@ export class MulticotizadorComponent implements OnInit {
   sumaRivadavia:String="";
 
   codigoPostalFederacion:String="";
+  tipoVehiculoFederacion:number=0;
 
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
@@ -55,6 +57,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(InfoautoService) private s_infoauto: InfoautoService,
     @Inject(RivadaviaService) private s_riv: RivadaviaService,
     @Inject(FederacionService) private s_fedPat: FederacionService,
+    @Inject(AtmService) private s_ATM: AtmService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -65,6 +68,64 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.loadYears();
     this.setupValueChanges();
+
+
+
+    const xml = `
+   <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+       <soapenv:Body>
+          <tem:AUTOS_Cotizar>
+             <tem:doc_in>
+    <auto>
+      <usuario>
+        <usa>TECYSEG</usa>
+        <pass>TECYSEG%24</pass>
+        <fecha>05052025</fecha>
+        <vendedor>0956109561</vendedor>
+        <origen>WS</origen>
+        <plan>02</plan>
+      </usuario>
+      <asegurado>
+        <persona>F</persona>
+        <iva>CF</iva>
+        <cupondscto></cupondscto>
+        <infomotoclub>N</infomotoclub>
+        <bonificacion></bonificacion>
+      </asegurado>
+      <bien>
+        <cerokm>N</cerokm>
+        <rastreo>N</rastreo>
+        <micrograbado>N</micrograbado>
+        <alarma>0</alarma>
+        <marcaalarma></marcaalarma>
+        <esventa>A</esventa>
+        <ajuste></ajuste>
+        <codpostal>1005</codpostal>
+        <accesorios/>
+        <marca>18</marca>
+        <modelo>505</modelo>
+        <anofab>2010</anofab>
+        <seccion>3</seccion>
+        <uso>0101</uso>
+        <suma></suma>
+      </bien>
+    </auto>
+             </tem:doc_in>
+          </tem:AUTOS_Cotizar>
+       </soapenv:Body>
+    </soapenv:Envelope>`.trim();
+
+
+    console.log("Enviando a ATM",xml);
+    this.s_ATM.cotizarATM(xml).subscribe({
+      next: (res) => {
+       console.log('✅ Cotización exitosa Rvadavia:',res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+
   }
 
   public readonly tipoInteresOpciones=
@@ -405,21 +466,16 @@ export class MulticotizadorComponent implements OnInit {
 
         const zipCodeString=String(zipCode);
 
-        console.log(zipCodeString.length);
-
         if(zipCodeString.length>=4)
         {
 
           this.s_fedPat.getLocalidades().subscribe( { next:(resp) => {
 
-
           const array: LocalidadesFederacion[] = resp.respuesta;
-          console.log('Array completo:', array);
 
           const localidadEncontrada = array.find(loc => loc.codigoPostal === zipCode);
 
           if (localidadEncontrada) {
-            console.log('✅ Localidad encontrada:', localidadEncontrada);
             this.codigoPostalFederacion=localidadEncontrada.codigo;
           } else {
             console.log('❌ No se encontró localidad con ese código postal');
@@ -427,22 +483,41 @@ export class MulticotizadorComponent implements OnInit {
 
           },
           error: (error) => {
-
-
             console.error("❌ ERROR:",
             error?.error?.error || "Error desconocido");
-
           }  });
-
-
         }
-
-
-      } else {
-        this.modelos = [];
-
       }
     });
+
+
+
+    this.cotizacionForm.get('uso')?.valueChanges.subscribe((uso) => {
+      if (uso) {
+        console.log(uso);
+        //tipos de federacion
+        this.s_fedPat.getTiposVehiculo(this.codigoInfoAuto).subscribe({
+          next: (res:any[]) => {
+
+          const tipoMatch = res.find(t =>
+          uso.uso === 'PARTICULAR' ? t.descripcion.toUpperCase().includes('PARTICULAR') :
+          uso.uso === 'COMERCIAL'  ? t.descripcion.toUpperCase().includes('COMERCIAL') :
+          false
+        );
+          if (tipoMatch) {
+            this.tipoVehiculoFederacion = tipoMatch.codigo;
+          } else {
+            console.warn("⚠️ No se encontró tipo de vehículo que coincida con el uso");
+          }
+        },
+        error: (err) => {
+            console.log(err);
+          }
+        });
+      }
+    });
+
+
   }
 
 
@@ -636,7 +711,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.s_riv.cotizarRivadavia(cotizacion).subscribe({
       next: (res) => {
-       console.log(res);
+       console.log('✅ Cotización exitosa Rvadavia:',res);
       },
       error: (err) => {
         console.log(err);
@@ -671,55 +746,56 @@ export class MulticotizadorComponent implements OnInit {
       vehiculo: {
         infoauto: String(this.codigoInfoAuto),
         anio: String(this.anio),
-        tipo_vehiculo: 46,  //falta traer tipos vehiculo
-        alarma: true,
-        rastreador: 46,
-        gnc: false,
-        volcador: false,
-        suma_asegurada: 1200000,
+        tipo_vehiculo: this.tipoVehiculoFederacion,  //falta traer tipos vehiculo
+        //alarma: true,
+        //rastreador: 46,
+        //gnc: false,
+        //volcador: false,
+        //suma_asegurada: 1200000,
         localidad_de_guarda: Number(this.codigoPostalFederacion)
-      },/*
+      },
       coberturas: {
-        rc_conosur: 99,
-        casco_conosur: true,
-        petroliferos_aeropuertos: 99,
-        grua: true,
-        taller_exclusivo: false,
-        interasegurado: true,
-        servicio_petrolero: true,
-        gastos_remediacion: 99,
         ajuste_automatico: 20,
         rc_ampliada: 50,
-        plan: 'TD',
+        plan: 'CF',
         franquicia: 99
-      },
+      },/*
       producto_modular: {
         cant_modulos: 0,
         codigo_producto: '190001',
         fecha_nacimiento: '13/07/1998'
-      },
+      },*/
       asegura2: [
         {
           ramo: 1,
           producto: '10008'
         }
-      ]*/
+      ]
     };
 
 
     console.log(cotizacionFederacion);
 
 
+    this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
+      next: (res) => {
+       console.log('✅ Cotización exitosa Federacion:',res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+
   }
 
   cotizar()
   {
-   // this.cotizarRivadavia();
+    this.cotizarRivadavia();
 
     this.cotizarFederacion();
-    //this.cotizarRUS();
+     this.cotizarRUS();
 
-    //this.cotizarMercantil();
+    this.cotizarMercantil();
   }
 
 

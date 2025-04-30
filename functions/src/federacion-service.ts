@@ -19,6 +19,12 @@ const FEDERACION_PASSWORD = "qJP5.PtIJ6PAsI";
 const API_LOCALIDADES_URL_FEDPAT=
 "https://api-sandbox.fedpat.com.ar/v1/referencias/localidades/getLocalidades";
 
+const API_URL_TIPO_VEHICULO_FEDPAT =
+"https://api-sandbox.fedpat.com.ar/v1/vehiculos/vehiculo";
+
+const API_URL_COTIZACION_FEDPAT=
+"https://api-sandbox.fedpat.com.ar/v1/cotizador-automotores";
+
 export const getTokenFederacion = async () => {
   const tokenRef = db.doc("Federacion/token");
   const now = Date.now();
@@ -76,5 +82,49 @@ export const getLocalidadesFederacion = async () => {
   } catch (error: any) {
     console.error("Error marcas:", error.response?.data || error.message);
     throw new Error("No se pudo obtener las localidades en federacion");
+  }
+};
+
+export const getTipoVehiculoFederacion = async (codInfoAuto: number) => {
+  try {
+    const token= await getTokenFederacion();
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    const response = await axios.get(
+      `${API_URL_TIPO_VEHICULO_FEDPAT}/${codInfoAuto}/tipos`, { headers });
+    console.log("obtener tipo vehiculo ok");
+    return response.data;
+  } catch (error: any) {
+    console.error("Error marcas:", error.response?.data || error.message);
+    throw new Error("No se pudo obtener los tipo vehiculo en federacion");
+  }
+};
+
+export const cotizarFederacion = async (datos: any) => {
+  try {
+    const token = await getTokenFederacion();
+
+    const response = await axios.post(API_URL_COTIZACION_FEDPAT, datos, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "accept": "*/*",
+      },
+    });
+    console.log("cotiza fedPat ok");
+    return response.data;
+  } catch (error:any) {
+    console.log(error.response.data);
+    const errorMessage =
+    error.response?.data ||
+    // error.response?.data?.fieldErrors?.[0]?.message ||
+    "Error desconocido";
+
+    console.error("❌ Error en cotización Federacion:", errorMessage);
+
+    throw errorMessage;
   }
 };
