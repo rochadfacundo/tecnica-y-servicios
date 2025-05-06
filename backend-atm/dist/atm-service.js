@@ -15,10 +15,9 @@ const cotizarATMXML = async (xml) => {
                 "SOAPAction": "http://tempuri.org/AUTOS_Cotizar", // importante
                 "User-Agent": "Mozilla/5.0 ATM-Test",
             },
-            timeout: 60000,
         });
         console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
-        return response.data;
+        return response;
     }
     catch (error) {
         console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
