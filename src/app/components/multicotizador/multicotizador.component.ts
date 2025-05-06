@@ -80,7 +80,7 @@ export class MulticotizadorComponent implements OnInit {
       <usuario>
         <usa>TECYSEG</usa>
         <pass>TECYSEG%24</pass>
-        <fecha>05052025</fecha>
+        <fecha>05062025</fecha>
         <vendedor>0956109561</vendedor>
         <origen>WS</origen>
         <plan>02</plan>

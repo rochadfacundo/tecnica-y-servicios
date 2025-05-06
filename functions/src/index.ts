@@ -10,8 +10,6 @@ import { cotizarRus, getMarcas,
 import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getLocalidadesFederacion, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
-import { cotizarATMXML } from "./atm-service";
-
 
 const app = express();
 // Habilitar CORS para todas las solicitudes
@@ -369,17 +367,6 @@ app.post("/federacion/cotizar", async (req: Request, res: Response) => {
     res.status(500).json({
       message: error || "Error desconocido",
     });
-  }
-});
-
-// ✅ Cotizar con ATM
-app.post("/ATM/cotizar", async (req: Request, res: Response) => {
-  try {
-    const resultadoXML = await cotizarATMXML(req.body.xml);
-    console.log("🛰️ Enviando XML a ATM...");
-    return res.status(200).send(resultadoXML);
-  } catch (error: any) {
-    return res.status(500).json({ message: error });
   }
 });
 
