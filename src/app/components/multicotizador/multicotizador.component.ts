@@ -119,7 +119,7 @@ export class MulticotizadorComponent implements OnInit {
     console.log("Enviando a ATM",xml);
     this.s_ATM.cotizarATM(xml).subscribe({
       next: (res) => {
-       console.log('✅ Cotización exitosa Rvadavia:',res);
+       console.log('✅ Cotización exitosa ATM:',res);
       },
       error: (err) => {
         console.log(err);
