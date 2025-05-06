@@ -12,14 +12,11 @@ const PORT: number = Number(process.env["PORT"]) || 3000;
 // ✅ Middleware
 app.use(cors({ origin: "*", methods: ["POST"] }));
 app.use(express.text({ type: "text/xml" }));
-app.use(express.json());
-// Configurar body-parser para manejar XML
-app.use(xmlparser());
 
 // ✅ Endpoint principal
 app.post("/ATM/cotizar", async (req, res) => {
   try {
-    const xmlData = req.body;
+    const xmlData: string = req.body;
 
     const response= await cotizarATMXML(xmlData);
     res.status(200).send(response);
