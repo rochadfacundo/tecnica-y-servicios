@@ -12,11 +12,10 @@ export const cotizarATMXML= async (xml: string) => {
         "SOAPAction": "http://tempuri.org/AUTOS_Cotizar", // importante
         "User-Agent": "Mozilla/5.0 ATM-Test",
       },
-      timeout: 60000,
     });
     console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
 
-    return response.data;
+    return response;
   } catch (error: any) {
     console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
     console.error("❌ Error completo ATM:",
