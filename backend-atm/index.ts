@@ -21,7 +21,7 @@ app.post("/ATM/cotizar", async (req, res) => {
   try {
     const xmlData = req.body;
     // Procesar xmlData según sea necesario
-    res.status(200).send("Solicitud procesada correctamente");
+    res.status(200).send(xmlData);
   } catch (error) {
     console.error("Error al procesar la solicitud:", error);
     res.status(500).send(error);
