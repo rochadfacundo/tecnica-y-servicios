@@ -3,7 +3,8 @@ import cors from "cors";
 import { cotizarATMXML } from "./atm-service";
 
 const app: Application = express();
-const PORT = process.env["PORT"] || 3000;
+const PORT: number = Number(process.env["PORT"]) || 3000;
+
 
 // ✅ Middleware
 app.use(cors({ origin: "*", methods: ["POST"] }));
@@ -25,4 +26,8 @@ app.post("/ATM/cotizar", async (req: Request, res: Response) : Promise<void> =>{
     console.error("❌ Error en /ATM/cotizar:", error);
      res.status(500).json({ message: "Error en cotización ATM", detalle: error });
   }
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
