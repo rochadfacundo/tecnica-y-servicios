@@ -20,6 +20,7 @@ app.use(xmlparser());
 app.post("/ATM/cotizar", async (req, res) => {
   try {
     const xmlData = req.body;
+
     const response= await cotizarATMXML(xmlData);
     res.status(200).send(response);
   } catch (error) {

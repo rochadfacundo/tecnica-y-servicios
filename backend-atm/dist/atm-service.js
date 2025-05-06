@@ -5,11 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cotizarATMXML = void 0;
 const axios_1 = __importDefault(require("axios"));
+const xml2js_1 = require("xml2js");
 const ATM_SOAP_URL = "https://wsatm-dev.atmseguros.com.ar/index.php/soap";
-const cotizarATMXML = async (xml) => {
+const cotizarATMXML = async (xmlObject) => {
     try {
         console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
-        const response = await axios_1.default.post(ATM_SOAP_URL, xml, {
+        // 🔁 Convertir objeto JS a string XML
+        const builder = new xml2js_1.Builder({ headless: true }); // headless = sin <?xml ...?>
+        const xmlString = builder.buildObject(xmlObject);
+        const response = await axios_1.default.post(ATM_SOAP_URL, xmlString, {
             headers: {
                 "Content-Type": "text/xml; charset=utf-8",
                 "SOAPAction": "http://tempuri.org/AUTOS_Cotizar", // importante
@@ -17,7 +21,7 @@ const cotizarATMXML = async (xml) => {
             },
         });
         console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
-        return response;
+        return response.data;
     }
     catch (error) {
         console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
