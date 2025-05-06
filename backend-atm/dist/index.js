@@ -19,7 +19,7 @@ app.use((0, express_xml_bodyparser_1.default)());
 app.post("/ATM/cotizar", async (req, res) => {
     try {
         const xmlData = req.body;
-        const response = (0, atm_service_1.cotizarATMXML)(xmlData);
+        const response = await (0, atm_service_1.cotizarATMXML)(xmlData);
         res.status(200).send(response);
     }
     catch (error) {
