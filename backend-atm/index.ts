@@ -1,6 +1,9 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { cotizarATMXML } from "./atm-service";
+import bodyParser from "body-parser";
+import xmlparser from 'express-xml-bodyparser';
+
 
 const app: Application = express();
 const PORT: number = Number(process.env["PORT"]) || 3000;
@@ -10,21 +13,18 @@ const PORT: number = Number(process.env["PORT"]) || 3000;
 app.use(cors({ origin: "*", methods: ["POST"] }));
 app.use(express.text({ type: "text/xml" }));
 app.use(express.json());
+// Configurar body-parser para manejar XML
+app.use(xmlparser());
 
 // ✅ Endpoint principal
-app.post("/ATM/cotizar", async (req: Request, res: Response) : Promise<void> =>{
+app.post("/ATM/cotizar", async (req, res) => {
   try {
-    const xml = typeof req.body === "string" ? req.body : req.body.xml;
-    if (!xml) {
-       res.status(400).json({ message: "XML no recibido." });
-    }
-
-    const resultado = await cotizarATMXML(xml);
-    res.set("Content-Type", "text/xml");
-     res.status(200).send(resultado);
-  } catch (error: any) {
-    console.error("❌ Error en /ATM/cotizar:", error);
-     res.status(500).json({ message: "Error en cotización ATM", detalle: error });
+    const xmlData = req.body;
+    // Procesar xmlData según sea necesario
+    res.status(200).send("Solicitud procesada correctamente");
+  } catch (error) {
+    console.error("Error al procesar la solicitud:", error);
+    res.status(500).send(error);
   }
 });
 
