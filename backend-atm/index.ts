@@ -20,8 +20,8 @@ app.use(xmlparser());
 app.post("/ATM/cotizar", async (req, res) => {
   try {
     const xmlData = req.body;
-    // Procesar xmlData según sea necesario
-    res.status(200).send(xmlData);
+    const response= cotizarATMXML(xmlData);
+    res.status(200).send(response);
   } catch (error) {
     console.error("Error al procesar la solicitud:", error);
     res.status(500).send(error);
