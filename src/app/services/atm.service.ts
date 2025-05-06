@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AtmService {
-  private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/ATM';
+  private apiUrl = 'http://18.216.130.143:3000/ATM';
 
   constructor(private http: HttpClient) {}
 

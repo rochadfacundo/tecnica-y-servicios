@@ -3,6 +3,8 @@
     {
       "source": "functions",
       "codebase": "default",
+       "timeoutSeconds": 60,
+       "memory": "512MB",
       "ignore": [
         "node_modules",
         ".git",
