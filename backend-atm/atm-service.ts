@@ -21,8 +21,7 @@ export const cotizarATMXML= async (xml: string) => {
     console.log("🕓 [ATM] Fecha y hora:", new Date().toISOString());
     console.error("❌ Error completo ATM:",
       error.toJSON ? error.toJSON() : error);
-    // console.error("❌ Error en cotización ATM:",
-    // error.response?.data);
-    throw error.response?.data;
+
+    throw error;
   }
 };
