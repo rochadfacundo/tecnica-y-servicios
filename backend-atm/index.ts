@@ -18,8 +18,8 @@ app.post("/ATM/cotizar", async (req, res) => {
   try {
     const xmlData: string = req.body;
 
-    const response= await cotizarATMXML(xmlData);
-    res.status(200).send(response);
+    //const response= await cotizarATMXML(xmlData);
+    res.status(200).send(xmlData);
   } catch (error) {
     console.error("Error al procesar la solicitud:", error);
     res.status(500).send(error);
