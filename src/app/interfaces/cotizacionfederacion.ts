@@ -1,3 +1,6 @@
+import { CondicionFiscalCodigo } from "../enums/condicion";
+
+
 export interface CotizacionFederacion {
   fecha_desde: string; // formato "dd/MM/yyyy"
   razon_social: number;
@@ -15,7 +18,7 @@ export interface CotizacionFederacion {
 }
 
 export interface ContratanteFederacion {
-  condicion_iva: CondicionIvaFederacion;
+  condicion_iva: CondicionFiscalCodigo;
   id?: number;
   tipo_id?: string;
   cuit?: string;
@@ -64,18 +67,6 @@ export interface Asegura2Federacion {
   producto: string;
 }
 
-
-export enum CondicionIvaFederacion {
-  IN= "IN",
-  CF= "CF",
-  EA= "EA",
-  IR= "IR",
-  ED= "ED",
-  MO= "MO",
-  NC=  "NC",
-  O= "0",
-  NA= "NA"
-}
 
 export interface LocalidadesFederacion {
   codigo: string;

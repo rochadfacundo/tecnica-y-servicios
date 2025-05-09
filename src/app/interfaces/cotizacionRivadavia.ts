@@ -1,6 +1,8 @@
 
 // Interfaces
 
+import { CondicionIVA } from "../enums/condicion";
+
 export interface DatosCotizacionRivadavia {
   nroProductor: string;
   claveProductor: string;
@@ -79,14 +81,6 @@ export enum TipoDocumento {
   PASAPORTE= 'PASAPORTE'
 }
 
-export enum CondicionIVA {
-  CONSUMIDOR_FINAL = 'CONSUMIDOR_FINAL',
-  RESPONSABLE_INSCRIPTO= 'RESPONSABLE_INSCRIPTO',
-  EXCENTO= 'EXCENTO',
-  RESPONSABLE_INSCRIPTO_AGENTE_PERCEPCION= 'RESPONSABLE_INSCRIPTO_AGENTE_PERCEPCION',
-  MONOTRIBUTISTA= 'MONOTRIBUTISTA',
-  NO_CATEGORIZADO= 'NO_CATEGORIZADO'
-}
 
 export enum CondicionIB {
   CONSUMIDOR_FINAL = 'CONSUMIDOR_FINAL',
