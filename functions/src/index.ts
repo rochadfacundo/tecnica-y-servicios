@@ -7,7 +7,7 @@ import { cotizarRus, getMarcas,
   getModelos,
   getVersiones,
   getTokenRus } from "./rus-service";
-import { getGruposPorMarca, getMarcasInfoauto, getModelosPorMarcaYGrupo, getTokenInfoauto} from "./intoauto-service";
+import { getGruposPorMarca, getModelosPorMarcaYGrupo, getMarcasInfoauto, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getLocalidadesFederacion, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
 

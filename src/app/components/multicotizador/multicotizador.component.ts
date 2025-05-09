@@ -7,14 +7,16 @@ import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,CotizacionV
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
-import { DashboardLayoutComponent } from '../../layouts/dashboard-layout/dashboard-layout.component';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
-import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import { CondicionIB, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
-import { CondicionIvaFederacion, CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
+import { CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
+import { CondicionFiscal } from '../../interfaces/condicionFiscal';
+import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
+import { CondicionFiscalCodigo, CondicionIVA } from '../../enums/condicion';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -25,6 +27,7 @@ import { AtmService } from '../../services/atm.service';
 export class MulticotizadorComponent implements OnInit {
 
   cotizacionForm!: FormGroup;
+  loadedForm!: CotizacionFormValue;
   marcas: Brand[] = [];
   brand_idSelected:number=0;
   group_idSelected:number=0;
@@ -69,63 +72,6 @@ export class MulticotizadorComponent implements OnInit {
     this.loadYears();
     this.setupValueChanges();
 
-
-
-    const xml = `
-   <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-       <soapenv:Body>
-          <tem:AUTOS_Cotizar>
-             <tem:doc_in>
-    <auto>
-      <usuario>
-        <usa>TECYSEG</usa>
-        <pass>TECYSEG%24</pass>
-        <fecha>05062025</fecha>
-        <vendedor>0956109561</vendedor>
-        <origen>WS</origen>
-        <plan>02</plan>
-      </usuario>
-      <asegurado>
-        <persona>F</persona>
-        <iva>CF</iva>
-        <cupondscto></cupondscto>
-        <infomotoclub>N</infomotoclub>
-        <bonificacion></bonificacion>
-      </asegurado>
-      <bien>
-        <cerokm>N</cerokm>
-        <rastreo>N</rastreo>
-        <micrograbado>N</micrograbado>
-        <alarma>0</alarma>
-        <marcaalarma></marcaalarma>
-        <esventa>A</esventa>
-        <ajuste></ajuste>
-        <codpostal>1005</codpostal>
-        <accesorios/>
-        <marca>18</marca>
-        <modelo>505</modelo>
-        <anofab>2010</anofab>
-        <seccion>3</seccion>
-        <uso>0101</uso>
-        <suma></suma>
-      </bien>
-    </auto>
-             </tem:doc_in>
-          </tem:AUTOS_Cotizar>
-       </soapenv:Body>
-    </soapenv:Envelope>`.trim();
-
-
-    console.log("Enviando a ATM",xml);
-    this.s_ATM.cotizarATM(xml).subscribe({
-      next: (res) => {
-       console.log('✅ Cotización exitosa ATM:',res);
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
-
   }
 
   public readonly tipoInteresOpciones=
@@ -158,16 +104,16 @@ export class MulticotizadorComponent implements OnInit {
     { id: 3, opcion: 'ANUAL' }
   ];
 
-  public readonly condicionesFiscales = [
-    { id: 1, condicion: 'CF', descripcion: 'Consumidor final'},
-    { id: 2, condicion: 'EX', descripcion: 'Exento'},
-    { id: 3, condicion: 'FM', descripcion: 'Resp. Inscp. Fac. M'},
-    { id: 4, condicion: 'GC', descripcion: 'Gran contribuyente'},
-    { id: 5, condicion: 'RI', descripcion: 'Responsable inscripto'},
-    { id: 6, condicion: 'RMT', descripcion: 'Responsable monotributo'},
-    { id: 7, condicion: 'RNI', descripcion: 'No inscripto'},
-    { id: 8, condicion: 'SSF', descripcion: 'Sin situación fiscal'},
-    { id: 9, condicion: 'CDE', descripcion: 'Cliente del exterior'}
+  public readonly condicionesFiscales: CondicionFiscal[] = [
+    { id: 1, condicion: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', ivaMercantil: 5 },
+    { id: 2, condicion: CondicionFiscalCodigo.EX, descripcion: 'Exento' },
+    { id: 3, condicion: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M' },
+    { id: 4, condicion: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente' },
+    { id: 5, condicion: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto' },
+    { id: 6, condicion: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo' },
+    { id: 7, condicion: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto' },
+    { id: 8, condicion: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal' },
+    { id: 9, condicion: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior' }
   ];
 
 
@@ -277,11 +223,6 @@ export class MulticotizadorComponent implements OnInit {
     return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
   }
 
-  private getCondicionFiscal(id: number): string {
-    const condicion = this.condicionesFiscales.find(cf => cf.id === id);
-    return condicion ? condicion.condicion : 'CF';
-  }
-
   private getSiNo(id: number): string {
     return id === 1 ? 'SI' : 'NO';
   }
@@ -289,7 +230,7 @@ export class MulticotizadorComponent implements OnInit {
 
 
   private initForm(): void {
-    this.cotizacionForm = this.fb.group({
+    this.cotizacionForm = this.fb.group<CotizacionFormValue>({
       codigoTipoInteres: [{ value: null }, Validators.required],
       tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
       marca: [{ value: null, disabled: true }, Validators.required],
@@ -308,6 +249,11 @@ export class MulticotizadorComponent implements OnInit {
       vigenciaDesde: [this.formatDate(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }]
     });
+  }
+
+
+  getloadedForm(){
+    return this.cotizacionForm.value;
   }
 
   // Función para formatear la fecha en 'yyyy-MM-dd'
@@ -545,7 +491,7 @@ export class MulticotizadorComponent implements OnInit {
       codigoTipoInteres: codigoTipo,
       cuotas: Number(formValues.cuotas), //solo permite hasta 3
       ajusteAutomatico:Number(formValues.clausulaAjuste),
-      condicionFiscal: this.getCondicionFiscal(formValues.condicionFiscal),
+      condicionFiscal: formValues.condicionFiscal.condicion,
       tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
       vehiculos: vehiculo,
       vigenciaDesde: formValues.vigenciaDesde,
@@ -691,7 +637,7 @@ export class MulticotizadorComponent implements OnInit {
       },
       datoPoliza: {
         nroPoliza: "12322",
-        fechaVigenciaDesde: "2025-05-05",
+        fechaVigenciaDesde: "2025-05-15",
         fechaVigenciaHasta: "2025-06-06",
         cantidadCuotas: "1",
         tipoFacturacion: TipoFacturacion.MENSUAL,
@@ -723,15 +669,16 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizarFederacion()
   {
+
     const cotizacionFederacion: CotizacionFederacion = {
       //numero_cotizacion: 129445013,
-      fecha_desde: '05/05/2025',
+      fecha_desde: '15/05/2025',
       //descuento_comision: 5,
-      medio_pago: 1, //efectivo
+      medio_pago: 2, //efectivo
       //pago_contado: false,
       razon_social: 21,
       //cliente_nuevo: false,
-      //refacturaciones: 2,
+      refacturaciones: 12,
       contratante: {
         //id: 35292858,
         //tipo_id: 'DNI',
@@ -739,7 +686,7 @@ export class MulticotizadorComponent implements OnInit {
         //nombre: 'Juan',
         //apellido: 'Perez',
         //razon_social: '21', //persona fisica 21
-        condicion_iva: CondicionIvaFederacion.CF,
+        condicion_iva: this.loadedForm.condicionFiscal.condicion,
         //localidad: 0,
         //matricula: '1125554'
       },
@@ -755,8 +702,10 @@ export class MulticotizadorComponent implements OnInit {
         localidad_de_guarda: Number(this.codigoPostalFederacion)
       },
       coberturas: {
-        ajuste_automatico: 20,
-        rc_ampliada: 50,
+        ajuste_automatico: 99,
+        rc_ampliada: 99,
+        rc_conosur:1,
+        casco_conosur:true,
         plan: 'CF',
         franquicia: 99
       },/*
@@ -765,12 +714,6 @@ export class MulticotizadorComponent implements OnInit {
         codigo_producto: '190001',
         fecha_nacimiento: '13/07/1998'
       },*/
-      asegura2: [
-        {
-          ramo: 1,
-          producto: '10008'
-        }
-      ]
     };
 
 
@@ -788,14 +731,75 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+  cotizarATM(){
+    const xml = `
+    <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <soapenv:Body>
+           <tem:AUTOS_Cotizar>
+              <tem:doc_in>
+     <auto>
+       <usuario>
+         <usa>TECYSEG</usa>
+         <pass>TECYSEG%24</pass>
+         <fecha>05062025</fecha>
+         <vendedor>0956109561</vendedor>
+         <origen>WS</origen>
+         <plan>02</plan>
+       </usuario>
+       <asegurado>
+         <persona>F</persona>
+         <iva>CF</iva>
+         <cupondscto></cupondscto>
+         <infomotoclub>N</infomotoclub>
+         <bonificacion></bonificacion>
+       </asegurado>
+       <bien>
+         <cerokm>N</cerokm>
+         <rastreo>N</rastreo>
+         <micrograbado>N</micrograbado>
+         <alarma>0</alarma>
+         <marcaalarma></marcaalarma>
+         <esventa>A</esventa>
+         <ajuste></ajuste>
+         <codpostal>1005</codpostal>
+         <accesorios/>
+         <marca>18</marca>
+         <modelo>505</modelo>
+         <anofab>${this.anio}</anofab>
+         <seccion>3</seccion>
+         <uso>0101</uso>
+         <suma></suma>
+       </bien>
+     </auto>
+              </tem:doc_in>
+           </tem:AUTOS_Cotizar>
+        </soapenv:Body>
+     </soapenv:Envelope>`.trim();
+
+
+     console.log("Enviando a ATM",xml);
+     this.s_ATM.cotizarATM(xml).subscribe({
+       next: (res) => {
+        console.log('✅ Cotización exitosa ATM:',res);
+       },
+       error: (err) => {
+         console.log(err);
+       }
+     });
+  }
+
+
   cotizar()
   {
-    this.cotizarRivadavia();
+
+    this.loadedForm = this.getloadedForm();
+
+    //this.cotizarRivadavia();
 
     this.cotizarFederacion();
-     this.cotizarRUS();
+    // this.cotizarRUS();
 
-    this.cotizarMercantil();
+    //this.cotizarMercantil();
   }
 
 

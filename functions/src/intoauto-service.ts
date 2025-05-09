@@ -9,14 +9,25 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // URL del servicio de autenticación de INFOAUTO
+// demo
 const AUTH_URL = "https://demo.api.infoauto.com.ar/cars/auth/login";
 const AUTH_URL_REFRESH= "https://demo.api.infoauto.com.ar/cars/auth/refresh";
+
 const BRANDS_URL="https://demo.api.infoauto.com.ar/cars/pub/brands";
-// Credenciales de INFOAUTO
 const CREDENTIALS = {
   usuario: "hrocha@tecnicayseguros.com.ar",
   clave: "tys.API2025",
 };
+// produccion
+// const AUTH_URL = "https://api.infoauto.com.ar/cars/auth/login";
+// const AUTH_URL_REFRESH= "https://api.infoauto.com.ar/cars/auth/refresh";
+
+// const BRANDS_URL="https://api.infoauto.com.ar/cars/pub/brands";
+// Credenciales de INFOAUTO
+// const CREDENTIALS = {
+//  usuario: "hrocha@tecnicayseguros.com.ar",
+//  clave: "AjLyGC9i5QSrSw7U",
+// };
 
 // Función para obtener el token de INFOAUTO
 export const getTokenInfoauto = async () => {
@@ -102,6 +113,45 @@ export const getTokenInfoauto = async () => {
   }
 };
 
+export const getTodasLasMarcasInfoauto = async () => {
+  try {
+    const token = await getTokenInfoauto();
+    const pageSize = 100;
+    let page = 1;
+    let todasLasMarcas: any[] = [];
+    let hayMas = true;
+
+    while (hayMas) {
+      const response = await axios.get(BRANDS_URL, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        params: {
+          page: page,
+          page_size: pageSize,
+        },
+      });
+
+      const marcas = response.data;
+      todasLasMarcas = [...todasLasMarcas, ...marcas];
+
+      if (marcas.length < pageSize) {
+        hayMas = false;
+      } else {
+        page++;
+      }
+    }
+
+    return todasLasMarcas;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Error al obtener las marcas de Infoauto";
+    throw new Error(errorMessage);
+  }
+};
 
 export const getMarcasInfoauto = async () => {
   try {

@@ -102,7 +102,7 @@
     <div class="mb-3">
       <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
       <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
-        <option *ngFor="let condicion of condicionesFiscales" [value]="condicion.id">
+        <option *ngFor="let condicion of condicionesFiscales" [ngValue]="condicion">
           {{ condicion.condicion }} -   {{ condicion.descripcion }}
         </option>
       </select>
