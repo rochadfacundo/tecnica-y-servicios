@@ -8,7 +8,7 @@ import { CotizacionRioUruguay } from "./interfaces/CotizacionRioUruguay";
 const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
 
 const USERNAME = "18291036ws";
-const PASSWORD = "cambiar";
+const PASSWORD = "qwe123$$";
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -148,13 +148,13 @@ export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<
 
     const apiUrlCotizacion=`${API_URL}/cotizaciones`;
 
-    if (cotizacionData.vigenciaPolizaId==65) {
+    if (cotizacionData.codigoTipoInteres=="VEHICULO") {
       const response = await axios.put(`${apiUrlCotizacion}/autos`, cotizacionData, {
         headers: { Authorization: token},
       });
-      console.log("llegamos a cotizar?", response.data);
+
       return response.data;
-    } else if (cotizacionData.vigenciaPolizaId==70) {
+    } else if (cotizacionData.codigoTipoInteres=="MOTOVEHICULO") {
       const response = await axios.put(`${apiUrlCotizacion}/motos`, cotizacionData, {
         headers: { Authorization: token},
       });

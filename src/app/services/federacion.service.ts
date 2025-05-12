@@ -21,6 +21,14 @@ export class FederacionService {
       return this.http.get<any>(`${this.apiUrl}/localidades`);
     }
 
+    getRastreadores(): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/rastreadores`);
+    }
+
+    getTiposPersoneria(): Observable<{ codigo: number, descripcion: string }[]> {
+      return this.http.get<{ codigo: number, descripcion: string }[]>(`${this.apiUrl}/tipoPersoneria`);
+    }
+
     getTiposVehiculo(codInfoAuto: number): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}/tiposVehiculo/${codInfoAuto}`);
     }

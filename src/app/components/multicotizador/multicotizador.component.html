@@ -6,9 +6,50 @@
   <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
   <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
     <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
-    <option *ngFor="let tipo of tipoInteresOpciones" [value]="tipo.id">{{ tipo.nombre }}</option>
+    <option *ngFor="let tipo of tipoInteresOpciones" [ngValue]="tipo">{{ tipo.nombre }}</option>
   </select>
 </div>
+
+  <!-- Tipo de Vehículo -->
+  <div class="mb-3">
+    <label for="tipoPersoneria" class="form-label">Tipo de persona</label>
+    <select id="tipoPersoneria" class="form-select" formControlName="tipoPersoneria">
+      <option [ngValue]="null" disabled>Seleccione un tipo</option>
+      <option *ngFor="let tipo of tiposPersoneria" [ngValue]="tipo">{{ tipo.descripcion }}</option>
+    </select>
+  </div>
+
+  //Solo si es persona
+  <div *ngIf="tipoPersona?.descripcion === 'Persona Fisica'">
+
+    <!-- Fila: Nombre y Apellido -->
+    <div class="row">
+      <div class="mb-3 col-md-6">
+        <label for="nombre" class="form-label">Nombre:</label>
+        <input type="text" formControlName="nombre" class="form-control">
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="apellido" class="form-label">Apellido:</label>
+        <input type="text" formControlName="apellido" class="form-control">
+      </div>
+    </div>
+
+    <!-- Fila: Tipo Doc y N° -->
+    <div class="row">
+      <div class="mb-3 col-md-6">
+        <label for="tipoId" class="form-label">Tipo de documento</label>
+        <select id="tipoId" class="form-select" formControlName="tipoId">
+          <option [ngValue]="null" disabled>Seleccione un tipo</option>
+          <option *ngFor="let tipo of tiposId" [value]="tipo.tipo_id">{{ tipo.tipo_id }}</option>
+        </select>
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="nroId" class="form-label">N°</label>
+        <input type="text" formControlName="nroId" class="form-control">
+      </div>
+    </div>
+
+  </div>
 
     <!-- SECCION VEHICULOS -->
 
@@ -70,6 +111,76 @@
         </select>
       </div>
 
+  <!--SECCION FEDERACION PATRONAL-->
+  <div class="" *ngIf="this.federacionForm">
+
+    <div class="row">
+      <div class="mb-3 col-md-6 form-check">
+          <input type="checkbox" id="alarma" class="form-check-input" formControlName="alarma">
+          <label for="alarma" class="form-check-label">¿Tiene alarma?</label>
+      </div>
+
+      <div class="mb-3 col-md-6 form-check">
+        <input type="checkbox" id="gnc" class="form-check-input" formControlName="gnc">
+        <label for="gnc" class="form-check-label">¿Tiene GNC?</label>
+      </div>
+
+    </div>
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check">
+          <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
+          <label for="controlSatelital" class="form-check-label">¿Tiene rastreador?</label>
+      </div>
+
+      <div class="mb-3 col-md-6 form-check"  *ngIf="cotizacionForm.get('controlSatelital')?.value">
+        <label for="rastreador" class="form-label">Rastreadores</label>
+        <select id="rastreador" class="form-select" formControlName="rastreador">
+          <option *ngFor="let rastreador of this.tiposDeRastreadores" [ngValue]="rastreador">{{ rastreador.descripcion }}</option>
+        </select>
+      </div>
+
+    </div>
+
+
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check">
+        <label for="tipoRefacturacion" class="form-label">Tipo de Refacturacion</label>
+        <select id="tipoRefacturacion" class="form-select" formControlName="tipoRefacturacion">
+          <option *ngFor="let refacturacion of this.tiposDeRefacturacion" [ngValue]="refacturacion">{{ refacturacion.descripcion }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3 col-md-6 form-check"  *ngIf="cotizacionForm.get('tipoRefacturacion')?.value.descripcion=='Debito'">
+      <input type="checkbox" id="pagoContado" class="form-check-input" formControlName="pagoContado">
+      <label for="pagoContado" class="form-check-label">Pago contado?</label>
+      </div>
+
+    </div>
+
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check">
+        <label for="tipoRefacturacion" class="form-label">Descuento comision</label>
+        <select id="tipoRefacturacion" class="form-select" formControlName="tipoRefacturacion">
+          <option *ngFor="let descuento of this.descuentoComision" [ngValue]="descuento">{{ descuento.descripcion }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3 col-md-6 form-check"  >
+      <input type="checkbox" id="pagoContado" class="form-check-input" formControlName="pagoContado">
+      <label for="pagoContado" class="form-check-label">Pago contado?</label>
+      </div>
+
+    </div>
+
+
+
+
+
+  </div>
+
     <!-- Tipo Vigencia -->
     <div class="mb-3">
       <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
@@ -112,22 +223,6 @@
     <div class="mb-3">
       <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
       <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
-    </div>
-
-    <!-- Control Satelital -->
-    <div class="mb-3">
-      <label for="controlSatelital" class="form-label">Control Satelital</label>
-      <select id="controlSatelital" class="form-select" formControlName="controlSatelital">
-        <option *ngFor="let opcion of opcionesSiNo" [value]="opcion.id">{{ opcion.opcion }}</option>
-      </select>
-    </div>
-
-    <!-- GNC -->
-    <div class="mb-3">
-      <label for="gnc" class="form-label">GNC</label>
-      <select id="gnc" class="form-select" formControlName="gnc">
-        <option *ngFor="let opcion of opcionesSiNo" [value]="opcion.id">{{ opcion.opcion }}</option>
-      </select>
     </div>
 
     <!-- Vigencia Desde -->
