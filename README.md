@@ -1,27 +1,46 @@
-# Tecnicayservicios
+# 🧾 Sistema Multicotizador de Seguros
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.2.
+Este proyecto es una **plataforma web para cotización de seguros vehiculares** que permite consultar múltiples compañías aseguradoras en simultáneo, integrando sus APIs oficiales de forma unificada y eficiente.
 
-## Development server
+El sistema fue desarrollado con foco en la automatización del proceso de cotización, facilitando el trabajo de brokers y productores mediante una interfaz simple, ágil y robusta.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## 🚗 Aseguradoras integradas
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Federación Patronal  
+- Río Uruguay Seguros (RUS)  
+- Mercantil Andina  
+- Rivadavia Seguros  
+- ATM Seguros  
+- Digna Seguros
 
-## Build
+> *(y en constante expansión)*
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+---
 
-## Running unit tests
+## 🛠️ Tecnologías utilizadas
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+- **Frontend:** Angular 18 + Bootstrap 5  
+- **Backend:** Firebase Cloud Functions (Node.js) / AWS (EC2 y Lambda)  
+- **Base de datos:** Firestore (NoSQL)  
+- **Autenticación y tokens:** Manejo automático de expiración y renovación  
+- **Integración de pagos (opcional):** MercadoPago Checkout Pro / PayWay  
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+---
 
-## Further help
+## 🎯 Funcionalidades principales
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Consulta y comparación de cotizaciones de diferentes compañías en tiempo real  
+- Estructura flexible según requerimientos de cada aseguradora  
+- Gestión unificada de tokens, fechas, tipos de vehículos, usos, coberturas y condiciones fiscales  
+- Compatibilidad con cobros online mediante pasarelas integradas  
+- Módulo escalable, preparado para ampliarse con nuevas compañías  
+
+---
+
+## 🚧 Estado del proyecto
+
+- 🔧 En desarrollo con compañías activas  
+- 🔧 Módulos avanzados (comisiones, facturación y más) en desarrollo  

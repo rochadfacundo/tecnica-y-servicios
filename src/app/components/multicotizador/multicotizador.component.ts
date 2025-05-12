@@ -782,7 +782,7 @@ export class MulticotizadorComponent implements OnInit {
     const cotizacionFederacion: CotizacionFederacion = {
       //numero_cotizacion: 129445013,
       fecha_desde: fechaFormateada,
-      //descuento_comision: 5,
+      descuento_comision: this.form.descuentoComision?.codigo,
       medio_pago: this.form.tipoPago.codigo,
       pago_contado: Boolean(this.form.pagoContado),
       razon_social: this.form.tipoPersoneria.codigo,
