@@ -35,7 +35,6 @@ El sistema fue desarrollado con foco en la automatización del proceso de cotiza
 - Consulta y comparación de cotizaciones de diferentes compañías en tiempo real  
 - Estructura flexible según requerimientos de cada aseguradora  
 - Gestión unificada de tokens, fechas, tipos de vehículos, usos, coberturas y condiciones fiscales  
-- Compatibilidad con cobros online mediante pasarelas integradas  
 - Módulo escalable, preparado para ampliarse con nuevas compañías  
 
 ---
