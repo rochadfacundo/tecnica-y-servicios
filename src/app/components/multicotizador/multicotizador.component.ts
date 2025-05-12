@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
-import { CotizacionRioUruguay, RusCotizado, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
+import { CotizacionRioUruguay, RusCotizado, TipoVehiculoRUS, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
 import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,CotizacionVehiculoMoto,MercantilCotizado,Productor } from '../../interfaces/cotizacionMercantil';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
@@ -17,6 +17,7 @@ import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
 import { CondicionFiscalCodigo, CondicionIVA } from '../../enums/condicion';
+import { Tipo, TipoId, TipoPersoneria } from '../../interfaces/tipoPersoneria';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -26,13 +27,24 @@ import { CondicionFiscalCodigo, CondicionIVA } from '../../enums/condicion';
 })
 export class MulticotizadorComponent implements OnInit {
 
+  //FOrm
   cotizacionForm!: FormGroup;
-  loadedForm!: CotizacionFormValue;
+  form!: CotizacionFormValue;
+  federacionForm:boolean=false;
   marcas: Brand[] = [];
   brand_idSelected:number=0;
   group_idSelected:number=0;
   anios: number[] = [];
+
+  tiposPersoneria: TipoPersoneria[]=[];
+  tipoPersona!: TipoPersoneria;
   tipoVehiculo:string="";
+  tiposId:TipoId[]=[];
+  tiposDeRastreadores:any[]=[];
+  tiposDeRefacturacion:Tipo[]=[];
+  tipoPago:Tipo[]=[];
+  descuentoComision:Tipo[]=[];
+
   codigoTipoInteres:string='';
   codModelo:number=0;
   gnc:boolean=false;
@@ -77,10 +89,17 @@ export class MulticotizadorComponent implements OnInit {
   public readonly tipoInteresOpciones=
   [
     { id: 1, nombre: 'VEHICULO' },
-    { id: 2, nombre: 'MAQUINARIA' },
-    { id: 3, nombre: 'ACOPLADOS' },
-    { id: 4, nombre: 'TRAILERS'},
-    { id: 5, nombre: 'IMPLEMENTOS'},
+    { id: 2, nombre: 'MOTOVEHICULO'},
+    { id: 3, nombre: 'PERSONA' },
+    { id: 4, nombre: 'VIVIENDA' },
+    { id: 5, nombre: 'COMERCIO' },
+    { id: 6, nombre: 'BICICLETA' },
+    { id: 7, nombre: 'MAQUINARIA' },
+    { id: 8, nombre: 'ACOPLADOS' },
+    { id: 9, nombre: 'TRAILERS'},
+    { id: 10, nombre: 'IMPLEMENTOS'},
+    { id: 11, nombre: 'CONSORCIO'},
+    { id: 12, nombre: 'Otro riesgo'},
   ];
 
   public readonly cuotas=[1,2,3,4,5,6];
@@ -117,18 +136,7 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
 
-  public readonly tiposVehiculo = [
-    { id: 7, nombre: 'MOTO MENOS 50 CC' },
-    { id: 8, nombre: 'MOTO MAS 50 CC' },
-    { id: 1, nombre: 'AUTO' },
-    { id: 2, nombre: 'PICK-UP "A"' },
-    { id: 3, nombre: 'PICK-UP "B"' },
-    { id: 4, nombre: 'CAMION HASTA 5 TN' },
-    { id: 5, nombre: 'CAMION HASTA 10 TN' },
-    { id: 6, nombre: 'CAMION MAS 10 TN' },
-    { id: 25, nombre: 'MOTORHOME' },
-    { id: 26, nombre: 'M3 OMNIBUS' },
-  ];
+  public tiposVehiculo:TipoVehiculoRUS[] = [];
 
 
 
@@ -232,7 +240,13 @@ export class MulticotizadorComponent implements OnInit {
   private initForm(): void {
     this.cotizacionForm = this.fb.group<CotizacionFormValue>({
       codigoTipoInteres: [{ value: null }, Validators.required],
+      controlSatelital: [false],
       tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
+      nombre: [""],
+      apellido: [""],
+      tipoId: [{ value: null }],
+      nroId: [""],
+      alarma: [true],
       marca: [{ value: null, disabled: true }, Validators.required],
       anio: [{ value: null, disabled: true }, Validators.required],
       modelo: [{ value: null, disabled: true }, Validators.required],
@@ -244,11 +258,58 @@ export class MulticotizadorComponent implements OnInit {
       clausulaAjuste: [{ value: null }],
       condicionFiscal: [{ value: null }, Validators.required],
       cpLocalidadGuarda: [{ value: null }, Validators.required],
-      controlSatelital: [{ value: null }],
-      gnc: [{ value: null }],
+      rastreador: [],
+      gnc: [false],
+      pagoContado:false,
       vigenciaDesde: [this.formatDate(new Date()), Validators.required],
-      vigenciaHasta: [{ value: null }]
+      vigenciaHasta: [{ value: null }],
+      tipoRefacturacion:[],
+      tipoPago:[],
+      tipoPersoneria: [{ value: "" }],
     });
+
+    this.s_fedPat.getTiposPersoneria().subscribe({
+
+      next: (tipos) => {
+        console.log(tipos);
+      // Ordenar: primero el que tenga descripcion "Persona Fisica"
+      this.tiposPersoneria = tipos.sort((a, b) => {
+      if (a.descripcion === 'Persona Fisica') return -1;
+      if (b.descripcion === 'Persona Fisica') return 1;
+      return 0;
+    });
+        this.tiposPersoneria = tipos;
+      },
+      error: (err) => {
+        console.error("Error cargando tipos de personería", err);
+      }
+    });
+
+    this.tiposId=[
+      {tipo_id: 'DNI'},
+      {tipo_id: 'PA (pasaporte)'},
+      {tipo_id: 'Libreta Civica'},
+      {tipo_id: 'Libreta de enrolamiento'},
+    ];
+
+    this.tiposDeRefacturacion=[
+    {codigo:2,descripcion:'SEMESTRAL'},
+    {codigo:12,descripcion:'MENSUAL'},
+    ];
+
+
+    this.tipoPago =[
+      {codigo:1,descripcion:'Efectivo'},
+      {codigo:2,descripcion:'Debito'},
+      ];
+
+    this.descuentoComision =[
+        {codigo:1,descripcion:'1%'},
+        {codigo:2,descripcion:'2%'},
+        {codigo:3,descripcion:'3%'},
+        {codigo:4,descripcion:'4%'},
+        {codigo:5,descripcion:'5%'},
+        ];
   }
 
 
@@ -317,12 +378,27 @@ export class MulticotizadorComponent implements OnInit {
   private setupValueChanges(): void {
 
     this.cotizacionForm.get('codigoTipoInteres')?.valueChanges.subscribe((tipo) => {
+      let auxTiposVehiculos: TipoVehiculoRUS[]=[];
+      if (tipo.nombre=="VEHICULO") {
 
-      if (tipo==1) {
-        this.cotizacionForm.get('tipoVehiculo')?.enable();
+        auxTiposVehiculos=[{ id: 1, nombre: 'AUTO' },
+        { id: 2, nombre: 'PICK-UP "A"' },
+        { id: 3, nombre: 'PICK-UP "B"' },
+        { id: 4, nombre: 'CAMION HASTA 5 TN' },
+        { id: 5, nombre: 'CAMION HASTA 10 TN' },
+        { id: 6, nombre: 'CAMION MAS 10 TN' },
+        { id: 25, nombre: 'MOTORHOME' },
+        { id: 26, nombre: 'M3 OMNIBUS' }];
+
+      }else if (tipo.nombre=="MOTOVEHICULO"){
+        auxTiposVehiculos=[{ id: 7, nombre: 'MOTO MENOS 50 CC' },
+          { id: 8, nombre: 'MOTO MAS 50 CC' }];
+
       } else {
         this.cotizacionForm.get('tipoVehiculo')?.disable();
       }
+      this.tiposVehiculo=auxTiposVehiculos;
+      this.cotizacionForm.get('tipoVehiculo')?.enable();
     });
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
@@ -331,6 +407,17 @@ export class MulticotizadorComponent implements OnInit {
         //this.obtenerMarcasRUS(tipo);
         this.getMarcasInfoAuto();
         this.cotizacionForm.get('uso')?.enable();
+      } else {
+        this.marcas = [];
+        this.cotizacionForm.get('marca')?.disable();
+        this.cotizacionForm.get('uso')?.disable();
+      }
+    });
+
+    this.cotizacionForm.get('tipoPersoneria')?.valueChanges.subscribe((tipoPersona) => {
+
+      if (tipoPersona) {
+        this.tipoPersona=tipoPersona;
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
@@ -455,14 +542,31 @@ export class MulticotizadorComponent implements OnInit {
           } else {
             console.warn("⚠️ No se encontró tipo de vehículo que coincida con el uso");
           }
+
         },
         error: (err) => {
             console.log(err);
+            //this.federacionForm=false;
           }
         });
+
+        this.federacionForm=true;
       }
+
     });
 
+    this.cotizacionForm.get('controlSatelital')?.valueChanges.subscribe((rastreador) => {
+
+      if (rastreador) {
+        this.s_fedPat.getRastreadores().subscribe((rastreadores) => {
+          if (rastreadores) {
+            this.tiposDeRastreadores=rastreadores;
+          }
+        });
+      } else {
+
+      }
+    });
 
   }
 
@@ -496,10 +600,10 @@ export class MulticotizadorComponent implements OnInit {
       vehiculos: vehiculo,
       vigenciaDesde: formValues.vigenciaDesde,
       vigenciaHasta: formValues.vigenciaHasta,
-      vigenciaPolizaId: 65 //autos
+      vigenciaPolizaId: 65 //id de autos
     };
 
-    if(codigoTipo!='VEHICULO')
+    if(codigoTipo=='MOTOVEHICULO')
     {
       cotizacionData.vigenciaPolizaId=70; //id para motos
     }
@@ -669,24 +773,28 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizarFederacion()
   {
+    let rastreador= this.form.rastreador? Number(this.form.rastreador.codigo): 99;
+    console.log(this.form);
 
+    const fechaOriginal = this.form.vigenciaDesde;
+    const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
+    console.log(fechaFormateada);
     const cotizacionFederacion: CotizacionFederacion = {
       //numero_cotizacion: 129445013,
-      fecha_desde: '15/05/2025',
+      fecha_desde: fechaFormateada,
       //descuento_comision: 5,
-      medio_pago: 2, //efectivo
-      //pago_contado: false,
-      razon_social: 21,
+      medio_pago: this.form.tipoPago.codigo,
+      pago_contado: Boolean(this.form.pagoContado),
+      razon_social: this.form.tipoPersoneria.codigo,
       //cliente_nuevo: false,
-      refacturaciones: 12,
+      refacturaciones: this.form.tipoRefacturacion.codigo,
       contratante: {
-        //id: 35292858,
-        //tipo_id: 'DNI',
+        id: Number(this.form.nroId),
+        tipo_id: this.form.tipoId,
        // cuit: '20352928587',
-        //nombre: 'Juan',
-        //apellido: 'Perez',
-        //razon_social: '21', //persona fisica 21
-        condicion_iva: this.loadedForm.condicionFiscal.condicion,
+        nombre: this.form.nombre,
+        apellido: this.form.apellido,
+        condicion_iva: this.form.condicionFiscal.condicion,
         //localidad: 0,
         //matricula: '1125554'
       },
@@ -694,9 +802,9 @@ export class MulticotizadorComponent implements OnInit {
         infoauto: String(this.codigoInfoAuto),
         anio: String(this.anio),
         tipo_vehiculo: this.tipoVehiculoFederacion,  //falta traer tipos vehiculo
-        //alarma: true,
-        //rastreador: 46,
-        //gnc: false,
+        alarma: Boolean(this.form.alarma),
+        rastreador:rastreador,
+        gnc: Boolean(this.form.gnc),
         //volcador: false,
         //suma_asegurada: 1200000,
         localidad_de_guarda: Number(this.codigoPostalFederacion)
@@ -704,6 +812,7 @@ export class MulticotizadorComponent implements OnInit {
       coberturas: {
         ajuste_automatico: 99,
         rc_ampliada: 99,
+        interasegurado: true, //siempre true
         rc_conosur:1,
         casco_conosur:true,
         plan: 'CF',
@@ -719,7 +828,7 @@ export class MulticotizadorComponent implements OnInit {
 
     console.log(cotizacionFederacion);
 
-
+    /*
     this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa Federacion:',res);
@@ -727,7 +836,7 @@ export class MulticotizadorComponent implements OnInit {
       error: (err) => {
         console.log(err);
       }
-    });
+    });*/
 
   }
 
@@ -792,7 +901,7 @@ export class MulticotizadorComponent implements OnInit {
   cotizar()
   {
 
-    this.loadedForm = this.getloadedForm();
+    this.form = this.getloadedForm();
 
     //this.cotizarRivadavia();
 

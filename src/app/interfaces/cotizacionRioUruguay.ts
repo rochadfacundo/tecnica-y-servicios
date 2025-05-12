@@ -20,6 +20,12 @@ export interface VehiculoRioUruguay{
   descripcion:string;
 }
 
+export interface TipoVehiculoRUS{
+  id:number;
+  nombre:string;
+}
+
+
 export interface VehiculosRus
 {
   anio:string;

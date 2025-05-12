@@ -25,6 +25,9 @@ const API_URL_TIPO_VEHICULO_FEDPAT =
 const API_URL_COTIZACION_FEDPAT=
 "https://api-sandbox.fedpat.com.ar/v1/cotizador-automotores";
 
+const API_URL_GET_RASTREADORES=
+"https://api-sandbox.fedpat.com.ar/v1/referencias/rastreadoresVehiculares";
+
 export const getTokenFederacion = async () => {
   const tokenRef = db.doc("Federacion/token");
   const now = Date.now();
@@ -82,6 +85,35 @@ export const getLocalidadesFederacion = async () => {
   } catch (error: any) {
     console.error("Error marcas:", error.response?.data || error.message);
     throw new Error("No se pudo obtener las localidades en federacion");
+  }
+};
+
+export const getRastreadores = async () => {
+  try {
+    const token= await getTokenFederacion();
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    const response = await axios.get(API_URL_GET_RASTREADORES, { headers });
+    console.log("obtener rastreadores ok");
+    return response.data.respuesta;
+  } catch (error: any) {
+    console.error("Error rastreador:", error.response?.data || error.message);
+    throw new Error("No se pudo obtener los rastreadores en federacion");
+  }
+};
+
+export const getTiposPersoneria = async () => {
+  try {
+    console.log("Voy a buscar los tipos de personas");
+    const snapshot = await db.collection("tipoPersoneria").get();
+    const tipos = snapshot.docs.map((doc) => doc.data());
+    return tipos;
+  } catch (error) {
+    console.error("❌ Error al obtener tipoPersoneria:", error);
+    return error;
   }
 };
 

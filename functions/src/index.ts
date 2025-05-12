@@ -9,7 +9,7 @@ import { cotizarRus, getMarcas,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getModelosPorMarcaYGrupo, getMarcasInfoauto, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
-import { cotizarFederacion, getLocalidadesFederacion, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
+import { cotizarFederacion, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
 
 const app = express();
 // Habilitar CORS para todas las solicitudes
@@ -330,6 +330,29 @@ app.get("/federacion/token", async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Error obteniendo token de federacion:", error);
     return res.status(500).json({ error: error.message || "Error token de Rivadavia" });
+  }
+});
+
+// ✅ Obtener tipoPersoneria EN FIRESTORE de FEDERACION PATRONAL
+app.get("/federacion/tipoPersoneria", async (req: Request, res: Response) => {
+  try {
+    const tiposPersoneria = await getTiposPersoneria();
+    return res.status(200).json(tiposPersoneria);
+  } catch (error) {
+    console.error("Error obteniendo personerias federacion:", error);
+    return res.status(500).json({ error: error });
+  }
+});
+
+// ✅ Obtener rastreadores de FEDERACION PATRONAL
+app.get("/federacion/rastreadores", async (req: Request, res: Response) => {
+  try {
+    const rastreadores = await getRastreadores();
+    return res.status(200).json(rastreadores);
+  } catch (error) {
+    console.error("Error obteniendo rastreadores federacion:", error);
+    return res.status(500).json(
+      { error: error instanceof Error ? error.message : String(error) });
   }
 });
 
