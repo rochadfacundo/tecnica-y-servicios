@@ -42,8 +42,9 @@ export class MulticotizadorComponent implements OnInit {
   tiposId:TipoId[]=[];
   tiposDeRastreadores:any[]=[];
   tiposDeRefacturacion:Tipo[]=[];
-  tipoPago:Tipo[]=[];
   descuentoComision:Tipo[]=[];
+  mediosPago:Tipo[]=[];
+
 
   codigoTipoInteres:string='';
   codModelo:number=0;
@@ -247,9 +248,11 @@ export class MulticotizadorComponent implements OnInit {
       tipoId: [{ value: null }],
       nroId: [""],
       alarma: [true],
+      descuentoComision:[],
       marca: [{ value: null, disabled: true }, Validators.required],
       anio: [{ value: null, disabled: true }, Validators.required],
       modelo: [{ value: null, disabled: true }, Validators.required],
+      medioPago:false,
       version: [{ value: null, disabled: true }, Validators.required],
       uso: [{ value: null, disabled: true }, Validators.required],
       codigoUso: [{ value: null, disabled: true }, Validators.required],
@@ -268,6 +271,33 @@ export class MulticotizadorComponent implements OnInit {
       tipoPersoneria: [{ value: "" }],
     });
 
+    this.tiposId=[
+      {tipo_id: 'DNI'},
+      {tipo_id: 'PA (pasaporte)'},
+      {tipo_id: 'Libreta Civica'},
+      {tipo_id: 'Libreta de enrolamiento'},
+    ];
+
+    this.tiposDeRefacturacion=[
+    {codigo:2,descripcion:'SEMESTRAL'},
+    {codigo:12,descripcion:'MENSUAL'},
+    ];
+
+
+      //ver con el planchon
+    this.descuentoComision =[
+        {codigo:1,descripcion:'1%'},
+        {codigo:2,descripcion:'2%'},
+        {codigo:3,descripcion:'3%'},
+        {codigo:4,descripcion:'4%'},
+        {codigo:5,descripcion:'5%'},
+        ];
+
+    this.mediosPago=[
+      {codigo:1,descripcion:'Efectivo'},
+      {codigo:2,descripcion:'Debito/Credito'},
+    ];
+
     this.s_fedPat.getTiposPersoneria().subscribe({
 
       next: (tipos) => {
@@ -285,31 +315,7 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
 
-    this.tiposId=[
-      {tipo_id: 'DNI'},
-      {tipo_id: 'PA (pasaporte)'},
-      {tipo_id: 'Libreta Civica'},
-      {tipo_id: 'Libreta de enrolamiento'},
-    ];
 
-    this.tiposDeRefacturacion=[
-    {codigo:2,descripcion:'SEMESTRAL'},
-    {codigo:12,descripcion:'MENSUAL'},
-    ];
-
-
-    this.tipoPago =[
-      {codigo:1,descripcion:'Efectivo'},
-      {codigo:2,descripcion:'Debito'},
-      ];
-
-    this.descuentoComision =[
-        {codigo:1,descripcion:'1%'},
-        {codigo:2,descripcion:'2%'},
-        {codigo:3,descripcion:'3%'},
-        {codigo:4,descripcion:'4%'},
-        {codigo:5,descripcion:'5%'},
-        ];
   }
 
 
@@ -782,12 +788,12 @@ export class MulticotizadorComponent implements OnInit {
     const cotizacionFederacion: CotizacionFederacion = {
       //numero_cotizacion: 129445013,
       fecha_desde: fechaFormateada,
-      descuento_comision: this.form.descuentoComision?.codigo,
-      medio_pago: this.form.tipoPago.codigo,
+      descuento_comision: Number(this.form.descuentoComision?.codigo),
+      medio_pago: Number(this.form.medioPago.codigo),
       pago_contado: Boolean(this.form.pagoContado),
-      razon_social: this.form.tipoPersoneria.codigo,
+      razon_social: Number(this.form.tipoPersoneria.codigo),
       //cliente_nuevo: false,
-      refacturaciones: this.form.tipoRefacturacion.codigo,
+      refacturaciones: Number(this.form.tipoRefacturacion.codigo),
       contratante: {
         id: Number(this.form.nroId),
         tipo_id: this.form.tipoId,
