@@ -15,7 +15,8 @@ export interface CotizacionFormValue {
   tipoRefacturacion?:Tipo|any;
   tipoPago?:Tipo|any;
   pagoContado?:boolean;
-  descuentoComision?:Tipo;
+  descuentoComision?:Tipo|any;
+  medioPago?:Tipo|any;
 
   tipoVehiculo: any;
   marca: any;
