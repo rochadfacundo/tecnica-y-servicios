@@ -19,7 +19,7 @@ const FEDERACION_PASSWORD = "qJP5.PtIJ6PAsI";
 const API_LOCALIDADES_URL_FEDPAT=
 "https://api-sandbox.fedpat.com.ar/v1/referencias/localidades/getLocalidades";
 
-const API_URL_TIPO_VEHICULO_FEDPAT =
+const API_VEHICULO_FEDPAT =
 "https://api-sandbox.fedpat.com.ar/v1/vehiculos/vehiculo";
 
 const API_URL_COTIZACION_FEDPAT=
@@ -27,6 +27,7 @@ const API_URL_COTIZACION_FEDPAT=
 
 const API_URL_GET_RASTREADORES=
 "https://api-sandbox.fedpat.com.ar/v1/referencias/rastreadoresVehiculares";
+
 
 export const getTokenFederacion = async () => {
   const tokenRef = db.doc("Federacion/token");
@@ -105,9 +106,28 @@ export const getRastreadores = async () => {
   }
 };
 
+export const getFranquiciaVigente =
+async (codInfoAuto: string, fecha: string) => {
+  try {
+    const token = await getTokenFederacion();
+    const headers = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    const response = await axios.get(
+      API_VEHICULO_FEDPAT+`/${codInfoAuto}/franquicia-vigente/${fecha}`,
+      { headers });
+    return response.data;
+  } catch (error: any) {
+    console.error(error.response?.data);
+    console.error(error.data);
+    return error.response?.data || error?.data;
+  }
+};
+
 export const getTiposPersoneria = async () => {
   try {
-    console.log("Voy a buscar los tipos de personas");
     const snapshot = await db.collection("tipoPersoneria").get();
     const tipos = snapshot.docs.map((doc) => doc.data());
     return tipos;
@@ -126,7 +146,7 @@ export const getTipoVehiculoFederacion = async (codInfoAuto: number) => {
     };
 
     const response = await axios.get(
-      `${API_URL_TIPO_VEHICULO_FEDPAT}/${codInfoAuto}/tipos`, { headers });
+      `${API_VEHICULO_FEDPAT}/${codInfoAuto}/tipos`, { headers });
     console.log("obtener tipo vehiculo ok");
     return response.data;
   } catch (error: any) {

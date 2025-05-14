@@ -142,6 +142,33 @@
     </div>
 
 
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check custom_check">
+          <input type="checkbox" id="cascoConosur" class="form-check-input" formControlName="cascoConosur">
+          <label for="cascoConosur" class="form-check-label">Casco conosur</label>
+      </div>
+
+      <div class="mb-3 col-md-6  form-check custom_check">
+        <input type="checkbox" id="grua" class="form-check-input" formControlName="grua">
+        <label for="grua" class="form-check-label">Grua</label>
+      </div>
+
+    </div>
+
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check custom_check">
+          <input type="checkbox" id="tallerExclusivo" class="form-check-input" formControlName="tallerExclusivo">
+          <label for="tallerExclusivo" class="form-check-label">Taller exclusivo</label>
+      </div>
+
+      <div class="mb-3 col-md-6">
+
+      </div>
+
+    </div>
+
+
 
     <div class="row" >
       <div class="mb-3 col-md-6">
@@ -200,7 +227,7 @@
   <label for="clausulaAjuste" class="form-label">Clausula de ajuste</label>
   <select id="clausulaAjuste" class="form-select" formControlName="clausulaAjuste">
     <option [ngValue]="null" disabled>Seleccione una clausula de ajuste</option>
-    <option *ngFor="let ajuste of clausulasAjuste" [value]="ajuste.id">{{ ajuste.nombre }}</option>
+    <option *ngFor="let ajuste of clausulasAjuste" [ngValue]="ajuste">{{ ajuste.descripcion }}</option>
   </select>
 </div>
 
