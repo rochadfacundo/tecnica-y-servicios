@@ -17,6 +17,9 @@ export interface CotizacionFormValue {
   pagoContado?:boolean;
   descuentoComision?:Tipo|any;
   medioPago?:Tipo|any;
+  cascoConosur?:boolean;
+  tallerExclusivo?:boolean;
+  grua?:boolean;
 
   tipoVehiculo: any;
   marca: any;

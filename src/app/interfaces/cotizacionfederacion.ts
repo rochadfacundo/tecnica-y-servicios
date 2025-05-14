@@ -52,7 +52,7 @@ export interface CoberturasFederacion {
   gastos_remediacion?: number;
   ajuste_automatico?: number;
   rc_ampliada?: number;
-  plan?: string;
+  plan?: string|null;
   franquicia?: number;
 }
 

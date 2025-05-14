@@ -12,13 +12,16 @@ export class FederacionService {
 
   constructor(private http: HttpClient) {
   }
-
     getToken(): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/token`);
     }
 
     getLocalidades(): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/localidades`);
+    }
+
+    getFranquicia(codInfoAuto: string, fecha: string): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/franquicia/${codInfoAuto}/${fecha}`);
     }
 
     getRastreadores(): Observable<any> {

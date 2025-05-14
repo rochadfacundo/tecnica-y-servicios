@@ -9,7 +9,7 @@ import { cotizarRus, getMarcas,
   getTokenRus } from "./rus-service";
 import { getGruposPorMarca, getModelosPorMarcaYGrupo, getMarcasInfoauto, getTokenInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
-import { cotizarFederacion, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
+import { cotizarFederacion, getFranquiciaVigente, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
 
 const app = express();
 // Habilitar CORS para todas las solicitudes
@@ -362,8 +362,22 @@ app.get("/federacion/localidades", async (req: Request, res: Response) => {
     const localidades = await getLocalidadesFederacion();
     return res.status(200).json(localidades);
   } catch (error) {
-    console.error("Error obteniendo localidades federacion:", error);
-    return res.status(500).json({ error: "Error al obtener localidades" });
+    console.error(error);
+    return res.status(500).json({ error: error });
+  }
+});
+
+// ✅ Obtener franquicia de Federacion patronal
+app.get("/federacion/franquicia/:codInfoAuto/:fecha", async (req: Request, res: Response) => {
+  try {
+    const { codInfoAuto, fecha } = req.params;
+    console.log(codInfoAuto);
+    console.log(fecha);
+    const resultado = await getFranquiciaVigente(codInfoAuto, fecha);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    console.error("Error obteniendo franquicia:", error);
+    return res.status(500).json({ error: error });
   }
 });
 
