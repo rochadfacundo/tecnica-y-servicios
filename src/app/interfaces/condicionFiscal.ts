@@ -1,11 +1,11 @@
-import { CondicionFiscalCodigo, CondicionIVA } from "../enums/condicion";
+import { CondicionFiscalCodigo } from "../enums/condicion";
 
 export interface CondicionFiscal
 {
   id:number;
-  condicion:CondicionFiscalCodigo;
   descripcion:string;
-  ivaMercantil?:number;
-  condicionIVARivadavia?:CondicionIVA;
+  cfFedRus:CondicionFiscalCodigo;
+  cfMercantil?:number;
+  cfRivadavia?:string;
 
 }

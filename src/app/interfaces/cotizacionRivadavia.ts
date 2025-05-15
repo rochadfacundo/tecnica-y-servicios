@@ -1,7 +1,7 @@
 
 // Interfaces
 
-import { CondicionIVA } from "../enums/condicion";
+import { EProvincia } from "./provincia";
 
 export interface DatosCotizacionRivadavia {
   nroProductor: string;
@@ -13,7 +13,7 @@ export interface DatosCotizacionRivadavia {
 }
 
 export interface DatoAsegurado {
-  condicionIVA: CondicionIVA;
+  condicionIVA: string|undefined;
   condicionIB: CondicionIB;
 
   nroMatricula?: string;
@@ -31,7 +31,7 @@ export interface DatoVehiculo {
   codigoVehiculo: string;
   modeloAnio: string;
   sumaAsegurada: number;
-  porcentajeAjuste: string;
+  porcentajeAjuste: number;
 }
 
 export interface DatoPoliza {
@@ -40,7 +40,7 @@ export interface DatoPoliza {
   fechaVigenciaHasta: string;
   cantidadCuotas: string;
   tipoFacturacion: TipoFacturacion;
-  provincia: Provincia;
+  provincia: EProvincia;
   codigoPostal: string;
   sumaAseguradaAccesorios: number;
   sumaAseguradaEquipaje: number;
@@ -97,32 +97,6 @@ export enum TipoFacturacion {
   TRIMESTRAL= 'TRIMESTRAL'
 }
 
-export enum Provincia {
-  BUENOS_AIRES = "BUENOS_AIRES",
-  CAPITAL_FEDERAL = "CAPITAL_FEDERAL",
-  CATAMARCA = "CATAMARCA",
-  CORDOBA = "CORDOBA",
-  CORRIENTES = "CORRIENTES",
-  CHACO = "CHACO",
-  CHUBUT = "CHUBUT",
-  ENTRE_RIOS = "ENTRE_RIOS",
-  FORMOSA = "FORMOSA",
-  TIERRA_DEL_FUEGO = "TIERRA_DEL_FUEGO",
-  JUJUY = "JUJUY",
-  LA_PAMPA = "LA_PAMPA",
-  LA_RIOJA = "LA_RIOJA",
-  MENDOZA = "MENDOZA",
-  MISIONES = "MISIONES",
-  NEUQUEN = "NEUQUEN",
-  RIO_NEGRO = "RIO_NEGRO",
-  SALTA = "SALTA",
-  SAN_JUAN = "SAN_JUAN",
-  SAN_LUIS = "SAN_LUIS",
-  SANTA_CRUZ = "SANTA_CRUZ",
-  SANTA_FE = "SANTA_FE",
-  SANTIAGO_DEL_ESTERO = "SANTIAGO_DEL_ESTERO",
-  TUCUMAN = "TUCUMAN"
-}
 
 export enum EstadoGNC {
   NO_POSEE_GNC = 'NO_POSEE_GNC',
