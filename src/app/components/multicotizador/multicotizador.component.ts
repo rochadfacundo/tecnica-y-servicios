@@ -10,15 +10,16 @@ import { ChangeDetectorRef } from '@angular/core';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
-import { CondicionIB, DatosCotizacionRivadavia, Provincia, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import { CondicionIB, DatosCotizacionRivadavia, EstadoGNC, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
 import { CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
-import { CondicionFiscalCodigo, CondicionIVA } from '../../enums/condicion';
+import { CondicionFiscalCodigo } from '../../enums/condicion';
 import { Tipo, TipoId, TipoPersoneria } from '../../interfaces/tipoPersoneria';
 import { Cobertura } from '../../interfaces/cobertura';
+import { EProvincia, Provincia } from '../../interfaces/provincia';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -36,7 +37,7 @@ export class MulticotizadorComponent implements OnInit {
   brand_idSelected:number=0;
   group_idSelected:number=0;
   anios: number[] = [];
-
+  //fed
   tiposPersoneria: TipoPersoneria[]=[];
   tipoPersona!: TipoPersoneria;
   tipoVehiculo:string="";
@@ -46,7 +47,10 @@ export class MulticotizadorComponent implements OnInit {
   descuentoComision:Tipo[]=[];
   mediosPago:Tipo[]=[];
   coberturas:Cobertura[]=[];
+  franquicias:Tipo[]=[];
 
+  //riv
+  provincias:Provincia[]=[];
   codigoTipoInteres:string='';
   codModelo:number=0;
   gnc:boolean=false;
@@ -126,15 +130,15 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
   public readonly condicionesFiscales: CondicionFiscal[] = [
-    { id: 1, condicion: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', ivaMercantil: 5 },
-    { id: 2, condicion: CondicionFiscalCodigo.EX, descripcion: 'Exento' },
-    { id: 3, condicion: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M' },
-    { id: 4, condicion: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente' },
-    { id: 5, condicion: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto' },
-    { id: 6, condicion: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo' },
-    { id: 7, condicion: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto' },
-    { id: 8, condicion: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal' },
-    { id: 9, condicion: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior' }
+    { id: 1, cfFedRus: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', cfMercantil: 5, cfRivadavia:'CONSUMIDOR_FINAL'},
+    { id: 2, cfFedRus: CondicionFiscalCodigo.EX, descripcion: 'Exento', cfRivadavia:'EXCENTO'},
+    { id: 3, cfFedRus: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 4, cfFedRus: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 5, cfFedRus: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 6, cfFedRus: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo', cfRivadavia:'MONOTRIBUTISTA'},
+    { id: 7, cfFedRus: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto', cfRivadavia:'NO_CATEGORIZADO'},
+    { id: 8, cfFedRus: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal', cfRivadavia:'NO_CATEGORIZADO'},
+    { id: 9, cfFedRus: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior', cfRivadavia:'CONSUMIDOR_FINAL'}
   ];
 
 
@@ -240,19 +244,19 @@ export class MulticotizadorComponent implements OnInit {
 
 
   private initForm(): void {
-    this.cotizacionForm = this.fb.group<CotizacionFormValue>({
+    this.cotizacionForm = this.fb.group({
       alarma: [true],
       anio: [{ value: null, disabled: true }, Validators.required],
       apellido: [""],
       cascoConosur:false,
       clausulaAjuste: [{ value: null }],
-      codigoUso: [{ value: null, disabled: true }, Validators.required],
       codigoTipoInteres: [{ value: null }, Validators.required],
-      condicionFiscal: [{ value: null }, Validators.required],
+      condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
       controlSatelital: [false],
       cpLocalidadGuarda: [{ value: null }, Validators.required],
       cuotas: [{ value: null }, Validators.required],
       descuentoComision:0,
+      franquicia:[],
       gnc: false,
       grua:false,
       marca: [{ value: null, disabled: true }, Validators.required],
@@ -261,10 +265,10 @@ export class MulticotizadorComponent implements OnInit {
       nombre: [""],
       nroId: [""],
       pagoContado:false,
-      rastreador: [],
+      provincia: null,
+      rastreador: false,
       tallerExclusivo:false,
       tipoId: [{ value: null }],
-      tipoPago:[],
       tipoPersoneria: [{ value: "" }],
       tipoRefacturacion:[],
       tipoVigencia: [{ value: null }, Validators.required],
@@ -302,8 +306,34 @@ export class MulticotizadorComponent implements OnInit {
       {codigo:2,descripcion:'Debito/Credito'},
     ];
 
+    this.provincias=[
+      {id:1,descripcion:'Buenos Aires', provinciaRiv:EProvincia.BUENOS_AIRES},
+      {id:2,descripcion:'Capital Federal', provinciaRiv:EProvincia.CAPITAL_FEDERAL},
+      {id:3,descripcion:'Catamarca', provinciaRiv:EProvincia.CATAMARCA},
+      {id:4,descripcion:'Chaco', provinciaRiv:EProvincia.CHACO},
+      {id:5,descripcion:'Chubut', provinciaRiv:EProvincia.CHUBUT},
+      {id:6,descripcion:'Cordoba', provinciaRiv:EProvincia.CORDOBA},
+      {id:7,descripcion:'Corrientes', provinciaRiv:EProvincia.CORRIENTES},
+      {id:8,descripcion:'Entre Rios', provinciaRiv:EProvincia.ENTRE_RIOS},
+      {id:9,descripcion:'Formosa', provinciaRiv:EProvincia.FORMOSA},
+      {id:10,descripcion:'Jujuy', provinciaRiv:EProvincia.JUJUY},
+      {id:11,descripcion:'La Pampa', provinciaRiv:EProvincia.LA_PAMPA},
+      {id:12,descripcion:'La Rioja', provinciaRiv:EProvincia.LA_RIOJA},
+      {id:13,descripcion:'Mendoza', provinciaRiv:EProvincia.MENDOZA},
+      {id:14,descripcion:'Misiones', provinciaRiv:EProvincia.MISIONES},
+      {id:15,descripcion:'Neuquen', provinciaRiv:EProvincia.NEUQUEN},
+      {id:16,descripcion:'Rio Negro', provinciaRiv:EProvincia.RIO_NEGRO},
+      {id:17,descripcion:'Salta', provinciaRiv:EProvincia.SALTA},
+      {id:18,descripcion:'San Juan', provinciaRiv:EProvincia.SAN_JUAN},
+      {id:19,descripcion:'San Luis', provinciaRiv:EProvincia.SAN_LUIS},
+      {id:20,descripcion:'Santa Cruz', provinciaRiv:EProvincia.SANTA_CRUZ},
+      {id:21,descripcion:'Santa Fe', provinciaRiv:EProvincia.SANTA_FE},
+      {id:22,descripcion:'Santiago Del Estero', provinciaRiv:EProvincia.SANTIAGO_DEL_ESTERO},
+      {id:23,descripcion:'Tierra Del Fuego', provinciaRiv:EProvincia.TIERRA_DEL_FUEGO},
+      {id:24,descripcion:'Tucuman', provinciaRiv:EProvincia.TUCUMAN},
+    ];
     this.coberturas=[
-      {codigo:1,descripcion:'Todas las coberturas',valor:null},
+      {codigo:1,descripcion:'Todas las coberturas',valor:'N'},
       {codigo:2,descripcion:'A-RESP. CIVIL Obligatoria',valor:'A'},
       {codigo:3,descripcion:'A4-RESP.CIVIL LIMITE MAXIMO UNICA',valor:'A4'},
       {codigo:4,descripcion:'B-RC.PERD TOTAL Accid. Inc. y Robo',valor:'B'},
@@ -340,25 +370,6 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
-
-  getloadedForm(){
-    return this.cotizacionForm.value;
-  }
-
-  // Función para formatear la fecha en 'yyyy-MM-dd'
-  private formatDateSinceYear(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
- // Función para formatear la fecha en 'dd-MM-yyyy'
-  private formatDateSinceDay(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${day}-${month}-${year}`;
-  }
 
   //anios
   private loadYears(): void {
@@ -499,7 +510,7 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
 
-    //Para traer codigo de Rivadavia.
+    //Para traer codigo de Rivadavia y franquicia federacion.
     this.cotizacionForm.get('version')?.valueChanges.subscribe((version) => {
       if (version) {
       console.log(version);
@@ -509,7 +520,7 @@ export class MulticotizadorComponent implements OnInit {
 
       this.s_fedPat.getFranquicia(String(this.codigoInfoAuto),this.formatDateSinceDay(new Date())).subscribe({
         next: (res) => {
-          console.log(res);
+          this.franquicias=res;
         },
         error: (err) => {
           console.log(err);
@@ -614,10 +625,7 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
-
   //RIO URUGUAY
-
-
   cotizarRUS(): void {
 
     const formValues = this.cotizacionForm.value;
@@ -639,7 +647,7 @@ export class MulticotizadorComponent implements OnInit {
       codigoTipoInteres: codigoTipo,
       cuotas: Number(formValues.cuotas), //solo permite hasta 3
       ajusteAutomatico:Number(formValues.clausulaAjuste.codigo),
-      condicionFiscal: formValues.condicionFiscal.condicion,
+      condicionFiscal: formValues.condicionFiscal.cfFedRus,
       tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
       vehiculos: vehiculo,
       vigenciaDesde: formValues.vigenciaDesde,
@@ -678,8 +686,6 @@ export class MulticotizadorComponent implements OnInit {
 
 
   //MERCANTIL ANDINA
-
-
   cotizarMercantil()
   {
     const formValues = this.cotizacionForm.value;
@@ -762,34 +768,69 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+
+  // Función para formatear la fecha en 'yyyy-MM-dd'
+  private formatDateSinceYear(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+ // Función para formatear la fecha en 'dd-MM-yyyy'
+  private formatDateSinceDay(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${day}-${month}-${year}`;
+  }
+
+  //Rivadavia
   cotizarRivadavia()
   {
+    //formatDateSinceYear
+    const gnc= this.form.gnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
+    const personaJuridica =
+    this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
+
     const cotizacion: DatosCotizacionRivadavia = {
       nroProductor: "18922",
       claveProductor: "THLV2582",
       datoAsegurado: {
-        condicionIVA: CondicionIVA.CONSUMIDOR_FINAL,
-        condicionIB: CondicionIB.CONSUMIDOR_FINAL,
-        tipoDocumento: TipoDocumento.DNI,
-        nroDocumento: "12345678"
+        tipoDocumento: this.form.tipoId,
+        condicionIVA: this.form.condicionFiscal.cfRivadavia,
+        condicionIB: CondicionIB.CONSUMIDOR_FINAL, //lo agrego?
+        nroDocumento: this.form.nroId,
+        //cuil: "",
+        //cuit: "asd",
+        //fechaNacimiento?: string;
+        personaJuridica:personaJuridica,
+        //  formaPago?: FormaPago;
       },
       datoVehiculo: {
         codigoInfoAuto: String(this.codigoInfoAuto),
         codigoVehiculo: String(this.codigoRivadavia),
         modeloAnio: String(this.anio),
         sumaAsegurada: Number(this.sumaRivadavia),
-        porcentajeAjuste: "5"
+        porcentajeAjuste: Number(this.form.clausulaAjuste.codigo),
       },
       datoPoliza: {
         nroPoliza: "12322",
-        fechaVigenciaDesde: "2025-05-15",
-        fechaVigenciaHasta: "2025-06-06",
-        cantidadCuotas: "1",
-        tipoFacturacion: TipoFacturacion.MENSUAL,
-        provincia: Provincia.BUENOS_AIRES,
-        codigoPostal: "1872",
-        sumaAseguradaAccesorios: 0,
-        sumaAseguradaEquipaje: 0
+        fechaVigenciaDesde: this.form.vigenciaDesde,
+        fechaVigenciaHasta: this.form.vigenciaHasta,
+        cantidadCuotas: String(this.form.cuotas),
+        tipoFacturacion: TipoFacturacion.MENSUAL, //tiene mas que fedpat.
+        provincia: this.form.provincia.provinciaRiv,
+        codigoPostal: this.form.cpLocalidadGuarda,
+        sumaAseguradaAccesorios: 0, //y
+        sumaAseguradaEquipaje: 0,    //estos?
+        gnc: gnc,
+          //cantidadAsientos?: string;
+          //alarmaSatelital?: AlarmaSatelital;
+          //subrogado?: boolean;
+          //coeficienteRC?: number;
+          //coeficienteCasco?: number;
+          //porcentajeBonificacion?: number;
+          //aniosSinSiniestros?: AniosSinSiniestros;
       },
       polizasVinculadas: {
         accidentePasajeros: "s",
@@ -799,6 +840,8 @@ export class MulticotizadorComponent implements OnInit {
         vidaIndividual: "s"
       }
     };
+
+    console.log(cotizacion);
 
     this.s_riv.cotizarRivadavia(cotizacion).subscribe({
       next: (res) => {
@@ -812,6 +855,7 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+  //Federacion patronal
   cotizarFederacion()
   {
     let rastreador= this.form.rastreador? Number(this.form.rastreador.codigo): 99;
@@ -836,7 +880,7 @@ export class MulticotizadorComponent implements OnInit {
        // cuit: '20352928587',
         nombre: this.form.nombre,
         apellido: this.form.apellido,
-        condicion_iva: this.form.condicionFiscal.condicion,
+        condicion_iva: this.form.condicionFiscal.cfFedRus,
         //localidad: 0,
         //matricula: '1125554'
       },
@@ -856,9 +900,11 @@ export class MulticotizadorComponent implements OnInit {
         rc_ampliada: 99, //diferencia entre ajuste automatico y esto
         interasegurado: true, //siempre true
         rc_conosur:1,
+        grua:Boolean(this.form.grua),
+        taller_exclusivo:Boolean(this.form.tallerExclusivo),
         casco_conosur:true,
-        plan: null,
-        franquicia: 99
+        plan: "null",
+        franquicia: Number(this.form.franquicia.codigo),
       },/*
       producto_modular: {
         cant_modulos: 0,
@@ -942,12 +988,10 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizar()
   {
+    this.form = this.cotizacionForm.getRawValue();
+    this.cotizarRivadavia();
 
-    this.form = this.getloadedForm();
-
-    //this.cotizarRivadavia();
-
-    this.cotizarFederacion();
+    //this.cotizarFederacion();
     // this.cotizarRUS();
 
     //this.cotizarMercantil();

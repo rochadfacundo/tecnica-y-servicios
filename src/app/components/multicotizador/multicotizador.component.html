@@ -163,7 +163,10 @@
       </div>
 
       <div class="mb-3 col-md-6">
-
+        <label for="franquicia" class="form-label">Franquicia</label>
+        <select id="franquicia" class="form-select" formControlName="franquicia">
+          <option *ngFor="let franquicia of this.franquicias" [ngValue]="franquicia">{{ franquicia.descripcion }}</option>
+        </select>
       </div>
 
     </div>
@@ -238,10 +241,20 @@
       <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
       <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
         <option *ngFor="let condicion of condicionesFiscales" [ngValue]="condicion">
-          {{ condicion.condicion }} -   {{ condicion.descripcion }}
+          {{ condicion.cfFedRus }} -   {{ condicion.descripcion }}
         </option>
       </select>
     </div>
+
+    <!-- Provincia -->
+    <div class="mb-3">
+      <label for="provincia" class="form-label">Provincia</label>
+      <select id="provincia" class="form-select" formControlName="provincia">
+        <option *ngFor="let provincia of provincias" [ngValue]="provincia">
+         {{ provincia.descripcion }}
+        </option>
+      </select>
+  </div>
 
     <!-- Código Postal -->
     <div class="mb-3">
