@@ -128,11 +128,11 @@
 
     <div class="row" >
       <div class="mb-3 col-md-6 form-check custom_check">
-          <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
-          <label for="controlSatelital" class="form-check-label">¿Tiene rastreador?</label>
+          <input type="checkbox" id="tieneRastreador" class="form-check-input" formControlName="tieneRastreador">
+          <label for="tieneRastreador" class="form-check-label">¿Tiene rastreador?</label>
       </div>
 
-      <div class="mb-3 col-md-6"  *ngIf="cotizacionForm.get('controlSatelital')?.value">
+      <div class="mb-3 col-md-6"  *ngIf="cotizacionForm.get('tieneRastreador')?.value">
         <label for="rastreador" class="form-label">Rastreadores</label>
         <select id="rastreador" class="form-select" formControlName="rastreador">
           <option *ngFor="let rastreador of this.tiposDeRastreadores" [ngValue]="rastreador">{{ rastreador.descripcion }}</option>
@@ -241,7 +241,7 @@
       <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
       <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
         <option *ngFor="let condicion of condicionesFiscales" [ngValue]="condicion">
-          {{ condicion.cfFedRus }} -   {{ condicion.descripcion }}
+          {{ condicion.cfFedRusATM }} -   {{ condicion.descripcion }}
         </option>
       </select>
     </div>
@@ -261,6 +261,12 @@
       <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
       <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
     </div>
+
+      <!-- Control satelital -->
+      <div class="mb-3  form-check custom_check">
+        <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
+        <label for="controlSatelital" class="form-check-label">Control satelital?</label>
+      </div>
 
     <!-- Vigencia Desde -->
     <div class="mb-3">

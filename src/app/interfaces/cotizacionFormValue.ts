@@ -1,19 +1,20 @@
 import { FormControl } from "@angular/forms";
 import { CondicionFiscal } from "./condicionFiscal";
-import { Tipo, TipoPersoneria } from "./tipoPersoneria";
+import { Tipo, TipoPersoneria, TipoRefacturacion } from "./tipos";
 import { Provincia } from "./provincia";
 
 export interface CotizacionFormValue {
   codigoTipoInteres: any;
   //federacion
-  tipoPersoneria:TipoPersoneria |any;
+  tipoPersoneria:TipoPersoneria;
   nombre?: any
   apellido?:any;
   nroId?:any;
   tipoId?:any;
   alarma?:any;
-  rastreador?:any;
-  tipoRefacturacion?:Tipo|any;
+  tieneRastreador:boolean;
+  rastreador?:Tipo;
+  tipoRefacturacion?:TipoRefacturacion;
   tipoPago?:Tipo|any;
   pagoContado?:boolean;
   descuentoComision?:Tipo|any;
@@ -37,8 +38,10 @@ export interface CotizacionFormValue {
   clausulaAjuste: Tipo;
   condicionFiscal: CondicionFiscal;
   cpLocalidadGuarda: any;
+
+  //rio uruguay
   controlSatelital: any;
-  gnc: any;
+  gnc: boolean;
   vigenciaDesde: any;
   vigenciaHasta: any;
 }

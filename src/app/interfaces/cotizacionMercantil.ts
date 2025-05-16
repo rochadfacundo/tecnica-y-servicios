@@ -1,6 +1,6 @@
 export interface CotizacionMercantil {
   localidad: CotizacionLocalidad;
-  vehiculo: CotizacionVehiculo | CotizacionVehiculoMoto | null;
+  vehiculo: CotizacionVehiculo | CotizacionVehiculoMoto| null;
   productor: Productor;
   tipo?:string;
   canal?: number;
