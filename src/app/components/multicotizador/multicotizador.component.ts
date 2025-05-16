@@ -17,7 +17,7 @@ import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
 import { CondicionFiscalCodigo } from '../../enums/condicion';
-import { Tipo, TipoId, TipoPersoneria } from '../../interfaces/tipoPersoneria';
+import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
 @Component({
@@ -42,8 +42,8 @@ export class MulticotizadorComponent implements OnInit {
   tipoPersona!: TipoPersoneria;
   tipoVehiculo:string="";
   tiposId:TipoId[]=[];
-  tiposDeRastreadores:any[]=[];
-  tiposDeRefacturacion:Tipo[]=[];
+  tiposDeRastreadores:Tipo[]=[];
+  tiposDeRefacturacion:TipoRefacturacion[]=[];
   descuentoComision:Tipo[]=[];
   mediosPago:Tipo[]=[];
   coberturas:Cobertura[]=[];
@@ -130,15 +130,15 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
   public readonly condicionesFiscales: CondicionFiscal[] = [
-    { id: 1, cfFedRus: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', cfMercantil: 5, cfRivadavia:'CONSUMIDOR_FINAL'},
-    { id: 2, cfFedRus: CondicionFiscalCodigo.EX, descripcion: 'Exento', cfRivadavia:'EXCENTO'},
-    { id: 3, cfFedRus: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 4, cfFedRus: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 5, cfFedRus: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 6, cfFedRus: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo', cfRivadavia:'MONOTRIBUTISTA'},
-    { id: 7, cfFedRus: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto', cfRivadavia:'NO_CATEGORIZADO'},
-    { id: 8, cfFedRus: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal', cfRivadavia:'NO_CATEGORIZADO'},
-    { id: 9, cfFedRus: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior', cfRivadavia:'CONSUMIDOR_FINAL'}
+    { id: 1, cfFedRusATM: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', cfMercantil: 5, cfRivadavia:'CONSUMIDOR_FINAL'},
+    { id: 2, cfFedRusATM: CondicionFiscalCodigo.EX, descripcion: 'Exento', cfRivadavia:'EXCENTO'},
+    { id: 3, cfFedRusATM: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 4, cfFedRusATM: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 5, cfFedRusATM: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
+    { id: 6, cfFedRusATM: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo', cfRivadavia:'MONOTRIBUTISTA'},
+    { id: 7, cfFedRusATM: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto', cfRivadavia:'NO_CATEGORIZADO'},
+    { id: 8, cfFedRusATM: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal', cfRivadavia:'NO_CATEGORIZADO'},
+    { id: 9, cfFedRusATM: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior', cfRivadavia:'CONSUMIDOR_FINAL'}
   ];
 
 
@@ -237,10 +237,9 @@ export class MulticotizadorComponent implements OnInit {
     return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
   }
 
-  private getSiNo(id: number): string {
-    return id === 1 ? 'SI' : 'NO';
+  private getSiNo(value: boolean): string {
+    return value === true ? 'SI' : 'NO';
   }
-
 
 
   private initForm(): void {
@@ -252,7 +251,7 @@ export class MulticotizadorComponent implements OnInit {
       clausulaAjuste: [{ value: null }],
       codigoTipoInteres: [{ value: null }, Validators.required],
       condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
-      controlSatelital: [false],
+      controlSatelital: false,
       cpLocalidadGuarda: [{ value: null }, Validators.required],
       cuotas: [{ value: null }, Validators.required],
       descuentoComision:0,
@@ -268,6 +267,7 @@ export class MulticotizadorComponent implements OnInit {
       provincia: null,
       rastreador: false,
       tallerExclusivo:false,
+      tieneRastreador:false,
       tipoId: [{ value: null }],
       tipoPersoneria: [{ value: "" }],
       tipoRefacturacion:[],
@@ -287,8 +287,8 @@ export class MulticotizadorComponent implements OnInit {
     ];
 
     this.tiposDeRefacturacion=[
-    {codigo:2,descripcion:'SEMESTRAL'},
-    {codigo:12,descripcion:'MENSUAL'},
+    {codigo:2,descripcion:'SEMESTRAL', mercantilPeriodo:6},
+    {codigo:12,descripcion:'MENSUAL', mercantilPeriodo:1},
     ];
 
 
@@ -610,7 +610,7 @@ export class MulticotizadorComponent implements OnInit {
 
     });
 
-    this.cotizacionForm.get('controlSatelital')?.valueChanges.subscribe((rastreador) => {
+    this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe((rastreador) => {
 
       if (rastreador) {
         this.s_fedPat.getRastreadores().subscribe((rastreadores) => {
@@ -628,30 +628,31 @@ export class MulticotizadorComponent implements OnInit {
   //RIO URUGUAY
   cotizarRUS(): void {
 
-    const formValues = this.cotizacionForm.value;
-    let codigoTipo= this.getTipo(formValues.tipoVehiculo);
-    const USO:TipoDeUso = formValues.uso;
+
+    let codigoTipo= this.getTipo(this.form.tipoVehiculo);
+    const USO:TipoDeUso = this.form.uso;
 
     const vehiculo: VehiculosRus[]=[{
-        anio: String(formValues.anio),
-        controlSatelital: this.getSiNo(formValues.controlSatelital),
-        cpLocalidadGuarda:Number(formValues.cpLocalidadGuarda),
-        gnc: this.getSiNo(formValues.gnc),
+        anio: String(this.form.anio),
+        controlSatelital: this.getSiNo(this.form.controlSatelital),
+        cpLocalidadGuarda:Number(this.form.cpLocalidadGuarda),
+        gnc: this.getSiNo(this.form.gnc),
         codia:this.getCodigoInfoAuto(),
-        uso: USO.uso
+        uso: USO.uso,
+        rastreoACargoRUS: this.getSiNo(this.form.tieneRastreador),
     }];
 
     const cotizacionData: CotizacionRioUruguay = {
       codigoProductor: 4504,
       codigoSolicitante: 4504,
       codigoTipoInteres: codigoTipo,
-      cuotas: Number(formValues.cuotas), //solo permite hasta 3
-      ajusteAutomatico:Number(formValues.clausulaAjuste.codigo),
-      condicionFiscal: formValues.condicionFiscal.cfFedRus,
-      tipoVigencia: this.getTiposVigencia(formValues.tipoVigencia),
+      cuotas: Number(this.form.cuotas), //solo permite hasta 3
+      ajusteAutomatico:Number(this.form.clausulaAjuste.codigo),
+      condicionFiscal: this.form.condicionFiscal.cfFedRusATM,
+      tipoVigencia: this.getTiposVigencia(this.form.tipoVigencia),
       vehiculos: vehiculo,
-      vigenciaDesde: formValues.vigenciaDesde,
-      vigenciaHasta: formValues.vigenciaHasta,
+      vigenciaDesde: this.form.vigenciaDesde,
+      vigenciaHasta: this.form.vigenciaHasta,
       vigenciaPolizaId: 65 //id de autos
     };
 
@@ -667,8 +668,6 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionError='';
         this.cotizacionesRus = response.dtoList;
 
-
-    //console.log('Cotizaciones procesadas:', this.cotizacionesRus);
       },
       error: (error) => {
         this.cotizacion = false;
@@ -688,38 +687,28 @@ export class MulticotizadorComponent implements OnInit {
   //MERCANTIL ANDINA
   cotizarMercantil()
   {
-    const formValues = this.cotizacionForm.value;
-
-    const TIPO_VEHICULO = this.getTipo(formValues.tipoVehiculo);
-    const ANIO = Number(formValues.anio);
-    const USO: TipoDeUso =  formValues.uso;
-    const CUOTAS = Number(formValues.cuotas);
-    const GNC = this.getSiNo(formValues.gnc);
+    const TIPO_VEHICULO = this.getTipo(this.form.tipoVehiculo);
+    const ANIO = Number(this.form.anio);
+    const USO: TipoDeUso =  this.form.uso;
     const PRODUCTOR:Productor={ id: 86322 };
     const LOCALIDAD:CotizacionLocalidad=
-    { codigo_postal: Number(formValues.cpLocalidadGuarda)
-      ,id:10407
+    { codigo_postal: Number(this.form.cpLocalidadGuarda),
+      id:10407,
+      provincia: this.form.provincia.descripcion
     };
-
-
-    if(GNC=='SI')
-    {
-      this.gnc=true;
-    }else
-    {
-      this.gnc=false;
-    }
-
+    const RASTREADOR=this.form.rastreador ? 1 : 0;
 
 
     let cotizacionData: CotizacionMercantil = {
-      canal: 78,
+      canal: 78, //canal autos
       localidad: LOCALIDAD,
       vehiculo:null,
       productor: PRODUCTOR,
-      cuotas:CUOTAS,
+      cuotas:Number(this.form.cuotas),
       tipo: TIPO_VEHICULO,//este lo agregue yo para validar en el backend el endpoint
-   //   comision: nose,
+      periodo: Number(this.form.tipoRefacturacion?.mercantilPeriodo),
+      iva: Number(this.form.condicionFiscal.cfMercantil),
+      //   comision: nose,
    //   bonificacion: nose,
    //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
       desglose:true     //desglose de montos totales y cuotas
@@ -731,10 +720,10 @@ export class MulticotizadorComponent implements OnInit {
         infoauto: this.getCodigoInfoAuto(),
         aniofab: ANIO,
         uso: USO.id,
-        gnc: this.gnc,
-        rastreo: 0 };
+        gnc: this.form.gnc,
+        rastreo: RASTREADOR };
        cotizacionData.vehiculo=MOTOVEHICULO;
-       cotizacionData.canal=81;
+       cotizacionData.canal=81; //canal motos
 
     }else
     {
@@ -742,8 +731,8 @@ export class MulticotizadorComponent implements OnInit {
         infoauto: this.getCodigoInfoAuto(),
         anio: ANIO,
         uso: USO.id,
-        gnc: this.gnc,
-        rastreo: 0 };
+        gnc: this.form.gnc,
+        rastreo: RASTREADOR };
         cotizacionData.vehiculo=VEHICULO;
     }
 
@@ -792,6 +781,7 @@ export class MulticotizadorComponent implements OnInit {
     const personaJuridica =
     this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
+    const formaPago= this.form.medioPago
     const cotizacion: DatosCotizacionRivadavia = {
       nroProductor: "18922",
       claveProductor: "THLV2582",
@@ -873,14 +863,14 @@ export class MulticotizadorComponent implements OnInit {
       pago_contado: Boolean(this.form.pagoContado),
       razon_social: Number(this.form.tipoPersoneria.codigo),
       //cliente_nuevo: false,
-      refacturaciones: Number(this.form.tipoRefacturacion.codigo),
+      refacturaciones: Number(this.form.tipoRefacturacion?.codigo),
       contratante: {
         id: Number(this.form.nroId),
         tipo_id: this.form.tipoId,
        // cuit: '20352928587',
         nombre: this.form.nombre,
         apellido: this.form.apellido,
-        condicion_iva: this.form.condicionFiscal.cfFedRus,
+        condicion_iva: this.form.condicionFiscal.cfFedRusATM,
         //localidad: 0,
         //matricula: '1125554'
       },
@@ -929,6 +919,14 @@ export class MulticotizadorComponent implements OnInit {
   }
 
   cotizarATM(){
+    const fechaOriginal = this.form.vigenciaDesde;
+    const [anio, mes, dia] = fechaOriginal.split("-");
+    const fechaFormatoATM = `${dia}${mes}${anio}`;
+    const alarma= this.form.alarma ? 1: 0;
+
+    const persona =
+    this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
+
     const xml = `
     <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <soapenv:Body>
@@ -938,30 +936,25 @@ export class MulticotizadorComponent implements OnInit {
        <usuario>
          <usa>TECYSEG</usa>
          <pass>TECYSEG%24</pass>
-         <fecha>05062025</fecha>
+         <fecha>${fechaFormatoATM}</fecha>
          <vendedor>0956109561</vendedor>
          <origen>WS</origen>
          <plan>02</plan>
        </usuario>
        <asegurado>
-         <persona>F</persona>
-         <iva>CF</iva>
+         <persona>${persona}</persona>
+         <iva>${this.form.condicionFiscal.cfFedRusATM}</iva>
          <cupondscto></cupondscto>
-         <infomotoclub>N</infomotoclub>
          <bonificacion></bonificacion>
        </asegurado>
        <bien>
          <cerokm>N</cerokm>
          <rastreo>N</rastreo>
          <micrograbado>N</micrograbado>
-         <alarma>0</alarma>
-         <marcaalarma></marcaalarma>
-         <esventa>A</esventa>
+         <alarma>${alarma}</alarma>
          <ajuste></ajuste>
-         <codpostal>1005</codpostal>
-         <accesorios/>
-         <marca>18</marca>
-         <modelo>505</modelo>
+         <codpostal>${this.form.cpLocalidadGuarda}</codpostal>
+         <cod_infoauto>${this.codigoInfoAuto}</cod_infoauto>
          <anofab>${this.anio}</anofab>
          <seccion>3</seccion>
          <uso>0101</uso>
@@ -989,10 +982,12 @@ export class MulticotizadorComponent implements OnInit {
   cotizar()
   {
     this.form = this.cotizacionForm.getRawValue();
-    this.cotizarRivadavia();
+    //this.cotizarRivadavia();
 
     //this.cotizarFederacion();
     // this.cotizarRUS();
+
+    this.cotizarATM();
 
     //this.cotizarMercantil();
   }

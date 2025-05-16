@@ -12,6 +12,13 @@ export interface Tipo{
 
 }
 
+export interface TipoRefacturacion{
+
+  codigo:number;
+  descripcion:string;
+  mercantilPeriodo?:number;
+}
+
 export interface TipoId{
 
   	id?:number;

@@ -4,7 +4,7 @@ export interface CondicionFiscal
 {
   id:number;
   descripcion:string;
-  cfFedRus:CondicionFiscalCodigo;
+  cfFedRusATM:CondicionFiscalCodigo;
   cfMercantil?:number;
   cfRivadavia?:string;
 
