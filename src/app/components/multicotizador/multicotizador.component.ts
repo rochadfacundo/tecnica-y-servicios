@@ -124,8 +124,8 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
   public readonly tiposVigencia = [
-    { id: 1, opcion: 'TRIMESTRAL' },
-    { id: 2, opcion: 'SEMESTRAL' },
+    { id: 1, opcion: 'TRIMESTRAL  (valido solo Rio Uruguay)' },
+    { id: 2, opcion: 'SEMESTRAL - (valido solo Rio Uruguay)' },
     { id: 3, opcion: 'ANUAL' }
   ];
 
@@ -287,8 +287,11 @@ export class MulticotizadorComponent implements OnInit {
     ];
 
     this.tiposDeRefacturacion=[
-    {codigo:2,descripcion:'SEMESTRAL', mercantilPeriodo:6},
-    {codigo:12,descripcion:'MENSUAL', mercantilPeriodo:1},
+    {codigo:2,descripcion:'SEMESTRAL', mercantilPeriodo:0}, //atm no MA tamp
+    {codigo:12,descripcion:'MENSUAL', mercantilPeriodo:1}, //todas
+    {codigo:0,descripcion:'CUATRIMESTRAL', mercantilPeriodo:4}, //SOLO RIV Y MA
+    {codigo:0,descripcion:'TRIMESTRAL', mercantilPeriodo:0},  // ni MA ni fed
+    {codigo:0,descripcion:'BIMESTRAL', mercantilPeriodo:0}, //SOLO ATM
     ];
 
 
@@ -794,7 +797,7 @@ export class MulticotizadorComponent implements OnInit {
         //cuit: "asd",
         //fechaNacimiento?: string;
         personaJuridica:personaJuridica,
-        //  formaPago?: FormaPago;
+        //  formaPago?: FormaPago;  AGREGAR
       },
       datoVehiculo: {
         codigoInfoAuto: String(this.codigoInfoAuto),
@@ -817,17 +820,17 @@ export class MulticotizadorComponent implements OnInit {
           //cantidadAsientos?: string;
           //alarmaSatelital?: AlarmaSatelital;
           //subrogado?: boolean;
-          //coeficienteRC?: number;
-          //coeficienteCasco?: number;
-          //porcentajeBonificacion?: number;
+          //coeficienteRC?: number;    ESTOS SON DECUENTOS agregarlo con POLIZAS VINCULADAS
+          //coeficienteCasco?: number;  ESTOS SON DESCUENTOS agregarlo con POLIZAS VINCULADAS
+          //porcentajeBonificacion?: number;   DESCUENTOS PERO DESCONTANDO COMISION
           //aniosSinSiniestros?: AniosSinSiniestros;
       },
       polizasVinculadas: {
-        accidentePasajeros: "s",
-        accidentePersonales: "s",
-        combinadoFamiliar: "s",
-        incendio: "s",
-        vidaIndividual: "s"
+        accidentePasajeros: "n",
+        accidentePersonales: "n",
+        combinadoFamiliar: "n",
+        incendio: "n",
+        vidaIndividual: "n"
       }
     };
 
@@ -886,7 +889,7 @@ export class MulticotizadorComponent implements OnInit {
         localidad_de_guarda: Number(this.codigoPostalFederacion)
       },
       coberturas: {
-        ajuste_automatico: 99,
+        ajuste_automatico: 99, //en mensuales hasta 10,
         rc_ampliada: 99, //diferencia entre ajuste automatico y esto
         interasegurado: true, //siempre true
         rc_conosur:1,
@@ -982,14 +985,14 @@ export class MulticotizadorComponent implements OnInit {
   cotizar()
   {
     this.form = this.cotizacionForm.getRawValue();
-    //this.cotizarRivadavia();
+    this.cotizarRivadavia();
 
-    //this.cotizarFederacion();
+    this.cotizarFederacion();
     // this.cotizarRUS();
 
     this.cotizarATM();
 
-    //this.cotizarMercantil();
+    this.cotizarMercantil();
   }
 
 
