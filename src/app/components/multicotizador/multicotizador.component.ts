@@ -10,7 +10,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
-import { CondicionIB, DatosCotizacionRivadavia, EstadoGNC, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import { CondicionIB, DatosCotizacionRivadavia, EstadoGNC, FormaPago, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
 import { CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
@@ -20,10 +20,11 @@ import { CondicionFiscalCodigo } from '../../enums/condicion';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
+import { NgSelectModule } from '@ng-select/ng-select';
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,NgSelectModule],
   templateUrl: './multicotizador.component.html',
   styleUrl: './multicotizador.component.css'
 })
@@ -124,9 +125,9 @@ export class MulticotizadorComponent implements OnInit {
   ];
 
   public readonly tiposVigencia = [
-    { id: 1, opcion: 'TRIMESTRAL  (valido solo Rio Uruguay)' },
-    { id: 2, opcion: 'SEMESTRAL - (valido solo Rio Uruguay)' },
-    { id: 3, opcion: 'ANUAL' }
+    { id: 1,descripcion:'TRIMESTRAL  (valido solo Rio Uruguay)' , opcion: 'TRIMESTRAL' },
+    { id: 2, descripcion:'SEMESTRAL  (valido solo Rio Uruguay)', opcion: 'SEMESTRAL' },
+    { id: 3, descripcion:'ANUAL',opcion: 'ANUAL' }
   ];
 
   public readonly condicionesFiscales: CondicionFiscal[] = [
@@ -232,11 +233,6 @@ export class MulticotizadorComponent implements OnInit {
       this.cdr.detectChanges(); // Fuerza la actualización del template
   }
 
-  private getTiposVigencia(id: number): string {
-    const tipoVigencia = this.tiposVigencia.find(item => item.id == id);
-    return tipoVigencia ? tipoVigencia.opcion : 'ANUAL';
-  }
-
   private getSiNo(value: boolean): string {
     return value === true ? 'SI' : 'NO';
   }
@@ -248,7 +244,7 @@ export class MulticotizadorComponent implements OnInit {
       anio: [{ value: null, disabled: true }, Validators.required],
       apellido: [""],
       cascoConosur:false,
-      clausulaAjuste: [{ value: null }],
+      clausulaAjuste: [{ value: { codigo: 10, descripcion: '10%' }, disabled: true }],
       codigoTipoInteres: [{ value: null }, Validators.required],
       condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
       controlSatelital: false,
@@ -268,7 +264,7 @@ export class MulticotizadorComponent implements OnInit {
       rastreador: false,
       tallerExclusivo:false,
       tieneRastreador:false,
-      tipoId: [{ value: null }],
+      tipoId: "DNI",
       tipoPersoneria: [{ value: "" }],
       tipoRefacturacion:[],
       tipoVigencia: [{ value: null }, Validators.required],
@@ -373,6 +369,11 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+  //COmparar clausulas para dar una por defecto.
+  compararClausula(op1: Tipo, op2: Tipo): boolean {
+    return op1?.codigo === op2?.codigo;
+  }
+
 
   //anios
   private loadYears(): void {
@@ -387,7 +388,6 @@ export class MulticotizadorComponent implements OnInit {
       next: (response:Brand[]) => {
         console.log(response);
         this.marcas=response;
-        this.cotizacionForm.get('marca')?.enable();
       },
       error: (error) => {
         console.error('Error:', error);
@@ -453,9 +453,11 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
       this.setTiposUso(Number(tipo));
       if (tipo) {
-        //this.obtenerMarcasRUS(tipo);
+
+
         this.getMarcasInfoAuto();
         this.cotizacionForm.get('uso')?.enable();
+        this.cotizacionForm.get('marca')?.enable();
       } else {
         this.marcas = [];
         this.cotizacionForm.get('marca')?.disable();
@@ -475,10 +477,11 @@ export class MulticotizadorComponent implements OnInit {
     });
 
 
-    this.cotizacionForm.get('marca')?.valueChanges.subscribe((marca:Brand) => {
+    this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca:number) => {
       this.cotizacionForm.get('anio')?.setValue(null);
-      if (marca) {
-        this.brand_idSelected=marca.id;
+      if (idMarca) {
+        console.log(idMarca);
+        this.brand_idSelected=idMarca;
         this.cotizacionForm.get('anio')?.enable();
       } else {
         this.cotizacionForm.get('anio')?.disable();
@@ -487,7 +490,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
-      if (anio) {
+      if (anio && this.brand_idSelected) {
         this.anio=anio;
         //this.obtenerModelosRUS();
         this.getGruposPorMarca(this.brand_idSelected);
@@ -500,11 +503,11 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
 
-    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((modelo) => {
+    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo:number) => {
       this.cotizacionForm.get('version')?.setValue(null);
-      if (modelo) {
+      if (idModelo) {
         //this.obtenerVersionesRUS();
-        this.group_idSelected=modelo.id;
+        this.group_idSelected=idModelo;
         this.getModelosPorGrupoYMarca(this.brand_idSelected,this.group_idSelected);
        //this.obtenerVersionesMA();
       } else {
@@ -514,10 +517,10 @@ export class MulticotizadorComponent implements OnInit {
     });
 
     //Para traer codigo de Rivadavia y franquicia federacion.
-    this.cotizacionForm.get('version')?.valueChanges.subscribe((version) => {
-      if (version) {
-      console.log(version);
-      this.codigoInfoAuto=version.codia;
+    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia:number) => {
+      if (codia) {
+      console.log(codia);
+      this.codigoInfoAuto=codia;
       const nroProductorRiv= String(18922);
       const anio= String(this.anio);
 
@@ -634,13 +637,14 @@ export class MulticotizadorComponent implements OnInit {
 
     let codigoTipo= this.getTipo(this.form.tipoVehiculo);
     const USO:TipoDeUso = this.form.uso;
+    const medioCobro= this.form.medioPago.codigo === 1 ? 1 : 3;
 
     const vehiculo: VehiculosRus[]=[{
         anio: String(this.form.anio),
         controlSatelital: this.getSiNo(this.form.controlSatelital),
         cpLocalidadGuarda:Number(this.form.cpLocalidadGuarda),
         gnc: this.getSiNo(this.form.gnc),
-        codia:this.getCodigoInfoAuto(),
+        codia:this.codigoInfoAuto,
         uso: USO.uso,
         rastreoACargoRUS: this.getSiNo(this.form.tieneRastreador),
     }];
@@ -652,7 +656,8 @@ export class MulticotizadorComponent implements OnInit {
       cuotas: Number(this.form.cuotas), //solo permite hasta 3
       ajusteAutomatico:Number(this.form.clausulaAjuste.codigo),
       condicionFiscal: this.form.condicionFiscal.cfFedRusATM,
-      tipoVigencia: this.getTiposVigencia(this.form.tipoVigencia),
+      tipoVigencia: this.form.tipoVigencia.opcion,
+      medioCobro:medioCobro,
       vehiculos: vehiculo,
       vigenciaDesde: this.form.vigenciaDesde,
       vigenciaHasta: this.form.vigenciaHasta,
@@ -681,11 +686,6 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
-  getCodigoInfoAuto():number{
-    return Number(this.cotizacionForm.value.version.codia);
-  }
-
 
   //MERCANTIL ANDINA
   cotizarMercantil()
@@ -720,7 +720,7 @@ export class MulticotizadorComponent implements OnInit {
     if(cotizacionData.tipo=="MOTOVEHICULO"){
 
       const MOTOVEHICULO:CotizacionVehiculoMoto=  {
-        infoauto: this.getCodigoInfoAuto(),
+        infoauto: this.codigoInfoAuto,
         aniofab: ANIO,
         uso: USO.id,
         gnc: this.form.gnc,
@@ -731,7 +731,7 @@ export class MulticotizadorComponent implements OnInit {
     }else
     {
       const VEHICULO:CotizacionVehiculo=  {
-        infoauto: this.getCodigoInfoAuto(),
+        infoauto: this.codigoInfoAuto,
         anio: ANIO,
         uso: USO.id,
         gnc: this.form.gnc,
@@ -784,7 +784,8 @@ export class MulticotizadorComponent implements OnInit {
     const personaJuridica =
     this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
-    const formaPago= this.form.medioPago
+    const formaPago= this.form.medioPago.codigo === 1 ? FormaPago.PAGO_FACIL : FormaPago.TARJETA_CREDITO;
+
     const cotizacion: DatosCotizacionRivadavia = {
       nroProductor: "18922",
       claveProductor: "THLV2582",
@@ -797,7 +798,7 @@ export class MulticotizadorComponent implements OnInit {
         //cuit: "asd",
         //fechaNacimiento?: string;
         personaJuridica:personaJuridica,
-        //  formaPago?: FormaPago;  AGREGAR
+         formaPago: formaPago
       },
       datoVehiculo: {
         codigoInfoAuto: String(this.codigoInfoAuto),
@@ -985,12 +986,12 @@ export class MulticotizadorComponent implements OnInit {
   cotizar()
   {
     this.form = this.cotizacionForm.getRawValue();
-    this.cotizarRivadavia();
+  //  this.cotizarRivadavia();
 
     this.cotizarFederacion();
-    // this.cotizarRUS();
+    this.cotizarRUS();
 
-    this.cotizarATM();
+  //  this.cotizarATM();
 
     this.cotizarMercantil();
   }

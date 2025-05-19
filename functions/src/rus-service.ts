@@ -8,7 +8,7 @@ import { CotizacionRioUruguay } from "./interfaces/CotizacionRioUruguay";
 const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
 
 const USERNAME = "18291036ws";
-const PASSWORD = "cambiar";
+const PASSWORD = "qwe123$$$";
 // const PASSWORD = "qwe123$$";
 if (!admin.apps.length) {
   admin.initializeApp();

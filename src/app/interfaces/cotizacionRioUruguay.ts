@@ -5,6 +5,7 @@ export interface CotizacionRioUruguay{
   condicionFiscal: string;
   codigoSolicitante?: number;
   codigoCobrador?:string;
+  medioCobro?:number;
   cuotas?: number;
   ajusteAutomatico?: number;
   tipoVigencia?: string;
