@@ -25,8 +25,7 @@ export class RivadaviaService {
   }
 
   cotizarRivadavia(data: DatosCotizacionRivadavia): Observable<any> {
-    console.log("📩 Enviando a la API Riv:", JSON.stringify(data, null, 2));
+    console.log("📩 Enviando a la API Riv: ", JSON.stringify(data, null, 2));
     return this.http.post(`${this.API_URL}/cotizar`, data);
   }
-
 }

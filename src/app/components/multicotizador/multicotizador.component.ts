@@ -17,6 +17,7 @@ import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
 import { CondicionFiscalCodigo } from '../../enums/condicion';
+import { Plan,MedioPago } from '../../enums/EnumAtm';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
@@ -54,7 +55,8 @@ export class MulticotizadorComponent implements OnInit {
   provincias:Provincia[]=[];
   codigoTipoInteres:string='';
   codModelo:number=0;
-  gnc:boolean=false;
+  tieneGnc:boolean=false;
+  gnc:number=0;
   grupos: Group[] = [];
   modelos: Model[] = [];
   versiones: any[] = [];
@@ -233,8 +235,8 @@ export class MulticotizadorComponent implements OnInit {
       this.cdr.detectChanges(); // Fuerza la actualización del template
   }
 
-  private getSiNo(value: boolean): string {
-    return value === true ? 'SI' : 'NO';
+  private getSiNo(value: boolean,yes: string,no: string): string {
+    return value === true ? yes : no;
   }
 
 
@@ -252,14 +254,14 @@ export class MulticotizadorComponent implements OnInit {
       cuotas: [{ value: null }, Validators.required],
       descuentoComision:0,
       franquicia:[],
-      gnc: false,
+      tieneGnc:false,
+      gnc: 0,
       grua:false,
       marca: [{ value: null, disabled: true }, Validators.required],
       medioPago:false,
       modelo: [{ value: null, disabled: true }, Validators.required],
       nombre: [""],
       nroId: [""],
-      pagoContado:false,
       provincia: null,
       rastreador: false,
       tallerExclusivo:false,
@@ -636,17 +638,19 @@ export class MulticotizadorComponent implements OnInit {
 
 
     let codigoTipo= this.getTipo(this.form.tipoVehiculo);
+    const yes = "SI";
+    const no = "NO";
     const USO:TipoDeUso = this.form.uso;
     const medioCobro= this.form.medioPago.codigo === 1 ? 1 : 3;
 
     const vehiculo: VehiculosRus[]=[{
         anio: String(this.form.anio),
-        controlSatelital: this.getSiNo(this.form.controlSatelital),
+        controlSatelital: this.getSiNo(this.form.controlSatelital,yes,no),
         cpLocalidadGuarda:Number(this.form.cpLocalidadGuarda),
-        gnc: this.getSiNo(this.form.gnc),
+        gnc: this.getSiNo(this.form.tieneGnc,yes,no),
         codia:this.codigoInfoAuto,
         uso: USO.uso,
-        rastreoACargoRUS: this.getSiNo(this.form.tieneRastreador),
+        rastreoACargoRUS: this.getSiNo(this.form.tieneRastreador,yes,no),
     }];
 
     const cotizacionData: CotizacionRioUruguay = {
@@ -661,13 +665,19 @@ export class MulticotizadorComponent implements OnInit {
       vehiculos: vehiculo,
       vigenciaDesde: this.form.vigenciaDesde,
       vigenciaHasta: this.form.vigenciaHasta,
-      vigenciaPolizaId: 65 //id de autos
+      sumaAseguradaGnc:Number(this.form.gnc),
+      sumaAseguradaAccesorios:0,
+      controlSatelital: 'NO',
+      excluirVida: 'NO',
+      aumentoRCPaisesLimitrofes: 'NO'
+     //vigenciaPolizaId: 65 //id de autos
     };
 
+    /*
     if(codigoTipo=='MOTOVEHICULO')
     {
       cotizacionData.vigenciaPolizaId=70; //id para motos
-    }
+    }*/
 
     this.s_rus.cotizar(cotizacionData).subscribe({
       next: (response) => {
@@ -712,8 +722,8 @@ export class MulticotizadorComponent implements OnInit {
       periodo: Number(this.form.tipoRefacturacion?.mercantilPeriodo),
       iva: Number(this.form.condicionFiscal.cfMercantil),
       //   comision: nose,
-   //   bonificacion: nose,
-   //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
+      //   bonificacion: nose,
+      //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
       desglose:true     //desglose de montos totales y cuotas
     };
 
@@ -723,7 +733,7 @@ export class MulticotizadorComponent implements OnInit {
         infoauto: this.codigoInfoAuto,
         aniofab: ANIO,
         uso: USO.id,
-        gnc: this.form.gnc,
+        gnc: this.form.tieneGnc,
         rastreo: RASTREADOR };
        cotizacionData.vehiculo=MOTOVEHICULO;
        cotizacionData.canal=81; //canal motos
@@ -734,7 +744,7 @@ export class MulticotizadorComponent implements OnInit {
         infoauto: this.codigoInfoAuto,
         anio: ANIO,
         uso: USO.id,
-        gnc: this.form.gnc,
+        gnc: this.form.tieneGnc,
         rastreo: RASTREADOR };
         cotizacionData.vehiculo=VEHICULO;
     }
@@ -780,7 +790,7 @@ export class MulticotizadorComponent implements OnInit {
   cotizarRivadavia()
   {
     //formatDateSinceYear
-    const gnc= this.form.gnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
+    const gnc= this.form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
     const personaJuridica =
     this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
@@ -812,10 +822,10 @@ export class MulticotizadorComponent implements OnInit {
         fechaVigenciaDesde: this.form.vigenciaDesde,
         fechaVigenciaHasta: this.form.vigenciaHasta,
         cantidadCuotas: String(this.form.cuotas),
-        tipoFacturacion: TipoFacturacion.MENSUAL, //tiene mas que fedpat.
+        tipoFacturacion: this.form.tipoRefacturacion.descripcion, //tiene mas que fedpat.
         provincia: this.form.provincia.provinciaRiv,
         codigoPostal: this.form.cpLocalidadGuarda,
-        sumaAseguradaAccesorios: 0, //y
+        sumaAseguradaAccesorios: 0, //y aca se suma gnc?
         sumaAseguradaEquipaje: 0,    //estos?
         gnc: gnc,
           //cantidadAsientos?: string;
@@ -835,8 +845,6 @@ export class MulticotizadorComponent implements OnInit {
       }
     };
 
-    console.log(cotizacion);
-
     this.s_riv.cotizarRivadavia(cotizacion).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa Rvadavia:',res);
@@ -845,26 +853,21 @@ export class MulticotizadorComponent implements OnInit {
         console.log(err);
       }
     });
-
-
   }
 
   //Federacion patronal
   cotizarFederacion()
   {
     let rastreador= this.form.rastreador? Number(this.form.rastreador.codigo): 99;
-
     let comision= this.form.descuentoComision? Number(this.form.descuentoComision.codigo):0;
-
     const fechaOriginal = this.form.vigenciaDesde;
     const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
-
     const cotizacionFederacion: CotizacionFederacion = {
       //numero_cotizacion: 129445013,
       fecha_desde: fechaFormateada,
       descuento_comision: comision,
       medio_pago: Number(this.form.medioPago.codigo),
-      pago_contado: Boolean(this.form.pagoContado),
+      pago_contado: false,
       razon_social: Number(this.form.tipoPersoneria.codigo),
       //cliente_nuevo: false,
       refacturaciones: Number(this.form.tipoRefacturacion?.codigo),
@@ -884,7 +887,7 @@ export class MulticotizadorComponent implements OnInit {
         tipo_vehiculo: this.tipoVehiculoFederacion,
         alarma: Boolean(this.form.alarma),
         rastreador:rastreador,
-        gnc: Boolean(this.form.gnc),
+        gnc: Boolean(this.form.tieneGnc),
         //volcador: false,
         //suma_asegurada: 1200000,
         localidad_de_guarda: Number(this.codigoPostalFederacion)
@@ -907,10 +910,6 @@ export class MulticotizadorComponent implements OnInit {
       },*/
     };
 
-
-    console.log(cotizacionFederacion);
-
-
     this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa Federacion:',res);
@@ -924,9 +923,37 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizarATM(){
     const fechaOriginal = this.form.vigenciaDesde;
-    const [anio, mes, dia] = fechaOriginal.split("-");
+    const [anio, mes, dia] = fechaOriginal.split('-');
     const fechaFormatoATM = `${dia}${mes}${anio}`;
     const alarma= this.form.alarma ? 1: 0;
+    const ajuste = this.form.clausulaAjuste.codigo;
+    const seccionAuto=3;
+    const yes = 'S';
+    const no = 'N';
+    const descripcion = this.form.tipoRefacturacion.descripcion.trim().toUpperCase();
+
+    const medioPago: MedioPago =
+      this.form.medioPago.codigo === 1
+        ? MedioPago.EFVO
+        : this.form.medioPago.codigo === 2
+        ? MedioPago.TARJETA
+        : MedioPago.CBU;
+
+    let plan: Plan;
+
+    if (descripcion.includes('MENSUAL') && medioPago === MedioPago.TARJETA) {
+      plan = Plan.MENSUAL_TARJETA;
+    } else if (descripcion.includes('MENSUAL') && medioPago === MedioPago.CBU) {
+      plan = Plan.MENSUAL_CBU;
+    } else if (descripcion.includes('BIMESTRAL') && medioPago === MedioPago.TARJETA) {
+      plan = Plan.BIMESTRAL_TARJETA;
+    } else if (descripcion.includes('BIMESTRAL')  && medioPago === MedioPago.EFVO) {
+      plan = Plan.BIMESTRAL_EFVO;
+    } else if (descripcion.includes('TRIMESTRAL') && medioPago === MedioPago.EFVO) {
+      plan = Plan.TRIMESTRAL_EFVO;
+    } else {
+      plan = Plan.DESCONOCIDO;
+    }
 
     const persona =
     this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
@@ -943,7 +970,7 @@ export class MulticotizadorComponent implements OnInit {
          <fecha>${fechaFormatoATM}</fecha>
          <vendedor>0956109561</vendedor>
          <origen>WS</origen>
-         <plan>02</plan>
+         <plan>${plan}</plan>
        </usuario>
        <asegurado>
          <persona>${persona}</persona>
@@ -953,14 +980,14 @@ export class MulticotizadorComponent implements OnInit {
        </asegurado>
        <bien>
          <cerokm>N</cerokm>
-         <rastreo>N</rastreo>
+         <rastreo>${this.getSiNo(this.form.tieneRastreador,yes,no)}</rastreo>
          <micrograbado>N</micrograbado>
          <alarma>${alarma}</alarma>
-         <ajuste></ajuste>
+         <ajuste>${ajuste}</ajuste>
          <codpostal>${this.form.cpLocalidadGuarda}</codpostal>
          <cod_infoauto>${this.codigoInfoAuto}</cod_infoauto>
          <anofab>${this.anio}</anofab>
-         <seccion>3</seccion>
+         <seccion>${seccionAuto}</seccion>
          <uso>0101</uso>
          <suma></suma>
        </bien>
@@ -970,8 +997,6 @@ export class MulticotizadorComponent implements OnInit {
         </soapenv:Body>
      </soapenv:Envelope>`.trim();
 
-
-     console.log("Enviando a ATM",xml);
      this.s_ATM.cotizarATM(xml).subscribe({
        next: (res) => {
         console.log('✅ Cotización exitosa ATM:',res);
@@ -988,12 +1013,12 @@ export class MulticotizadorComponent implements OnInit {
     this.form = this.cotizacionForm.getRawValue();
   //  this.cotizarRivadavia();
 
-    this.cotizarFederacion();
-    this.cotizarRUS();
+  //  this.cotizarFederacion();
+  //  this.cotizarRUS();
 
-  //  this.cotizarATM();
+   this.cotizarATM();
 
-    this.cotizarMercantil();
+  //  this.cotizarMercantil();
   }
 
 

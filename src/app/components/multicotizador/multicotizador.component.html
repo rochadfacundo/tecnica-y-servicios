@@ -156,8 +156,21 @@
       </div>
 
       <div class="mb-3 col-md-6 form-check custom_check">
-        <input type="checkbox" id="gnc" class="form-check-input" formControlName="gnc">
-        <label for="gnc" class="form-check-label">¿Tiene GNC?</label>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="mb-3 col-md-6 form-check custom_check">
+        <input type="checkbox" id="tieneGnc" class="form-check-input" formControlName="tieneGnc">
+        <label for="tieneGnc" class="form-check-label">¿Tiene GNC?</label>
+      </div>
+
+      <div class="mb-3 col-md-6" *ngIf="this.cotizacionForm.get('tieneGnc')?.value">
+        <label for="gnc" >Valor gnc:</label>
+        <input type="number" id="gnc" formControlName="gnc">
+
       </div>
 
     </div>
@@ -210,16 +223,18 @@
 
 
     <div class="row" >
+          <!-- vigencia y refacturacion-->
+      <div class="mb-3 col-md-6">
+        <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
+        <select id="tipoVigencia" class="form-select" formControlName="tipoVigencia">
+          <option *ngFor="let vigencia of tiposVigencia" [ngValue]="vigencia">{{ vigencia.descripcion }}</option>
+        </select>
+
+      </div>
       <div class="mb-3 col-md-6">
         <label for="tipoRefacturacion" class="form-label">Tipo de Refacturacion</label>
         <select id="tipoRefacturacion" class="form-select" formControlName="tipoRefacturacion">
           <option *ngFor="let refacturacion of this.tiposDeRefacturacion" [ngValue]="refacturacion">{{ refacturacion.descripcion }}</option>
-        </select>
-      </div>
-      <div class="mb-3 col-md-6">
-        <label for="descuentoComision" class="form-label">Descuento comision</label>
-        <select id="descuentoComision" class="form-select" formControlName="descuentoComision">
-          <option *ngFor="let descuento of this.descuentoComision" [ngValue]="descuento">{{ descuento.descripcion }}</option>
         </select>
       </div>
 
@@ -228,30 +243,20 @@
 
 
     <div class="row" >
-
+    <!-- MEdio pago y descuento comision-->
       <div class="mb-3 col-md-6 "  >
         <label for="medioPago" class="form-label">Medio de pago</label>
         <select id="medioPago" class="form-select" formControlName="medioPago">
           <option *ngFor="let medioPago of this.mediosPago" [ngValue]="medioPago">{{ medioPago.descripcion }}</option>
         </select>
       </div>
-      <div class="mb-3 col-md-6 form-check custom_check"  *ngIf="cotizacionForm.get('medioPago')?.value.descripcion=='Debito/Credito'">
-        <input type="checkbox" id="pagoContado" class="form-check-input" formControlName="pagoContado">
-        <label for="pagoContado" class="form-check-label">Pago contado?</label>
-        </div>
-
-
+      <div class="mb-3 col-md-6">
+        <label for="descuentoComision" class="form-label">Descuento comision</label>
+        <select id="descuentoComision" class="form-select" formControlName="descuentoComision">
+          <option *ngFor="let descuento of this.descuentoComision" [ngValue]="descuento">{{ descuento.descripcion }}</option>
+        </select>
+      </div>
     </div>
-
-
-    <!-- Tipo Vigencia -->
-    <div class="mb-3">
-      <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
-      <select id="tipoVigencia" class="form-select" formControlName="tipoVigencia">
-        <option *ngFor="let vigencia of tiposVigencia" [ngValue]="vigencia">{{ vigencia.descripcion }}</option>
-      </select>
-    </div>
-
 
     <!-- Cuotas -->
     <div class="mb-3">

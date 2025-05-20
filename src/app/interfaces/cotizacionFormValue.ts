@@ -14,7 +14,7 @@ export interface CotizacionFormValue {
   alarma?:any;
   tieneRastreador:boolean;
   rastreador?:Tipo;
-  tipoRefacturacion?:TipoRefacturacion;
+  tipoRefacturacion:TipoRefacturacion ;
   tipoPago?:Tipo|any;
   pagoContado?:boolean;
   descuentoComision?:Tipo|any;
@@ -41,7 +41,8 @@ export interface CotizacionFormValue {
 
   //rio uruguay
   controlSatelital: any;
-  gnc: boolean;
+  tieneGnc:boolean;
+  gnc?: number;
   vigenciaDesde: any;
   vigenciaHasta: any;
 }

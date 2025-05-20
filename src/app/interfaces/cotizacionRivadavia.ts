@@ -39,7 +39,7 @@ export interface DatoPoliza {
   fechaVigenciaDesde: string;
   fechaVigenciaHasta: string;
   cantidadCuotas: string;
-  tipoFacturacion: TipoFacturacion;
+  tipoFacturacion: string;
   provincia: EProvincia;
   codigoPostal: string;
   sumaAseguradaAccesorios: number;

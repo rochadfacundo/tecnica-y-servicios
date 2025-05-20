@@ -1,0 +1,27 @@
+[
+  {
+    "Descripcion": "ANUAL/REFA MENSUAL CON DÉBITO AUTOMÁTICO",
+    "FormaDePago": "TARJETA",
+    "Plan": "02"
+  },
+  {
+    "Descripcion": "ANUAL/REFA MENSUAL CON DÉBITO AUTOMÁTICO",
+    "FormaDePago": "CBU",
+    "Plan": "11"
+  },
+  {
+    "Descripcion": "ANUAL/REFA BIMESTRAL",
+    "FormaDePago": "TARJETA",
+    "Plan": "04"
+  },
+  {
+    "Descripcion": "ANUAL/REFA BIMESTRAL",
+    "FormaDePago": "EFVO",
+    "Plan": "03"
+  },
+  {
+    "Descripcion": "ANUAL REFA. TRIMESTRAL CON CUPONES",
+    "FormaDePago": "EFVO",
+    "Plan": "01"
+  }
+]
