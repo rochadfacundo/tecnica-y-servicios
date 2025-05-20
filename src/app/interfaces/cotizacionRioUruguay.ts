@@ -11,8 +11,13 @@ export interface CotizacionRioUruguay{
   tipoVigencia?: string;
   vigenciaDesde:string;
   vigenciaHasta?:string;
-  vigenciaPolizaId:number;
+  vigenciaPolizaId?:number;
   numeroSolicitud?: number;
+  sumaAseguradaGnc?:number;
+  sumaAseguradaAccesorios?:number;
+  controlSatelital?:string;
+  excluirVida?:string;
+  aumentoRCPaisesLimitrofes?:string;
 
 }
 

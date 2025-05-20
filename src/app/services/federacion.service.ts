@@ -37,7 +37,7 @@ export class FederacionService {
     }
 
     cotizarFederacion(data: CotizacionFederacion): Observable<any> {
-        console.log("📩 Enviando a la API fedPat:", JSON.stringify(data, null, 2));
+        console.log("📩 Enviando a la API fedPat: ", JSON.stringify(data, null, 2));
         return this.http.post(`${this.apiUrl}/cotizar`, data);
       }
 

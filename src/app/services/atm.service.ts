@@ -12,13 +12,11 @@ export class AtmService {
 
 
   cotizarATM(xml: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'text/xml',
-    });
+    console.log("📩 Enviando a ATM: ",xml);
+    const headers = new HttpHeaders({'Content-Type': 'text/xml'});
 
-    return this.http.post(
-      `${this.apiUrl}/cotizar`,xml,
-      { headers, responseType: 'text' }
-    );
+    return this.http.post(`${this.apiUrl}/cotizar`,xml,
+         { headers, responseType: 'text' });
   }
+
 }

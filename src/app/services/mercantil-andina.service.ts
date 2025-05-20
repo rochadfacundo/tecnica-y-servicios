@@ -38,7 +38,7 @@ export class MercantilAndinaService {
 
 
   cotizar(data: CotizacionMercantil): Observable<any> {
- console.log("📩 Enviando a la API MA:", JSON.stringify(data, null, 2));
+ console.log("📩 Enviando a la API MA: ", JSON.stringify(data, null, 2));
   return this.http.post(`${this.API_URL}/cotizaciones`, data);
   }
 }

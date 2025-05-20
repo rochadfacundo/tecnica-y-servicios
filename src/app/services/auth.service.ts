@@ -55,9 +55,7 @@ export class AuthService {
   }
 
   async logout() {
-    // Lógica para cerrar sesión (si estás usando Firebase Authentication)
     await this._auth.signOut();
-
   }
 
 
