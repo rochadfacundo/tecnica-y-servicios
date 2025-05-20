@@ -22,6 +22,10 @@ import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interface
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
+import { buildATMRequest } from './cotizadores/atm';
+import { getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
+
 @Component({
   selector: 'app-multicotizador',
   standalone: true,
@@ -31,7 +35,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 })
 export class MulticotizadorComponent implements OnInit {
 
-  //FOrm
+
   cotizacionForm!: FormGroup;
   form!: CotizacionFormValue;
   federacionForm:boolean=false;
@@ -90,7 +94,7 @@ export class MulticotizadorComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadYears();
+    this.anios= loadYears();
     this.setupValueChanges();
 
   }
@@ -147,99 +151,6 @@ export class MulticotizadorComponent implements OnInit {
 
   public tiposVehiculo:TipoVehiculoRUS[] = [];
 
-
-
-  private getTipo(id: number): string {
-
-    const idNumber =Number(id);
-    let vehiculo='';
-
-    switch (idNumber) {
-      case 1:
-      case 2:
-      case 3:
-      vehiculo='VEHICULO';
-      break;
-      case 4:
-      case 5:
-      case 6:
-      vehiculo='CAMION';
-        break;
-      case 7:
-      case 8:
-      vehiculo='MOTOVEHICULO';
-        break;
-      case 25:
-      vehiculo='MOTORHOME';
-        break;
-      case 26:
-      vehiculo='OMNIBUS';
-       break;
-
-      default:
-        break;
-    }
-    return vehiculo;
-  }
-
-  private setTiposUso(id: number) {
-
-
-      switch (id) {
-        case 1:   //auto
-        case 2:   //pick-up A
-        case 3:   //pick-up B
-        case 7:   //Moto menos 50 CC
-        case 8:   //Moto mas 50 CC
-        case 25:   //MOTORHOME
-          this.tiposDeUso=[
-            {id: 1, uso: 'PARTICULAR',desc: 'PARTICULAR'},
-            {id: 22, uso: 'COMERCIAL',desc: 'COMERCIAL'}
-          ];
-
-          break;
-        case 4:    //CAMION HASTA 5 TN
-        case 5:    //CAMION HASTA 10 TN
-        case 6:    //CAMION MAS DE 10 TN
-        this.tiposDeUso=[
-          {id: 2, uso: 'AGCIA. DE ALQUILER S/CHOFER',  desc:"AGCIA. DE ALQUILER S/CHOFER-COMERCIAL"},
-          {id: 3, uso: 'AUTOBOMBA', desc: 'AUTOBOMBA'},
-          {id: 4, uso: 'AUXILIO MECANICO', desc: 'AUXILIO MECANICO-COMERCIAL'},
-          {id: 5, uso: 'BOMBERO', desc: 'BOMBERO'},
-          {id: 6, uso: 'POLICIAL', desc: 'POLICIAL'},
-          {id: 7, uso: 'PORTAVOLQUETE', desc: 'PORTAVOLQUETE'},
-          {id: 8, uso: 'RADIO URBANO (NO > A 100KM)', desc: 'RADIO URBANO (NO > A 100KM)-COMERCIAL'},
-          {id: 9, uso: 'TRANS. PROD. ALIMENTICIOS', desc: 'TRANS. PROD. ALIMENTICIOS-COMERCIAL'},
-          {id: 10, uso: 'TRANS. CARGAS GRALES', desc: 'TRANS. CARGAS GRALES-COMERCIAL'},
-          {id: 11, uso: 'TRANS. COMB. GASEOSO', desc: 'TRANS. COMB. GASEOSO-COMERCIAL'},
-          {id: 12, uso: 'TRANS. COMB. LIQUIDOS', desc: 'TRANS. COMB. LIQUIDOS-COMERCIAL'},
-          {id: 13, uso: 'TRANS. DE HACIENDA', desc: 'TRANS. DE HACIENDA-COMERCIAL'},
-          {id: 14, uso: 'TRANS. PROD. QUIMICOS', desc: 'TRANS. PROD. QUIMICOS-COMERCIAL'}
-        ];
-
-          break;
-        case 26:   //M3 OMNIBUS
-
-        this.tiposDeUso=[
-          {id: 15, uso: 'ESCOLAR + 18 AS.', desc: 'ESCOLAR + 18 AS.'},
-          {id: 16, uso: 'ESCOLAR 16A A 18 AS.', desc: 'ESCOLAR 16A A 18 AS.'},
-          {id: 17, uso: 'FOOD TRUCK', desc: 'FOOD TRUCK'},
-          {id: 18, uso: 'PARTICULAR', desc: 'PARTICULAR'},
-          {id: 19, uso: 'POLICIAL', desc: 'POLICIAL'},
-          {id: 20, uso: 'SERVICIO ESPECIAL', desc: 'SERVICIO ESPECIAL-COMERCIAL'},
-          {id: 21, uso: 'TRASLADO DE PERSONAL PROPIO', desc: 'TRASLADO DE PERSONAL PROPIO'}
-        ];
-          break;
-      }
-
-      this.cdr.detectChanges(); // Fuerza la actualización del template
-  }
-
-  private getSiNo(value: boolean,yes: string,no: string): string {
-    return value === true ? yes : no;
-  }
-
-
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
       alarma: [true],
@@ -273,7 +184,7 @@ export class MulticotizadorComponent implements OnInit {
       tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
       uso: [{ value: null, disabled: true }, Validators.required],
       version: [{ value: null, disabled: true }, Validators.required],
-      vigenciaDesde: [this.formatDateSinceYear(new Date()), Validators.required],
+      vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
     });
 
@@ -377,12 +288,6 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
-  //anios
-  private loadYears(): void {
-    const anioActual = new Date().getFullYear();
-    this.anios = Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
-  }
-
 
   private getMarcasInfoAuto()
   {
@@ -429,33 +334,27 @@ export class MulticotizadorComponent implements OnInit {
   private setupValueChanges(): void {
 
     this.cotizacionForm.get('codigoTipoInteres')?.valueChanges.subscribe((tipo) => {
-      let auxTiposVehiculos: TipoVehiculoRUS[]=[];
-      if (tipo.nombre=="VEHICULO") {
 
-        auxTiposVehiculos=[{ id: 1, nombre: 'AUTO' },
-        { id: 2, nombre: 'PICK-UP "A"' },
-        { id: 3, nombre: 'PICK-UP "B"' },
-        { id: 4, nombre: 'CAMION HASTA 5 TN' },
-        { id: 5, nombre: 'CAMION HASTA 10 TN' },
-        { id: 6, nombre: 'CAMION MAS 10 TN' },
-        { id: 25, nombre: 'MOTORHOME' },
-        { id: 26, nombre: 'M3 OMNIBUS' }];
-
-      }else if (tipo.nombre=="MOTOVEHICULO"){
-        auxTiposVehiculos=[{ id: 7, nombre: 'MOTO MENOS 50 CC' },
-          { id: 8, nombre: 'MOTO MAS 50 CC' }];
-
+      if (tipo) {
+        this.tiposVehiculo = getTiposVehiculoRUS(tipo.nombre);
+        this.cotizacionForm.get('tipoVehiculo')?.enable();
       } else {
         this.cotizacionForm.get('tipoVehiculo')?.disable();
       }
-      this.tiposVehiculo=auxTiposVehiculos;
-      this.cotizacionForm.get('tipoVehiculo')?.enable();
+
+      this.cdr.detectChanges(); // ✅ está bien que lo fuerces si usás *ngIf
+
     });
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
-      this.setTiposUso(Number(tipo));
-      if (tipo) {
 
+      if(tipo){
+        this.tiposDeUso=setTiposUso(Number(tipo.id));
+      }
+
+
+      this.cdr.detectChanges(); // Fuerza la actualización del template
+      if (tipo) {
 
         this.getMarcasInfoAuto();
         this.cotizacionForm.get('uso')?.enable();
@@ -526,7 +425,7 @@ export class MulticotizadorComponent implements OnInit {
       const nroProductorRiv= String(18922);
       const anio= String(this.anio);
 
-      this.s_fedPat.getFranquicia(String(this.codigoInfoAuto),this.formatDateSinceDay(new Date())).subscribe({
+      this.s_fedPat.getFranquicia(String(this.codigoInfoAuto),formatDateSinceDay(new Date())).subscribe({
         next: (res) => {
           this.franquicias=res;
         },
@@ -537,7 +436,9 @@ export class MulticotizadorComponent implements OnInit {
 
       this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
         next: (res) => {
+
          const tipoVehiculo= res.tipoVehiculo;
+
          this.sumaRivadavia= res.suma;
          const tipoUso= "1";
           //llamarlo todo cuando se elija el tipo de uso mejor?
@@ -637,7 +538,7 @@ export class MulticotizadorComponent implements OnInit {
   cotizarRUS(): void {
 
 
-    let codigoTipo= this.getTipo(this.form.tipoVehiculo);
+    let codigoTipo= getTipo(this.form.tipoVehiculo.id);
     const yes = "SI";
     const no = "NO";
     const USO:TipoDeUso = this.form.uso;
@@ -645,12 +546,12 @@ export class MulticotizadorComponent implements OnInit {
 
     const vehiculo: VehiculosRus[]=[{
         anio: String(this.form.anio),
-        controlSatelital: this.getSiNo(this.form.controlSatelital,yes,no),
+        controlSatelital: getYesNo(this.form.controlSatelital,yes,no),
         cpLocalidadGuarda:Number(this.form.cpLocalidadGuarda),
-        gnc: this.getSiNo(this.form.tieneGnc,yes,no),
+        gnc: getYesNo(this.form.tieneGnc,yes,no),
         codia:this.codigoInfoAuto,
         uso: USO.uso,
-        rastreoACargoRUS: this.getSiNo(this.form.tieneRastreador,yes,no),
+        rastreoACargoRUS: getYesNo(this.form.tieneRastreador,yes,no),
     }];
 
     const cotizacionData: CotizacionRioUruguay = {
@@ -700,7 +601,7 @@ export class MulticotizadorComponent implements OnInit {
   //MERCANTIL ANDINA
   cotizarMercantil()
   {
-    const TIPO_VEHICULO = this.getTipo(this.form.tipoVehiculo);
+    const TIPO_VEHICULO = getTipo(this.form.tipoVehiculo.id);
     const ANIO = Number(this.form.anio);
     const USO: TipoDeUso =  this.form.uso;
     const PRODUCTOR:Productor={ id: 86322 };
@@ -768,22 +669,6 @@ export class MulticotizadorComponent implements OnInit {
     }
   });
 
-  }
-
-
-  // Función para formatear la fecha en 'yyyy-MM-dd'
-  private formatDateSinceYear(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
- // Función para formatear la fecha en 'dd-MM-yyyy'
-  private formatDateSinceDay(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${day}-${month}-${year}`;
   }
 
   //Rivadavia
@@ -921,92 +806,6 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
-  cotizarATM(){
-    const fechaOriginal = this.form.vigenciaDesde;
-    const [anio, mes, dia] = fechaOriginal.split('-');
-    const fechaFormatoATM = `${dia}${mes}${anio}`;
-    const alarma= this.form.alarma ? 1: 0;
-    const ajuste = this.form.clausulaAjuste.codigo;
-    const seccionAuto=3;
-    const yes = 'S';
-    const no = 'N';
-    const descripcion = this.form.tipoRefacturacion.descripcion.trim().toUpperCase();
-
-    const medioPago: MedioPago =
-      this.form.medioPago.codigo === 1
-        ? MedioPago.EFVO
-        : this.form.medioPago.codigo === 2
-        ? MedioPago.TARJETA
-        : MedioPago.CBU;
-
-    let plan: Plan;
-
-    if (descripcion.includes('MENSUAL') && medioPago === MedioPago.TARJETA) {
-      plan = Plan.MENSUAL_TARJETA;
-    } else if (descripcion.includes('MENSUAL') && medioPago === MedioPago.CBU) {
-      plan = Plan.MENSUAL_CBU;
-    } else if (descripcion.includes('BIMESTRAL') && medioPago === MedioPago.TARJETA) {
-      plan = Plan.BIMESTRAL_TARJETA;
-    } else if (descripcion.includes('BIMESTRAL')  && medioPago === MedioPago.EFVO) {
-      plan = Plan.BIMESTRAL_EFVO;
-    } else if (descripcion.includes('TRIMESTRAL') && medioPago === MedioPago.EFVO) {
-      plan = Plan.TRIMESTRAL_EFVO;
-    } else {
-      plan = Plan.DESCONOCIDO;
-    }
-
-    const persona =
-    this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
-
-    const xml = `
-    <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <soapenv:Body>
-           <tem:AUTOS_Cotizar>
-              <tem:doc_in>
-     <auto>
-       <usuario>
-         <usa>TECYSEG</usa>
-         <pass>TECYSEG%24</pass>
-         <fecha>${fechaFormatoATM}</fecha>
-         <vendedor>0956109561</vendedor>
-         <origen>WS</origen>
-         <plan>${plan}</plan>
-       </usuario>
-       <asegurado>
-         <persona>${persona}</persona>
-         <iva>${this.form.condicionFiscal.cfFedRusATM}</iva>
-         <cupondscto></cupondscto>
-         <bonificacion></bonificacion>
-       </asegurado>
-       <bien>
-         <cerokm>N</cerokm>
-         <rastreo>${this.getSiNo(this.form.tieneRastreador,yes,no)}</rastreo>
-         <micrograbado>N</micrograbado>
-         <alarma>${alarma}</alarma>
-         <ajuste>${ajuste}</ajuste>
-         <codpostal>${this.form.cpLocalidadGuarda}</codpostal>
-         <cod_infoauto>${this.codigoInfoAuto}</cod_infoauto>
-         <anofab>${this.anio}</anofab>
-         <seccion>${seccionAuto}</seccion>
-         <uso>0101</uso>
-         <suma></suma>
-       </bien>
-     </auto>
-              </tem:doc_in>
-           </tem:AUTOS_Cotizar>
-        </soapenv:Body>
-     </soapenv:Envelope>`.trim();
-
-     this.s_ATM.cotizarATM(xml).subscribe({
-       next: (res) => {
-        console.log('✅ Cotización exitosa ATM:',res);
-       },
-       error: (err) => {
-         console.log(err);
-       }
-     });
-  }
-
 
   cotizar()
   {
@@ -1016,10 +815,27 @@ export class MulticotizadorComponent implements OnInit {
   //  this.cotizarFederacion();
   //  this.cotizarRUS();
 
-   this.cotizarATM();
+   const xmlAtm=buildATMRequest(this.form,String(this.codigoInfoAuto));
+
+   this.cotizarATM(xmlAtm);
 
   //  this.cotizarMercantil();
   }
+
+
+
+
+  cotizarATM(xml:string){
+    this.s_ATM.cotizarATM(xml).subscribe({
+      next: (res) => {
+       console.log('✅ Cotización exitosa ATM:',res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
+
 
 
 
