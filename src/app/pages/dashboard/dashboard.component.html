@@ -41,13 +41,13 @@
   <!-- Contenido principal -->
   <div class="flex-grow-1 p-4">
     <div *ngIf="multicotizador">
-      <app-multicotizador></app-multicotizador>
-        <!--
-
-        Devuelve cada cotizacion y va cargando la tabla. input output corta
+      <app-multicotizador (cotizacionGenerada)="actualizarCotizaciones($event)"></app-multicotizador>
 
 
-        -->
+    </div>
+
+    <div *ngIf="this.misCotizaciones.length>0">
+
       <app-tabla-cotizadora [cotizaciones]="this.misCotizaciones"></app-tabla-cotizadora>
     </div>
     <div *ngIf="!multicotizador">
