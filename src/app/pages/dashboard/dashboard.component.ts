@@ -30,6 +30,15 @@ export class DashboardComponent {
 
   }
 
+  actualizarCotizaciones(cot: Cotizacion) {
+    const index = this.misCotizaciones.findIndex(c => c.compania === cot.compania);
+
+    if (index !== -1) {
+      this.misCotizaciones[index] = { ...this.misCotizaciones[index], ...cot };
+    } else {
+      this.misCotizaciones.push(cot);
+    }
+  }
 
   openMulticotizador(){
     this.multicotizador=!this.multicotizador;

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, formatDate } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
@@ -25,6 +25,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
 import { buildATMRequest } from './cotizadores/atm';
 import { getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
+import { Cotizacion } from '../../interfaces/cotizacion';
 
 @Component({
   selector: 'app-multicotizador',
@@ -34,7 +35,7 @@ import { getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
   styleUrl: './multicotizador.component.css'
 })
 export class MulticotizadorComponent implements OnInit {
-
+  @Output() cotizacionGenerada = new EventEmitter<Cotizacion>();
 
   cotizacionForm!: FormGroup;
   form!: CotizacionFormValue;
