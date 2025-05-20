@@ -1,0 +1,63 @@
+
+ // Función para devolver string dependiento el booleano
+export function getYesNo(value: boolean,yes: string,no: string): string {
+  return value === true ? yes : no;
+}
+
+ // Función para formatear la fecha en 'dd-MM-yyyy'
+ export function formatDateSinceDay(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${day}-${month}-${year}`;
+}
+
+  // Función para formatear la fecha en 'yyyy-MM-dd'
+  export function formatDateSinceYear(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Agrega 0
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+
+    //cargar Anios en el formulario
+    export function loadYears() {
+      const anioActual = new Date().getFullYear();
+      return Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
+    }
+
+
+    //devuelve el tipo de vehiculo
+  export function getTipo(id: number): string {
+
+    const idNumber =Number(id);
+    let vehiculo='';
+
+    switch (idNumber) {
+      case 1:
+      case 2:
+      case 3:
+      vehiculo='VEHICULO';
+      break;
+      case 4:
+      case 5:
+      case 6:
+      vehiculo='CAMION';
+        break;
+      case 7:
+      case 8:
+      vehiculo='MOTOVEHICULO';
+        break;
+      case 25:
+      vehiculo='MOTORHOME';
+        break;
+      case 26:
+      vehiculo='OMNIBUS';
+       break;
+
+      default:
+        break;
+    }
+    return vehiculo;
+  }
