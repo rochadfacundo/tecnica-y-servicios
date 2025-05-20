@@ -1,0 +1,26 @@
+<table class="table table-bordered table-striped">
+  <thead class="table-light text-center">
+    <tr>
+      <th rowspan="2">Compañía</th>
+      <th rowspan="2">Responsabilidad Civil</th>
+      <th colspan="2">Terceros Completos</th>
+      <th colspan="2">Todo Riesgo</th>
+    </tr>
+    <tr>
+      <th>MB</th>
+      <th>MPlus</th>
+      <th>TR1</th>
+      <th>TR2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cot of this.cotizaciones">
+      <td>{{ cot.compania }}</td>
+      <td>{{ cot.rc | currency:'ARS ' }}</td>
+      <td>{{ cot.mb | currency:'ARS ' }}</td>
+      <td>{{ cot.mplus | currency:'ARS ' }}</td>
+      <td>{{ cot.tr1 | currency:'ARS ' }}</td>
+      <td>{{ cot.tr2 | currency:'ARS ' }}</td>
+    </tr>
+  </tbody>
+</table>
