@@ -46,7 +46,7 @@
 
     </div>
 
-    <div *ngIf="this.misCotizaciones.length>0">
+    <div *ngIf="this.misCotizaciones.length>0 && multicotizador">
 
       <app-tabla-cotizadora [cotizaciones]="this.misCotizaciones"></app-tabla-cotizadora>
     </div>

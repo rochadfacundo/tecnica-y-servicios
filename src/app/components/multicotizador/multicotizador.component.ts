@@ -23,9 +23,13 @@ import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
-import { buildATMRequest } from './cotizadores/atm';
-import { getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
-import { Cotizacion } from '../../interfaces/cotizacion';
+import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
+import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
+import { Cotizacion, CotizacionATM } from '../../interfaces/cotizacion';
+import { XMLParser } from 'fast-xml-parser';
+import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
+import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
+import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 
 @Component({
   selector: 'app-multicotizador',
@@ -69,10 +73,10 @@ export class MulticotizadorComponent implements OnInit {
   codigosUso: any[] = [];
   anio:number=0;
   codigoInfoAuto:number=0;
-  codigoRivadavia:String="";
-  sumaRivadavia:String="";
+  codigoRivadavia:string="";
+  sumaRivadavia:string="";
 
-  codigoPostalFederacion:String="";
+  codigoPostalFederacion:string="";
   tipoVehiculoFederacion:number=0;
 
   cotizacionesRus: RusCotizado[] = [];
@@ -538,55 +542,21 @@ export class MulticotizadorComponent implements OnInit {
   //RIO URUGUAY
   cotizarRUS(): void {
 
-
-    let codigoTipo= getTipo(this.form.tipoVehiculo.id);
-    const yes = "SI";
-    const no = "NO";
-    const USO:TipoDeUso = this.form.uso;
-    const medioCobro= this.form.medioPago.codigo === 1 ? 1 : 3;
-
-    const vehiculo: VehiculosRus[]=[{
-        anio: String(this.form.anio),
-        controlSatelital: getYesNo(this.form.controlSatelital,yes,no),
-        cpLocalidadGuarda:Number(this.form.cpLocalidadGuarda),
-        gnc: getYesNo(this.form.tieneGnc,yes,no),
-        codia:this.codigoInfoAuto,
-        uso: USO.uso,
-        rastreoACargoRUS: getYesNo(this.form.tieneRastreador,yes,no),
-    }];
-
-    const cotizacionData: CotizacionRioUruguay = {
-      codigoProductor: 4504,
-      codigoSolicitante: 4504,
-      codigoTipoInteres: codigoTipo,
-      cuotas: Number(this.form.cuotas), //solo permite hasta 3
-      ajusteAutomatico:Number(this.form.clausulaAjuste.codigo),
-      condicionFiscal: this.form.condicionFiscal.cfFedRusATM,
-      tipoVigencia: this.form.tipoVigencia.opcion,
-      medioCobro:medioCobro,
-      vehiculos: vehiculo,
-      vigenciaDesde: this.form.vigenciaDesde,
-      vigenciaHasta: this.form.vigenciaHasta,
-      sumaAseguradaGnc:Number(this.form.gnc),
-      sumaAseguradaAccesorios:0,
-      controlSatelital: 'NO',
-      excluirVida: 'NO',
-      aumentoRCPaisesLimitrofes: 'NO'
-     //vigenciaPolizaId: 65 //id de autos
-    };
-
-    /*
-    if(codigoTipo=='MOTOVEHICULO')
-    {
-      cotizacionData.vigenciaPolizaId=70; //id para motos
-    }*/
+    const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto);
 
     this.s_rus.cotizar(cotizacionData).subscribe({
       next: (response) => {
-        console.log('✅ Cotización exitosa en RUS:', response);
-        this.cotizacion = true;
-        this.cotizacionError='';
-        this.cotizacionesRus = response.dtoList;
+        console.log('✅ Cotización exitosa en RUS:', response.dtoList);
+
+        const cotizacionesRus = response.dtoList;
+
+
+    const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
+    console.log(cotizacionRUS);
+
+    this.cotizacionGenerada.emit(cotizacionRUS);
+
+
 
       },
       error: (error) => {
@@ -602,67 +572,19 @@ export class MulticotizadorComponent implements OnInit {
   //MERCANTIL ANDINA
   cotizarMercantil()
   {
-    const TIPO_VEHICULO = getTipo(this.form.tipoVehiculo.id);
-    const ANIO = Number(this.form.anio);
-    const USO: TipoDeUso =  this.form.uso;
-    const PRODUCTOR:Productor={ id: 86322 };
-    const LOCALIDAD:CotizacionLocalidad=
-    { codigo_postal: Number(this.form.cpLocalidadGuarda),
-      id:10407,
-      provincia: this.form.provincia.descripcion
-    };
-    const RASTREADOR=this.form.rastreador ? 1 : 0;
 
-
-    let cotizacionData: CotizacionMercantil = {
-      canal: 78, //canal autos
-      localidad: LOCALIDAD,
-      vehiculo:null,
-      productor: PRODUCTOR,
-      cuotas:Number(this.form.cuotas),
-      tipo: TIPO_VEHICULO,//este lo agregue yo para validar en el backend el endpoint
-      periodo: Number(this.form.tipoRefacturacion?.mercantilPeriodo),
-      iva: Number(this.form.condicionFiscal.cfMercantil),
-      //   comision: nose,
-      //   bonificacion: nose,
-      //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
-      desglose:true     //desglose de montos totales y cuotas
-    };
-
-    if(cotizacionData.tipo=="MOTOVEHICULO"){
-
-      const MOTOVEHICULO:CotizacionVehiculoMoto=  {
-        infoauto: this.codigoInfoAuto,
-        aniofab: ANIO,
-        uso: USO.id,
-        gnc: this.form.tieneGnc,
-        rastreo: RASTREADOR };
-       cotizacionData.vehiculo=MOTOVEHICULO;
-       cotizacionData.canal=81; //canal motos
-
-    }else
-    {
-      const VEHICULO:CotizacionVehiculo=  {
-        infoauto: this.codigoInfoAuto,
-        anio: ANIO,
-        uso: USO.id,
-        gnc: this.form.tieneGnc,
-        rastreo: RASTREADOR };
-        cotizacionData.vehiculo=VEHICULO;
-    }
+    const cotizacionData= buildMercantilRequest(this.form,this.codigoInfoAuto);
 
     this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
 
       console.log('✅ Cotización exitosa Mercantil Andina:', response);
-      this.cotizacion = true;
-      /*--TABLA*
+      const cotizacionMercantil = construirCotizacionMercantil(response.resultado);
+      console.log(cotizacionMercantil);
+      this.cotizacionGenerada.emit(cotizacionMercantil);
 
-      this.cotizacionError='';
-      this.cotizacionesRus = response.dtoList;
-    console.log('Cotizaciones procesadas:', this.cotizacionesRus);*/
     },
     error: (error) => {
-      this.cotizacion = false;
+
 
       console.error("❌ Mercantil Andina Cotizacion Error:",
       error?.error?.error || "Error desconocido");
@@ -675,65 +597,24 @@ export class MulticotizadorComponent implements OnInit {
   //Rivadavia
   cotizarRivadavia()
   {
-    //formatDateSinceYear
-    const gnc= this.form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
-    const personaJuridica =
-    this.form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
-    const formaPago= this.form.medioPago.codigo === 1 ? FormaPago.PAGO_FACIL : FormaPago.TARJETA_CREDITO;
-
-    const cotizacion: DatosCotizacionRivadavia = {
-      nroProductor: "18922",
-      claveProductor: "THLV2582",
-      datoAsegurado: {
-        tipoDocumento: this.form.tipoId,
-        condicionIVA: this.form.condicionFiscal.cfRivadavia,
-        condicionIB: CondicionIB.CONSUMIDOR_FINAL, //lo agrego?
-        nroDocumento: this.form.nroId,
-        //cuil: "",
-        //cuit: "asd",
-        //fechaNacimiento?: string;
-        personaJuridica:personaJuridica,
-         formaPago: formaPago
-      },
-      datoVehiculo: {
-        codigoInfoAuto: String(this.codigoInfoAuto),
-        codigoVehiculo: String(this.codigoRivadavia),
-        modeloAnio: String(this.anio),
-        sumaAsegurada: Number(this.sumaRivadavia),
-        porcentajeAjuste: Number(this.form.clausulaAjuste.codigo),
-      },
-      datoPoliza: {
-        nroPoliza: "12322",
-        fechaVigenciaDesde: this.form.vigenciaDesde,
-        fechaVigenciaHasta: this.form.vigenciaHasta,
-        cantidadCuotas: String(this.form.cuotas),
-        tipoFacturacion: this.form.tipoRefacturacion.descripcion, //tiene mas que fedpat.
-        provincia: this.form.provincia.provinciaRiv,
-        codigoPostal: this.form.cpLocalidadGuarda,
-        sumaAseguradaAccesorios: 0, //y aca se suma gnc?
-        sumaAseguradaEquipaje: 0,    //estos?
-        gnc: gnc,
-          //cantidadAsientos?: string;
-          //alarmaSatelital?: AlarmaSatelital;
-          //subrogado?: boolean;
-          //coeficienteRC?: number;    ESTOS SON DECUENTOS agregarlo con POLIZAS VINCULADAS
-          //coeficienteCasco?: number;  ESTOS SON DESCUENTOS agregarlo con POLIZAS VINCULADAS
-          //porcentajeBonificacion?: number;   DESCUENTOS PERO DESCONTANDO COMISION
-          //aniosSinSiniestros?: AniosSinSiniestros;
-      },
-      polizasVinculadas: {
-        accidentePasajeros: "n",
-        accidentePersonales: "n",
-        combinadoFamiliar: "n",
-        incendio: "n",
-        vidaIndividual: "n"
-      }
-    };
+    const cotizacion:DatosCotizacionRivadavia = buildRivadaviaRequest(
+      this.form,
+      this.codigoInfoAuto,
+      this.codigoRivadavia,
+      this.sumaRivadavia
+    );
 
     this.s_riv.cotizarRivadavia(cotizacion).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa Rvadavia:',res);
+
+       const cotizacionRivadavia:Cotizacion= construirCotizacionRivadavia(res.coberturas);
+
+       console.log(cotizacionRivadavia);
+
+       this.cotizacionGenerada.emit(cotizacionRivadavia);
+
       },
       error: (err) => {
         console.log(err);
@@ -744,61 +625,18 @@ export class MulticotizadorComponent implements OnInit {
   //Federacion patronal
   cotizarFederacion()
   {
-    let rastreador= this.form.rastreador? Number(this.form.rastreador.codigo): 99;
-    let comision= this.form.descuentoComision? Number(this.form.descuentoComision.codigo):0;
-    const fechaOriginal = this.form.vigenciaDesde;
-    const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
-    const cotizacionFederacion: CotizacionFederacion = {
-      //numero_cotizacion: 129445013,
-      fecha_desde: fechaFormateada,
-      descuento_comision: comision,
-      medio_pago: Number(this.form.medioPago.codigo),
-      pago_contado: false,
-      razon_social: Number(this.form.tipoPersoneria.codigo),
-      //cliente_nuevo: false,
-      refacturaciones: Number(this.form.tipoRefacturacion?.codigo),
-      contratante: {
-        id: Number(this.form.nroId),
-        tipo_id: this.form.tipoId,
-       // cuit: '20352928587',
-        nombre: this.form.nombre,
-        apellido: this.form.apellido,
-        condicion_iva: this.form.condicionFiscal.cfFedRusATM,
-        //localidad: 0,
-        //matricula: '1125554'
-      },
-      vehiculo: {
-        infoauto: String(this.codigoInfoAuto),
-        anio: String(this.anio),
-        tipo_vehiculo: this.tipoVehiculoFederacion,
-        alarma: Boolean(this.form.alarma),
-        rastreador:rastreador,
-        gnc: Boolean(this.form.tieneGnc),
-        //volcador: false,
-        //suma_asegurada: 1200000,
-        localidad_de_guarda: Number(this.codigoPostalFederacion)
-      },
-      coberturas: {
-        ajuste_automatico: 99, //en mensuales hasta 10,
-        rc_ampliada: 99, //diferencia entre ajuste automatico y esto
-        interasegurado: true, //siempre true
-        rc_conosur:1,
-        grua:Boolean(this.form.grua),
-        taller_exclusivo:Boolean(this.form.tallerExclusivo),
-        casco_conosur:true,
-        plan: "null",
-        franquicia: Number(this.form.franquicia.codigo),
-      },/*
-      producto_modular: {
-        cant_modulos: 0,
-        codigo_producto: '190001',
-        fecha_nacimiento: '13/07/1998'
-      },*/
-    };
+
+    const cotizacionFederacion= buildFederacionRequest(this.form,this.codigoInfoAuto,this.tipoVehiculoFederacion,this.codigoPostalFederacion);
 
     this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa Federacion:',res);
+
+       const cotizacionFederacion:Cotizacion= construirCotizacionFederacion(res.coberturas.planes);
+
+       console.log(cotizacionFederacion);
+
+       this.cotizacionGenerada.emit(cotizacionFederacion);
       },
       error: (err) => {
         console.log(err);
@@ -811,31 +649,41 @@ export class MulticotizadorComponent implements OnInit {
   cotizar()
   {
     this.form = this.cotizacionForm.getRawValue();
-  //  this.cotizarRivadavia();
+  this.cotizarRivadavia();
 
-  //  this.cotizarFederacion();
-  //  this.cotizarRUS();
+  this.cotizarRUS();
 
-   const xmlAtm=buildATMRequest(this.form,String(this.codigoInfoAuto));
+  this.cotizarFederacion();
 
-   this.cotizarATM(xmlAtm);
 
-  //  this.cotizarMercantil();
+   this.cotizarATM();
+
+  this.cotizarMercantil();
   }
 
 
 
+  cotizarATM(){
 
-  cotizarATM(xml:string){
-    this.s_ATM.cotizarATM(xml).subscribe({
+    const xmlAtm=buildATMRequest(this.form,String(this.codigoInfoAuto));
+
+    this.s_ATM.cotizarATM(xmlAtm).subscribe({
       next: (res) => {
-       console.log('✅ Cotización exitosa ATM:',res);
-      },
-      error: (err) => {
-        console.log(err);
+       console.log('✅ Cotización exitosa ATM:');
+
+    const resultado =parsearXML(res);
+
+    const cotizacionATM = construirCotizacionATM(resultado);
+    console.log(cotizacionATM);
+
+    this.cotizacionGenerada.emit(cotizacionATM);
+
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
       }
-    });
-  }
 
 
 

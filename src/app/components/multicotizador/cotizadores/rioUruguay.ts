@@ -1,5 +1,8 @@
-import { TipoVehiculoRUS } from "../../../interfaces/cotizacionRioUruguay";
+import { Cotizacion } from "../../../interfaces/cotizacion";
+import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
+import { CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../interfaces/tiposDeUso";
+import { getTipo, getYesNo } from "../utils/utils";
 
 export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
 
@@ -77,4 +80,69 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
           break;
       }
       return tiposDeUso;
+  }
+
+  export function buildRusRequest(form: CotizacionFormValue,infoauto:number):CotizacionRioUruguay{
+        let codigoTipo= getTipo(form.tipoVehiculo.id);
+        const yes = "SI";
+        const no = "NO";
+        const USO:TipoDeUso = form.uso;
+        const medioCobro= form.medioPago.codigo === 1 ? 1 : 3;
+
+        const vehiculo: VehiculosRus[]=[{
+            anio: String(form.anio),
+            controlSatelital: getYesNo(form.controlSatelital,yes,no),
+            cpLocalidadGuarda:Number(form.cpLocalidadGuarda),
+            gnc: getYesNo(form.tieneGnc,yes,no),
+            codia:infoauto,
+            uso: USO.uso,
+            rastreoACargoRUS: getYesNo(form.tieneRastreador,yes,no),
+        }];
+
+        const cotizacionData: CotizacionRioUruguay = {
+          codigoProductor: 4504,
+          codigoSolicitante: 4504,
+          codigoTipoInteres: codigoTipo,
+          cuotas: Number(form.cuotas), //solo permite hasta 3
+          ajusteAutomatico:Number(form.clausulaAjuste.codigo),
+          condicionFiscal: form.condicionFiscal.cfFedRusATM,
+          //tipoVigencia: form.tipoVigencia.opcion,
+          tipoVigencia: "SEMESTRAL",
+          medioCobro:medioCobro,
+          vehiculos: vehiculo,
+          vigenciaDesde: form.vigenciaDesde,
+          vigenciaHasta: form.vigenciaHasta,
+          sumaAseguradaGnc:Number(form.gnc),
+          sumaAseguradaAccesorios:0,
+          controlSatelital: 'NO',
+          excluirVida: 'NO',
+          aumentoRCPaisesLimitrofes: 'NO'
+         //vigenciaPolizaId: 65 //id de autos
+        };
+
+        /*
+        if(codigoTipo=='MOTOVEHICULO')
+        {
+          cotizacionData.vigenciaPolizaId=70; //id para motos
+        }*/
+
+          return cotizacionData;
+
+  }
+
+ export function construirCotizacionRus(coberturas: any[]): Cotizacion {
+    const buscarPremio = (codigoCasco: string): number | undefined => {
+      const cobertura = coberturas.find(c => c.codigoCasco === codigoCasco);
+      return cobertura ? cobertura.premio : undefined;
+    };
+
+    const cotizacion: Cotizacion = {
+      compania: 'Río Uruguay',
+      rc: buscarPremio('T34'),
+      mb: buscarPremio('B-80'),
+      mplus: buscarPremio('S0'),
+      // tr1 y tr2 no definidos por ahora
+    };
+
+    return cotizacion;
   }
