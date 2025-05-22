@@ -5,3 +5,4 @@ export interface Cobertura{
   valor:string|null;
 
 }
+

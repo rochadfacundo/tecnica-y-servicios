@@ -1,4 +1,6 @@
+import { XMLParser } from "fast-xml-parser";
 import { MedioPago, Plan } from "../../../enums/EnumAtm";
+import { Cotizacion, CotizacionATM } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { getYesNo } from "../utils/utils";
 
@@ -84,4 +86,53 @@ form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
 
 return xml;
 
+}
+
+export function parsearXML(res:string):CotizacionATM[]{
+  const parser = new XMLParser({ ignoreAttributes: false });
+  const parsed = parser.parse(res);
+
+  // Acceso al nodo principal
+  const coberturas = parsed['SOAP-ENV:Envelope']
+    ['SOAP-ENV:Body']
+    ['ns1:AUTOS_CotizarResponse']
+    ['ns1:AUTOS_CotizarResult']
+    .auto
+    .cotizacion
+    .cobertura;
+
+  const resultado: CotizacionATM[] = Array.isArray(coberturas) ? coberturas.map((c) => ({
+    codigo: c.codigo,
+    descripcion: c.descripcion,
+    prima: parseFloat(c.prima),
+    premio: parseFloat(c.premio),
+    cuotas: parseInt(c.cuotas),
+    impcuotas: parseFloat(c.impcuotas),
+    ajuste: c.ajuste,
+    formapago: c.formapago,
+    plan_cot: c.plan_cot,
+    solicitud_glm: c.solicitud_glm
+  })) : [];
+  console.log(resultado);
+
+  return resultado;
+}
+
+
+export function construirCotizacionATM(coberturas: any[]): Cotizacion {
+  const buscarPremio = (codigo: string): number | undefined => {
+    const cobertura = coberturas.find(c => c.codigo === codigo);
+    return cobertura ? cobertura.premio : undefined;
+  };
+
+  const cotizacion: Cotizacion = {
+    compania: 'ATM',
+    rc: buscarPremio('A0'),
+    mb: buscarPremio('C3'),
+    mplus: buscarPremio('C2'),
+    tr1: buscarPremio('D3'),
+    tr2: buscarPremio('D2'),
+  };
+
+  return cotizacion;
 }

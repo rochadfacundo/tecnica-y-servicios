@@ -21,7 +21,7 @@ export class DashboardComponent {
 
   constructor(private s_auth:AuthService,private router:Router)
   {
-    this.misCotizaciones= getCotizacionesTabla();
+    this.misCotizaciones= [];
   }
 
   logout()
