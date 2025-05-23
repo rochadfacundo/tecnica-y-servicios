@@ -1,6 +1,5 @@
 enum Role {
-  Invitado="Invitado",
-  Usuario="Usuario",
+  Productor="Productor",
   Supervisor="Supervisor",
   Administrador="Administrador",
 }

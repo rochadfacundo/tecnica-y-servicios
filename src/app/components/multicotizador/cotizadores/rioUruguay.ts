@@ -95,6 +95,8 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
             cpLocalidadGuarda:Number(form.cpLocalidadGuarda),
             gnc: getYesNo(form.tieneGnc,yes,no),
             codia:infoauto,
+            sumaAseguradaGnc:form.gnc,
+           // sumaAseguradaAccesorios:"aca monto de la suma de accesorios",
             uso: USO.uso,
             rastreoACargoRUS: getYesNo(form.tieneRastreador,yes,no),
         }];
@@ -103,7 +105,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
           codigoProductor: 4504,
           codigoSolicitante: 4504,
           codigoTipoInteres: codigoTipo,
-          cuotas: Number(form.cuotas), //solo permite hasta 3
+          cuotas: Number(form.cuotas),
           ajusteAutomatico:Number(form.clausulaAjuste.codigo),
           condicionFiscal: form.condicionFiscal.cfFedRusATM,
           //tipoVigencia: form.tipoVigencia.opcion,
@@ -114,7 +116,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
           vigenciaHasta: form.vigenciaHasta,
           sumaAseguradaGnc:Number(form.gnc),
           sumaAseguradaAccesorios:0,
-          controlSatelital: 'NO',
+          controlSatelital: getYesNo(form.controlSatelital,yes,no),
           excluirVida: 'NO',
           aumentoRCPaisesLimitrofes: 'NO'
          //vigenciaPolizaId: 65 //id de autos

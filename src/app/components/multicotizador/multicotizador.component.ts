@@ -1,23 +1,21 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
-import { CotizacionRioUruguay, RusCotizado, TipoVehiculoRUS, VehiculosRus } from '../../interfaces/cotizacionRioUruguay';
-import { CotizacionLocalidad, CotizacionMercantil,CotizacionVehiculo,CotizacionVehiculoMoto,MercantilCotizado,Productor } from '../../interfaces/cotizacionMercantil';
+import { RusCotizado, TipoVehiculoRUS } from '../../interfaces/cotizacionRioUruguay';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
 import { TipoDeUso } from '../../interfaces/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
-import { CondicionIB, DatosCotizacionRivadavia, EstadoGNC, FormaPago, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import {  DatosCotizacionRivadavia, EstadoGNC, FormaPago, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
-import { CotizacionFederacion, LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
+import {LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
 import { CondicionFiscalCodigo } from '../../enums/condicion';
-import { Plan,MedioPago } from '../../enums/EnumAtm';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
@@ -25,8 +23,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
-import { Cotizacion, CotizacionATM } from '../../interfaces/cotizacion';
-import { XMLParser } from 'fast-xml-parser';
+import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
@@ -108,16 +105,6 @@ export class MulticotizadorComponent implements OnInit {
   [
     { id: 1, nombre: 'VEHICULO' },
     { id: 2, nombre: 'MOTOVEHICULO'},
-    { id: 3, nombre: 'PERSONA' },
-    { id: 4, nombre: 'VIVIENDA' },
-    { id: 5, nombre: 'COMERCIO' },
-    { id: 6, nombre: 'BICICLETA' },
-    { id: 7, nombre: 'MAQUINARIA' },
-    { id: 8, nombre: 'ACOPLADOS' },
-    { id: 9, nombre: 'TRAILERS'},
-    { id: 10, nombre: 'IMPLEMENTOS'},
-    { id: 11, nombre: 'CONSORCIO'},
-    { id: 12, nombre: 'Otro riesgo'},
   ];
 
   public readonly cuotas=[1,2,3,4,5,6];
@@ -287,10 +274,11 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
-  //COmparar clausulas para dar una por defecto.
-  compararClausula(op1: Tipo, op2: Tipo): boolean {
-    return op1?.codigo === op2?.codigo;
-  }
+      //COmparar clausulas para dar una por defecto.
+     compararClausula(op1: Tipo, op2: Tipo): boolean {
+        return op1?.codigo === op2?.codigo;
+      }
+
 
 
 
@@ -684,8 +672,5 @@ export class MulticotizadorComponent implements OnInit {
           }
         });
       }
-
-
-
 
 }

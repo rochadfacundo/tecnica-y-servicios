@@ -5,6 +5,7 @@ export interface Cotizacion {
   mplus?: number;
   tr1?: number;
   tr2?: number;
+  tr3?: number;
 }
 
 export interface CotizacionATM {

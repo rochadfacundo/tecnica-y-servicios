@@ -66,10 +66,10 @@ export function construirCotizacionMercantil(coberturas: any[]): Cotizacion {
   const cotizacion: Cotizacion = {
     compania: 'Mercantil Andina',
     rc: buscarPremio('A'),
-    mb: buscarPremio('B1'),
-    mplus: buscarPremio('B3'),
-    tr1: buscarPremio('D2 0030'),
-    tr2: buscarPremio('D2 0050'),
+    mb: buscarPremio('B3'),
+    mplus: buscarPremio('B1'),
+    tr1: buscarPremio('D2 0050'),
+    tr2: buscarPremio('D2 0030'),
   };
 
   return cotizacion;
