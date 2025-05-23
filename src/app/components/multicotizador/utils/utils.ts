@@ -1,4 +1,5 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
+import { Tipo } from "../../../interfaces/tipos";
  // Función para devolver string dependiento el booleano
 export function getYesNo(value: boolean,yes: string,no: string): string {
   return value === true ? yes : no;
@@ -19,6 +20,8 @@ export function getYesNo(value: boolean,yes: string,no: string): string {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+
 
 
     //cargar Anios en el formulario

@@ -73,10 +73,10 @@ export function construirCotizacionFederacion(coberturas: any[]): Cotizacion {
   const cotizacion: Cotizacion = {
     compania: 'Federación Patronal',
     rc: buscarPremio('A4'),
-    mb: buscarPremio('LB'),
-    mplus: buscarPremio('LB1'),
-    tr1: buscarPremio('TD1'),
-    tr2: buscarPremio('TD3'),
+    mb: buscarPremio('LB1'),
+    mplus: buscarPremio('LB'),
+    tr1: buscarPremio('TD3'),
+    tr2: buscarPremio('TD1'),
   };
 
   return cotizacion;

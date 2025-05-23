@@ -8,6 +8,8 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
     const personaJuridica =
     form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
+    const valorGnc= form.gnc? form.gnc : 0;
+
     const formaPago= form.medioPago.codigo === 1 ? FormaPago.PAGO_FACIL : FormaPago.TARJETA_CREDITO;
 
     const cotizacion: DatosCotizacionRivadavia = {
@@ -39,8 +41,8 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
         tipoFacturacion: form.tipoRefacturacion.descripcion, //tiene mas que fedpat.
         provincia: form.provincia.provinciaRiv,
         codigoPostal: form.cpLocalidadGuarda,
-        sumaAseguradaAccesorios: 0, //y aca se suma gnc?
-        sumaAseguradaEquipaje: 0,    //estos?
+        sumaAseguradaAccesorios: valorGnc, //y aca sumamos resto de accesorios(int)
+        sumaAseguradaEquipaje: 0,    //omnibus
         gnc: gnc,
           //cantidadAsientos?: string;
           //alarmaSatelital?: AlarmaSatelital;
