@@ -128,10 +128,11 @@ export function construirCotizacionATM(coberturas: any[]): Cotizacion {
   const cotizacion: Cotizacion = {
     compania: 'ATM',
     rc: buscarPremio('A0'),
-    mb: buscarPremio('C3'),
-    mplus: buscarPremio('C2'),
-    tr1: buscarPremio('D3'),
-    tr2: buscarPremio('D2'),
+    c: buscarPremio('C3'),
+    c1: buscarPremio('C2'),
+    d1: buscarPremio(''),
+    d2: buscarPremio('D2'),
+    d3: buscarPremio('D3'),
   };
 
   return cotizacion;

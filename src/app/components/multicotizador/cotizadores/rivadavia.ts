@@ -80,9 +80,10 @@ export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
   return {
     compania: 'Rivadavia',
     rc: buscarPremio('A'),
-    mb: buscarPremio('B'),
-    mplus: buscarPremio('M'),
-    tr1: buscarPremio('D F4'),
-    tr2: buscarPremio('D SF'),
+    c: buscarPremio('P'),
+    c1: buscarPremio('MX'),
+    d1: buscarPremio('D F1'),    //f1 o f2
+   d2: buscarPremio('D F3'),
+    d3: buscarPremio('D F5'),
   };
 }

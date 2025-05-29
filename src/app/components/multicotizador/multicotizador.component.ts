@@ -639,14 +639,14 @@ export class MulticotizadorComponent implements OnInit {
     this.form = this.cotizacionForm.getRawValue();
   this.cotizarRivadavia();
 
+  this.cotizarATM();
+
+  this.cotizarMercantil();
   this.cotizarRUS();
 
   this.cotizarFederacion();
 
 
-   this.cotizarATM();
-
-  this.cotizarMercantil();
   }
 
 

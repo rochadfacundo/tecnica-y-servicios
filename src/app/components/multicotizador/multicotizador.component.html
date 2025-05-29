@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <form [formGroup]="cotizacionForm">
 
- <!-- Código Tipo Interés -->
+ <!-- Código Tipo Interés  SACAR -->
 <div class="mb-3">
   <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
   <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
@@ -55,7 +55,7 @@
 
 <div class="" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
 
-    <!-- Tipo de Vehículo -->
+    <!-- Tipo de Vehículo  SACAR TAMBIEN -->
     <div class="mb-3">
       <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
       <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
@@ -137,7 +137,7 @@
        -->
     </div>
 
-      <!-- TIpo de uso -->
+      <!-- TIpo de uso   SACAR -->
       <div class="mb-3">
         <label for="uso" class="form-label">Tipo de uso</label>
         <select id="uso" class="form-select" formControlName="uso">
@@ -211,6 +211,7 @@
           <label for="tallerExclusivo" class="form-check-label">Taller exclusivo</label>
       </div>
 
+                <!-- SACAR -->
       <div class="mb-3 col-md-6">
         <label for="franquicia" class="form-label">Franquicia</label>
         <select id="franquicia" class="form-select" formControlName="franquicia">
@@ -223,7 +224,7 @@
 
 
     <div class="row" >
-          <!-- vigencia y refacturacion-->
+          <!-- vigencia y refacturacion-->              <!-- SACAR -->
       <div class="mb-3 col-md-6">
         <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
         <select id="tipoVigencia" class="form-select" formControlName="tipoVigencia">
@@ -231,7 +232,7 @@
         </select>
 
       </div>
-      <div class="mb-3 col-md-6">
+      <div class="mb-3 col-md-6">              <!-- SACAR -->
         <label for="tipoRefacturacion" class="form-label">Tipo de Refacturacion</label>
         <select id="tipoRefacturacion" class="form-select" formControlName="tipoRefacturacion">
           <option *ngFor="let refacturacion of this.tiposDeRefacturacion" [ngValue]="refacturacion">{{ refacturacion.descripcion }}</option>
@@ -250,7 +251,9 @@
           <option *ngFor="let medioPago of this.mediosPago" [ngValue]="medioPago">{{ medioPago.descripcion }}</option>
         </select>
       </div>
-      <div class="mb-3 col-md-6">
+      <div class="mb-3 col-md-6"> <!-- DESCUENTO DEL 10 SACAR EL BOTON
+        ofreceer boton que tenga descuentos del 10 o nada.
+        (varia segun grilla de comisiones)-->
         <label for="descuentoComision" class="form-label">Descuento comision</label>
         <select id="descuentoComision" class="form-select" formControlName="descuentoComision">
           <option *ngFor="let descuento of this.descuentoComision" [ngValue]="descuento">{{ descuento.descripcion }}</option>
@@ -258,7 +261,7 @@
       </div>
     </div>
 
-    <!-- Cuotas -->
+    <!-- Cuotas  SACAR-->
     <div class="mb-3">
       <label for="cuotas" class="form-label">Cuotas</label>
       <select id="cuotas" class="form-select" formControlName="cuotas">
@@ -266,7 +269,11 @@
       </select>
       </div>
 
- <!-- Clausula de ajuste -->
+ <!-- Clausula de ajuste
+
+ 20 TODAS       o         todas 10
+ 25 MERCANTIL       rio 20
+ -->
  <div class="mb-3">
   <label for="clausulaAjuste" class="form-label">Clausula de ajuste</label>
   <select id="clausulaAjuste" class="form-select"  [compareWith]="compararClausula" formControlName="clausulaAjuste">
@@ -277,7 +284,7 @@
 
 
 
-    <!-- Condición Fiscal -->
+    <!-- Condición Fiscal        SACAR-->
     <div class="mb-3">
       <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
       <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
@@ -315,7 +322,7 @@
       <input type="date" id="vigenciaDesde" class="form-control" formControlName="vigenciaDesde">
     </div>
 
-    <!-- Vigencia Hasta -->
+    <!-- Vigencia Hasta  sacar-->
     <div class="mb-3">
       <label for="vigenciaHasta" class="form-label">Vigencia Hasta</label>
       <input type="date" id="vigenciaHasta" class="form-control" formControlName="vigenciaHasta">
