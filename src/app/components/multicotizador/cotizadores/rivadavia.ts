@@ -1,12 +1,11 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CondicionIB, DatosCotizacionRivadavia, EstadoGNC, FormaPago } from "../../../interfaces/cotizacionRivadavia";
+import { CodigosPersoneria } from "../utils/utils";
 
 export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,codigoRivadavia:string,sumaRivadavia:string){
     //formatDateSinceYear
     const gnc= form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
-    const personaJuridica =
-    form.tipoPersoneria.descripcion === 'Persona Fisica' ? false: true;
 
     const valorGnc= form.gnc? form.gnc : 0;
 
@@ -23,7 +22,7 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
         //cuil: "",
         //cuit: "asd",
         //fechaNacimiento?: string;
-        personaJuridica:personaJuridica,
+        personaJuridica:CodigosPersoneria.Rivadavia.esJuridica,
          formaPago: formaPago
       },
       datoVehiculo: {
@@ -72,9 +71,12 @@ export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
     return { compania: 'Rivadavia' };
   }
 
-  const buscarPremio = (plan: string): number | undefined => {
-    const item = planes.find(p => p.plan === plan);
-    return item ? parseFloat(item.premioTotal) : undefined;
+  const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
+    for (const plan of nombresPlanes) {
+      const item = planes.find(p => p.plan === plan);
+      if (item) return parseFloat(item.premioTotal);
+    }
+    return undefined;
   };
 
   return {
@@ -82,8 +84,9 @@ export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
     rc: buscarPremio('A'),
     c: buscarPremio('P'),
     c1: buscarPremio('MX'),
-    d1: buscarPremio('D F1'),    //f1 o f2
-   d2: buscarPremio('D F3'),
+    d1: buscarPremio('D F1', 'D F2'),  // intenta con D F1, si no está usa D F2
+    d2: buscarPremio('D F3'),
     d3: buscarPremio('D F5'),
   };
 }
+

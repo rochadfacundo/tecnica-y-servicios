@@ -5,6 +5,43 @@ export function getYesNo(value: boolean,yes: string,no: string): string {
   return value === true ? yes : no;
 }
 
+//codigos personerias para companias
+export const CodigosPersoneria = {
+  Federacion: {
+    personaFisica: 21,
+  },
+  Mercantil: {
+
+  },
+  Rivadavia: {
+    esJuridica: false
+  },
+  Atm: {
+    personaFisica: 'F',
+    personaJuridica: 'J',
+  },
+  RUS: {
+    PERSONA_FISICA: 'FISICA',
+    PERSONA_JURIDICA: 'JURIDICA',
+  },
+};
+
+//descarga como json
+export function downloadJSON(data: any[], name: string): void {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: 'application/json'
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+
  // Función para formatear la fecha en 'dd-MM-yyyy'
  export function formatDateSinceDay(date: Date): string {
   const year = date.getFullYear();
@@ -65,51 +102,3 @@ export function getYesNo(value: boolean,yes: string,no: string): string {
     return vehiculo;
   }
 
-
-  //devuelve tabla hardcodeada cotizaciones
-export function getCotizacionesTabla(): Cotizacion[]{
-  const cotizaciones: Cotizacion[] = [
-    {
-      compania: 'Mercantil Andina',
-      rc: 10200,
-      mb: 13800,
-      mplus: 14950,
-      tr1: 21000,
-      tr2: 24500
-    },
-    {
-      compania: 'Federación Patronal',
-      rc: 11000,
-      mb: 14200,
-      mplus: 15100,
-      tr1: 22300,
-      tr2: 26000
-    },
-    {
-      compania: 'Río Uruguay',
-      rc: 10500,
-      mb: 13900,
-      mplus: 14800,
-      tr1: 20800,
-      tr2: 23900
-    },
-    {
-      compania: 'Rivadavia',
-      rc: 9950,
-      mb: 13500,
-      mplus: 14200,
-      tr1: 19700,
-      tr2: 22400
-    },
-    {
-      compania: 'ATM',
-      rc: 3250,
-      mb: 11300,
-      mplus: 13210,
-      tr1: 2700,
-      tr2: 2240
-    }
-  ];
-
-  return cotizaciones;
-}

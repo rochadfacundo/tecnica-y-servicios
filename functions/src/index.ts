@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import * as functions from "firebase-functions";
+
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obtenerTokenMercantil, obtenerVehiculosMercantil, obtenerVersionesMercantil } from "./ma-service";
@@ -7,9 +8,12 @@ import { cotizarRus, getMarcas,
   getModelos,
   getVersiones,
   getTokenRus } from "./rus-service";
-import { getGruposPorMarca, getModelosPorMarcaYGrupo, getMarcasInfoauto, getTokenInfoauto} from "./intoauto-service";
+import { getGruposPorMarca, getModelosPorMarcaYGrupo, getTokenInfoauto, getTodasLasMarcasInfoauto} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getFranquiciaVigente, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 // Habilitar CORS para todas las solicitudes
@@ -40,7 +44,7 @@ app.get("/infoauto/token", async (req: Request, res: Response) => {
 // ✅ Obtener marcas de INFOAUTO
 app.get("/infoauto/marcas", async (req: Request, res: Response) => {
   try {
-    const marcas = await getMarcasInfoauto();
+    const marcas = await getTodasLasMarcasInfoauto();
     res.status(200).json(marcas);
   } catch (error: any) {
     console.error("Error obteniendo marcas de INFOAUTO:", error);

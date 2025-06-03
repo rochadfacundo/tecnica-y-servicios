@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "nombre": "AUTO"
+  },
+  {
+    "id": 2,
+    "nombre": "PICK-UP \"A\""
+  },
+  {
+    "id": 3,
+    "nombre": "PICK-UP \"B\""
+  },
+  {
+    "id": 4,
+    "nombre": "CAMION HASTA 5 TN"
+  },
+  {
+    "id": 5,
+    "nombre": "CAMION HASTA 10 TN"
+  },
+  {
+    "id": 6,
+    "nombre": "CAMION MAS 10 TN"
+  },
+  {
+    "id": 25,
+    "nombre": "MOTORHOME"
+  },
+  {
+    "id": 26,
+    "nombre": "M3 OMNIBUS"
+  }
+]

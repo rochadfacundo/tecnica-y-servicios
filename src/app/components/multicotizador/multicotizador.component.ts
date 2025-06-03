@@ -20,9 +20,9 @@ import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interface
 import { Cobertura } from '../../interfaces/cobertura';
 import { EProvincia, Provincia } from '../../interfaces/provincia';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
+import { downloadJSON, formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
-import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS, setTiposUso } from './cotizadores/rioUruguay';
+import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS, setTiposUsoRUS } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
@@ -46,7 +46,6 @@ export class MulticotizadorComponent implements OnInit {
   group_idSelected:number=0;
   anios: number[] = [];
   //fed
-  tiposPersoneria: TipoPersoneria[]=[];
   tipoPersona!: TipoPersoneria;
   tipoVehiculo:string="";
   tiposId:TipoId[]=[];
@@ -170,7 +169,6 @@ export class MulticotizadorComponent implements OnInit {
       tallerExclusivo:false,
       tieneRastreador:false,
       tipoId: "DNI",
-      tipoPersoneria: [{ value: "" }],
       tipoRefacturacion:[],
       tipoVigencia: [{ value: null }, Validators.required],
       tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
@@ -254,23 +252,6 @@ export class MulticotizadorComponent implements OnInit {
       {codigo:15,descripcion:'TD3-TODO RIESGO CON FRANQUICIA FIJA.',valor:'TD3'},
     ];
 
-    this.s_fedPat.getTiposPersoneria().subscribe({
-
-      next: (tipos) => {
-        console.log(tipos);
-      // Ordenar: primero el que tenga descripcion "Persona Fisica"
-      this.tiposPersoneria = tipos.sort((a, b) => {
-      if (a.descripcion === 'Persona Fisica') return -1;
-      if (b.descripcion === 'Persona Fisica') return 1;
-      return 0;
-    });
-        this.tiposPersoneria = tipos;
-      },
-      error: (err) => {
-        console.error("Error cargando tipos de personería", err);
-      }
-    });
-
 
   }
 
@@ -288,6 +269,8 @@ export class MulticotizadorComponent implements OnInit {
       next: (response:Brand[]) => {
         console.log(response);
         this.marcas=response;
+        downloadJSON(this.marcas,'marcasINFOAUTO');
+
       },
       error: (error) => {
         console.error('Error:', error);
@@ -330,6 +313,7 @@ export class MulticotizadorComponent implements OnInit {
 
       if (tipo) {
         this.tiposVehiculo = getTiposVehiculoRUS(tipo.nombre);
+
         this.cotizacionForm.get('tipoVehiculo')?.enable();
       } else {
         this.cotizacionForm.get('tipoVehiculo')?.disable();
@@ -342,7 +326,7 @@ export class MulticotizadorComponent implements OnInit {
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
 
       if(tipo){
-        this.tiposDeUso=setTiposUso(Number(tipo.id));
+        this.tiposDeUso=setTiposUsoRUS(Number(tipo.id));
       }
 
 
@@ -358,18 +342,6 @@ export class MulticotizadorComponent implements OnInit {
         this.cotizacionForm.get('uso')?.disable();
       }
     });
-
-    this.cotizacionForm.get('tipoPersoneria')?.valueChanges.subscribe((tipoPersona) => {
-
-      if (tipoPersona) {
-        this.tipoPersona=tipoPersona;
-      } else {
-        this.marcas = [];
-        this.cotizacionForm.get('marca')?.disable();
-        this.cotizacionForm.get('uso')?.disable();
-      }
-    });
-
 
     this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca:number) => {
       this.cotizacionForm.get('anio')?.setValue(null);

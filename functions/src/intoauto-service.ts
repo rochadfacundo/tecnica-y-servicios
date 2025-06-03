@@ -1,36 +1,65 @@
 import * as admin from "firebase-admin";
 import axios from "axios";
+import { defineSecret } from "firebase-functions/params";
 
-// Inicializar Firestore si aún no está inicializado
+const ENV = defineSecret("ENV");
+
+const INFOA_USUARIO = defineSecret("INFOA_USUARIO");
+const INFOA_CLAVE = defineSecret("INFOA_CLAVE");
+const INFOA_AUTH_URL = defineSecret("INFOA_AUTH_URL");
+const REFRESH_URL = defineSecret("INFOA_REFRESH_URL");
+const INFOA_BRANDS_URL = defineSecret("INFOA_BRANDS_URL");
+
+const INFOA_USUARIO_DEMO = defineSecret("INFOA_USUARIO_DEMO");
+const INFOA_CLAVE_DEMO = defineSecret("INFOA_CLAVE_DEMO");
+const INFOA_AUTH_URL_DEMO = defineSecret("INFOA_AUTH_URL_DEMO");
+const REFRESH_URL_DEMO = defineSecret("INFOA_REFRESH_URL_DEMO");
+const INFOA_BRANDS_URL_DEMO = defineSecret("INFOA_BRANDS_URL_DEMO");
+
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
 
-// URL del servicio de autenticación de INFOAUTO
-// demo
-const AUTH_URL = "https://demo.api.infoauto.com.ar/cars/auth/login";
-const AUTH_URL_REFRESH= "https://demo.api.infoauto.com.ar/cars/auth/refresh";
-
-const BRANDS_URL="https://demo.api.infoauto.com.ar/cars/pub/brands";
-const CREDENTIALS = {
-  usuario: "hrocha@tecnicayseguros.com.ar",
-  clave: "tys.API2025",
+const isDemo = async () => {
+  return (await ENV.value()) === "produccion";
 };
-// produccion
-// const AUTH_URL = "https://api.infoauto.com.ar/cars/auth/login";
-// const AUTH_URL_REFRESH= "https://api.infoauto.com.ar/cars/auth/refresh";
 
-// const BRANDS_URL="https://api.infoauto.com.ar/cars/pub/brands";
-// Credenciales de INFOAUTO
-// const CREDENTIALS = {
-//  usuario: "hrocha@tecnicayseguros.com.ar",
-//  clave: "AjLyGC9i5QSrSw7U",
-// };
+const getCredentials = async () => {
+  if (await isDemo()) {
+    return {
+      usuario: await INFOA_USUARIO_DEMO.value(),
+      clave: await INFOA_CLAVE_DEMO.value(),
+    };
+  } else {
+    return {
+      usuario: await INFOA_USUARIO.value(),
+      clave: await INFOA_CLAVE.value(),
+    };
+  }
+};
 
-// Función para obtener el token de INFOAUTO
+const getUrls = async () => {
+  if (await isDemo()) {
+    return {
+      authUrl: await INFOA_AUTH_URL_DEMO.value(),
+      refreshUrl: await REFRESH_URL_DEMO.value(),
+      brandsUrl: await INFOA_BRANDS_URL_DEMO.value(),
+    };
+  } else {
+    return {
+      authUrl: await INFOA_AUTH_URL.value(),
+      refreshUrl: await REFRESH_URL.value(),
+      brandsUrl: await INFOA_BRANDS_URL.value(),
+    };
+  }
+};
+
 export const getTokenInfoauto = async () => {
+  const { usuario, clave } = await getCredentials();
+  const { authUrl, refreshUrl } = await getUrls();
+
   const docRef = db.collection("tokens").doc("infoauto");
   const doc = await docRef.get();
 
@@ -38,18 +67,15 @@ export const getTokenInfoauto = async () => {
     const data = doc.data();
     const now = Date.now();
 
-
-    // Si no expira, todavia lo reutilizo
     if (data && data.access_token && data.expiration > now) {
       console.log("🔄 Reutilizando access_token de INFOAUTO");
       return data.access_token;
     }
 
-    // Si expira, utilizo URL para renovar token.
     if (data && data.refresh_token && data.refresh_token_expiration > now) {
       console.log("🔄 Intentando refrescar el access_token...");
       try {
-        const refreshResponse = await axios.post(AUTH_URL_REFRESH, {
+        const refreshResponse = await axios.post(refreshUrl, {
           grant_type: "refresh_token",
           refresh_token: data.refresh_token,
         }, {
@@ -65,34 +91,31 @@ export const getTokenInfoauto = async () => {
 
         await docRef.set({
           access_token: newAccessToken,
-          refresh_token: data.refresh_token, // No cambia
+          refresh_token: data.refresh_token,
           expiration: expirationTime,
         });
         console.log("Se guarda bien el nuevo token en firestore!");
         return newAccessToken;
       } catch (refreshError) {
-        console.error("❌ Error refrescando el token, solicitando uno nuevo...");
+        console.error("❌ Error refrescando el token, solicitando uno nuevo");
       }
     }
   }
 
-  // Obtenemos token nuevo si expira el refresh token, no hay bd o falla.
   console.log("🔄 Obteniendo access token de INFOAUTO...");
   try {
-    const response = await axios.post(AUTH_URL, null, {
+    const response = await axios.post(authUrl, null, {
       headers: {
         "Authorization":
-        `Basic ${Buffer.from(`${CREDENTIALS.usuario}:${CREDENTIALS.clave}`)
-          .toString("base64")}`,
+        `Basic ${Buffer.from(`${usuario}:${clave}`).toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
 
     const accessToken = response.data.access_token;
     const refreshToken = response.data.refresh_token;
-    const expiresIn = 55 * 60 * 1000; // 55 minutos en milisegundos
+    const expiresIn = 55 * 60 * 1000;
     const expirationTime = Date.now() + expiresIn;
-    // 24 horas
     const refreshTokenExpirationTime = Date.now() + (24 * 60 * 60 * 1000);
     console.log("Se crea el nuevo access_token!");
 
@@ -105,10 +128,7 @@ export const getTokenInfoauto = async () => {
     console.log("Se guardo bien el token NUEVO en firestore!");
     return accessToken;
   } catch (error: any) {
-    const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Error desconocido";
+    const errorMessage = error.response?.data?.message || "Error desconocido";
     throw new Error(errorMessage);
   }
 };
@@ -116,13 +136,14 @@ export const getTokenInfoauto = async () => {
 export const getTodasLasMarcasInfoauto = async () => {
   try {
     const token = await getTokenInfoauto();
+    const { brandsUrl } = await getUrls();
     const pageSize = 100;
     let page = 1;
     let todasLasMarcas: any[] = [];
     let hayMas = true;
 
     while (hayMas) {
-      const response = await axios.get(BRANDS_URL, {
+      const response = await axios.get(brandsUrl, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -145,10 +166,7 @@ export const getTodasLasMarcasInfoauto = async () => {
 
     return todasLasMarcas;
   } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message ||
-      error.message ||
-      "Error al obtener las marcas de Infoauto";
+    const errorMessage = error.response?.data?.message || "Error get marcas";
     throw new Error(errorMessage);
   }
 };
@@ -156,8 +174,9 @@ export const getTodasLasMarcasInfoauto = async () => {
 export const getMarcasInfoauto = async () => {
   try {
     const token = await getTokenInfoauto();
+    const { brandsUrl } = await getUrls();
 
-    const response = await axios.get(BRANDS_URL, {
+    const response = await axios.get(brandsUrl, {
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -166,20 +185,16 @@ export const getMarcasInfoauto = async () => {
 
     return response.data;
   } catch (error: any) {
-    const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Error desconocido";
+    const errorMessage = error.response?.data?.message || "Error desconocido";
     throw new Error(errorMessage);
   }
 };
 
-// Función para obtener los grupos de una marca específica
 export const getGruposPorMarca = async (brandId: string) => {
   try {
     const token = await getTokenInfoauto();
-    const url =
-    `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups`;
+    const { brandsUrl } = await getUrls();
+    const url = `${brandsUrl}/${brandId}/groups`;
     const response = await axios.get(url, {
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -190,35 +205,30 @@ export const getGruposPorMarca = async (brandId: string) => {
   } catch (error: any) {
     console.log("error al traer grupos");
     console.log(error);
-    const errorMessage =
-    error.response?.data?.message ||
-    error.message ||
-    "Error desconocido";
+    const errorMessage = error.response?.data?.message || "Error desconocido";
     throw new Error(errorMessage);
   }
 };
 
-// Función para obtener los grupos de una marca específica
-export const getModelosPorMarcaYGrupo =
-  async (brandId: string, groupId:string) => {
-    try {
-      const token = await getTokenInfoauto();
-      const url =
-      `https://demo.api.infoauto.com.ar/cars/pub/brands/${brandId}/groups/${groupId}/models`;
-      const response = await axios.get(url, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      return response.data;
-    } catch (error: any) {
-      console.log("error al traer modelos");
-      console.log(error);
-      const errorMessage =
-      error.response?.data?.message ||
-      error.message ||
-      "Error desconocido";
-      throw new Error(errorMessage);
-    }
-  };
+export const getModelosPorMarcaYGrupo = async (
+  brandId: string,
+  groupId: string
+) => {
+  try {
+    const token = await getTokenInfoauto();
+    const { brandsUrl } = await getUrls();
+    const url = `${brandsUrl}/${brandId}/groups/${groupId}/models`;
+    const response = await axios.get(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.log("error al traer modelos");
+    console.log(error);
+    const errorMessage = error.response?.data?.message || "Error desconocido";
+    throw new Error(errorMessage);
+  }
+};

@@ -2,6 +2,8 @@ import { formatDate } from "@angular/common";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CotizacionFederacion } from "../../../interfaces/cotizacionfederacion";
 import { Cotizacion } from "../../../interfaces/cotizacion";
+import { CodigosPersoneria } from "../utils/utils";
+
 
 // Armar el request para cotizar federacion
 export function buildFederacionRequest(form: CotizacionFormValue,infoauto:number,tipoVehiculo:any,codPostal:any)
@@ -18,7 +20,7 @@ export function buildFederacionRequest(form: CotizacionFormValue,infoauto:number
         descuento_comision: comision,
         medio_pago: Number(form.medioPago.codigo),
         pago_contado: false,
-        razon_social: Number(form.tipoPersoneria.codigo),
+        razon_social: CodigosPersoneria.Federacion.personaFisica,
         //cliente_nuevo: false,
         refacturaciones: Number(form.tipoRefacturacion?.codigo),
         contratante: {
@@ -73,10 +75,10 @@ export function construirCotizacionFederacion(coberturas: any[]): Cotizacion {
   const cotizacion: Cotizacion = {
     compania: 'Federación Patronal',
     rc: buscarPremio('A4'),
-    mb: buscarPremio('LB1'),
-    mplus: buscarPremio('LB'),
-    tr1: buscarPremio('TD3'),
-    tr2: buscarPremio('TD1'),
+    c: buscarPremio('LB1'),
+    c1: buscarPremio('LB'),
+    d1: buscarPremio('TD3'),
+    d2: buscarPremio('TD1'),
   };
 
   return cotizacion;

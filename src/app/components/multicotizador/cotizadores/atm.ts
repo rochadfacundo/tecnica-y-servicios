@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { MedioPago, Plan } from "../../../enums/EnumAtm";
 import { Cotizacion, CotizacionATM } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { getYesNo } from "../utils/utils";
+import { CodigosPersoneria, getYesNo } from "../utils/utils";
 
 export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):string{
   const today = form.vigenciaDesde;
@@ -41,9 +41,6 @@ export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):strin
     plan = Plan.DESCONOCIDO;
   }
 
-  const persona =
-form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
-
   const xml = `
   <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <soapenv:Body>
@@ -59,7 +56,7 @@ form.tipoPersoneria.descripcion === 'Persona Fisica' ? 'F' : 'J';
        <plan>${plan}</plan>
      </usuario>
      <asegurado>
-       <persona>${persona}</persona>
+       <persona>${CodigosPersoneria.Atm.personaFisica}</persona>
        <iva>${form.condicionFiscal.cfFedRusATM}</iva>
        <cupondscto></cupondscto>
        <bonificacion></bonificacion>

@@ -10,17 +10,6 @@
   </select>
 </div>
 
-  <!-- Tipo de Vehículo -->
-  <div class="mb-3">
-    <label for="tipoPersoneria" class="form-label">Tipo de persona</label>
-    <select id="tipoPersoneria" class="form-select" formControlName="tipoPersoneria">
-      <option [ngValue]="null" disabled>Seleccione un tipo</option>
-      <option *ngFor="let tipo of tiposPersoneria" [ngValue]="tipo">{{ tipo.descripcion }}</option>
-    </select>
-  </div>
-
-  //Solo si es persona
-  <div *ngIf="tipoPersona?.descripcion === 'Persona Fisica'">
 
     <!-- Fila: Nombre y Apellido -->
     <div class="row">
@@ -49,7 +38,7 @@
       </div>
     </div>
 
-  </div>
+
 
     <!-- SECCION VEHICULOS -->
 

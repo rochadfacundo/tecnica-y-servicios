@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { TablaCotizadoraComponent } from '../../components/multicotizador/tabla-cotizadora/tabla-cotizadora.component';
 import { Cotizacion } from '../../interfaces/cotizacion';
-import { getCotizacionesTabla } from '../../components/multicotizador/utils/utils';
+
 
 @Component({
   selector: 'app-dashboard',

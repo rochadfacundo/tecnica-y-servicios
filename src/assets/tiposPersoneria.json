@@ -1,0 +1,86 @@
+[
+  {
+    "codigo": 21,
+    "descripcion": "Persona Fisica"
+  },
+  {
+    "codigo": 2,
+    "descripcion": "Soc. de Resp. Limitada"
+  },
+  {
+    "codigo": 10,
+    "descripcion": "Gobierno Provincial"
+  },
+  {
+    "codigo": 3,
+    "descripcion": "Sociedad Colectiva"
+  },
+  {
+    "codigo": 18,
+    "descripcion": "Club"
+  },
+  {
+    "codigo": 19,
+    "descripcion": "Sucesion"
+  },
+  {
+    "codigo": 1,
+    "descripcion": "Sociedad Anonima"
+  },
+  {
+    "codigo": 7,
+    "descripcion": "Banco"
+  },
+  {
+    "codigo": 4,
+    "descripcion": "Otras Soc. Legales"
+  },
+  {
+    "codigo": 13,
+    "descripcion": "Escuela"
+  },
+  {
+    "codigo": 12,
+    "descripcion": "Colegio Profesional"
+  },
+  {
+    "codigo": 9,
+    "descripcion": "Gobierno Nacional"
+  },
+  {
+    "codigo": 17,
+    "descripcion": "Soc. o Asoc. Civil y Sind."
+  },
+  {
+    "codigo": 8,
+    "descripcion": "Hospital"
+  },
+  {
+    "codigo": 5,
+    "descripcion": "Soc. de Hecho"
+  },
+  {
+    "codigo": 14,
+    "descripcion": "Cooperativa"
+  },
+  {
+    "codigo": 16,
+    "descripcion": "PRUEBA INSOMNIA"
+  },
+  {
+    "codigo": 6,
+    "descripcion": "Consorcio de Propietarios"
+  },
+  {
+    "codigo": 15,
+    "descripcion": "Entidad de Bien Publico"
+  },
+  {
+    "codigo": 22,
+    "descripcion": "Consorcio no constituido"
+  },
+  {
+    "codigo": 11,
+    "descripcion": "Gobierno Municipal"
+  }
+]

@@ -16,8 +16,9 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
       { id: 4, nombre: 'CAMION HASTA 5 TN' },
       { id: 5, nombre: 'CAMION HASTA 10 TN' },
       { id: 6, nombre: 'CAMION MAS 10 TN' },
-      { id: 25, nombre: 'MOTORHOME' },
-      { id: 26, nombre: 'M3 OMNIBUS' }];
+      //{ id: 25, nombre: 'MOTORHOME' },
+      //{ id: 26, nombre: 'M3 OMNIBUS' },
+      ];
 
   }else if(tipo==='MOTOVEHICULO'){
 
@@ -29,7 +30,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
 
 }
 
-  export function setTiposUso(id: number) {
+  export function setTiposUsoRUS(id: number) {
 
     let tiposDeUso: TipoDeUso[]=[];
 
@@ -141,9 +142,12 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
     const cotizacion: Cotizacion = {
       compania: 'Río Uruguay',
       rc: buscarPremio('T34'),
-      mb: buscarPremio('B-80'),
-      mplus: buscarPremio('S0'),
-      // tr1 y tr2 no definidos por ahora
+      c: buscarPremio('B-80'),
+      c1: buscarPremio('S0'),
+      d1:buscarPremio(''),
+      d2:buscarPremio(''),
+      d3:buscarPremio(''),
+      //no definidos por ahora
     };
 
     return cotizacion;

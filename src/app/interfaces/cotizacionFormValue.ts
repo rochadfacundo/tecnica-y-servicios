@@ -6,7 +6,7 @@ import { Provincia } from "./provincia";
 export interface CotizacionFormValue {
   codigoTipoInteres: any;
   //federacion
-  tipoPersoneria:TipoPersoneria;
+  //tipoPersoneria:TipoPersoneria;
   nombre?: any
   apellido?:any;
   nroId?:any;
