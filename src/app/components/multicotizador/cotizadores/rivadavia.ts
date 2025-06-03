@@ -11,6 +11,7 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
 
     const formaPago= form.medioPago.codigo === 1 ? FormaPago.PAGO_FACIL : FormaPago.TARJETA_CREDITO;
 
+    console.log("forma pago rivadavia",formaPago);
     const cotizacion: DatosCotizacionRivadavia = {
       nroProductor: "18922",
       claveProductor: "THLV2582",

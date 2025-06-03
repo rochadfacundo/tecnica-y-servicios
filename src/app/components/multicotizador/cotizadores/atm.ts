@@ -14,7 +14,7 @@ export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):strin
   const yes = 'S';
   const no = 'N';
   const descripcion = form.tipoRefacturacion.descripcion.trim().toUpperCase();
-
+  const uso= '0101';
 
 
 
@@ -71,7 +71,7 @@ export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):strin
        <cod_infoauto>${infoAuto}</cod_infoauto>
        <anofab>${form.anio}</anofab>
        <seccion>${seccionAuto}</seccion>
-       <uso>0101</uso>
+       <uso>${uso}</uso>
        <suma></suma>
      </bien>
    </auto>

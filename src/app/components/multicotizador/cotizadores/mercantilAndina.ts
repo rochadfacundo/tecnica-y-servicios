@@ -1,13 +1,13 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, Productor } from "../../../interfaces/cotizacionMercantil";
-import { TipoDeUso } from "../../../interfaces/tiposDeUso";
+import { TipoDeUso } from "../../../enums/tiposDeUso";
 import { getTipo } from "../utils/utils";
 
 export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):CotizacionMercantil{
       const TIPO_VEHICULO = getTipo(form.tipoVehiculo.id);
       const ANIO = Number(form.anio);
-      const USO: TipoDeUso =  form.uso;
+      const codigoParticular=1;
       const PRODUCTOR:Productor={ id: 86322 };
       const LOCALIDAD:CotizacionLocalidad=
       { codigo_postal: Number(form.cpLocalidadGuarda),
@@ -37,7 +37,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):
         const MOTOVEHICULO:CotizacionVehiculoMoto=  {
           infoauto: infoauto,
           aniofab: ANIO,
-          uso: USO.id,
+          uso: codigoParticular,
           gnc: form.tieneGnc,
           rastreo: RASTREADOR };
          cotizacionData.vehiculo=MOTOVEHICULO;
@@ -48,7 +48,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):
         const VEHICULO:CotizacionVehiculo=  {
           infoauto: infoauto,
           anio: ANIO,
-          uso: USO.id,
+          uso: codigoParticular,
           gnc: form.tieneGnc,
           rastreo: RASTREADOR };
           cotizacionData.vehiculo=VEHICULO;

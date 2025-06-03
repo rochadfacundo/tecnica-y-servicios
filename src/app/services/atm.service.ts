@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class AtmService {
   private apiUrl = 'http://3.149.136.15:3000/ATM';
 
+
   constructor(private http: HttpClient) {}
 
 

@@ -1,0 +1,6 @@
+export enum Tipo{
+  VEHICULO="VEHICULO",
+  MOTO="MOTOVEHICULO",
+  CAMION="CAMION"
+
+}

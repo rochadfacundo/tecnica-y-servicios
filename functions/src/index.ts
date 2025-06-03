@@ -12,6 +12,7 @@ import { getGruposPorMarca, getModelosPorMarcaYGrupo, getTokenInfoauto, getTodas
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getFranquiciaVigente, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
 import * as dotenv from "dotenv";
+import { Tipo } from "./enums/tipoVehiculo";
 
 dotenv.config();
 
@@ -29,7 +30,10 @@ app.use(express.json());
 // ✅ Obtener token de INFOAUTO
 app.get("/infoauto/token", async (req: Request, res: Response) => {
   try {
-    const token = await getTokenInfoauto();
+    const tipo =
+    req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+
+    const token = await getTokenInfoauto(tipo);
     res.status(200).json({ access_token: token });
   } catch (error: any) {
     console.log("Error al obtener token:", error);
@@ -44,7 +48,9 @@ app.get("/infoauto/token", async (req: Request, res: Response) => {
 // ✅ Obtener marcas de INFOAUTO
 app.get("/infoauto/marcas", async (req: Request, res: Response) => {
   try {
-    const marcas = await getTodasLasMarcasInfoauto();
+    const tipo =
+    req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+    const marcas = await getTodasLasMarcasInfoauto(tipo);
     res.status(200).json(marcas);
   } catch (error: any) {
     console.error("Error obteniendo marcas de INFOAUTO:", error);
@@ -60,7 +66,9 @@ app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) 
   const { brandId } = req.params;
 
   try {
-    const grupos = await getGruposPorMarca(brandId);
+    const tipo =
+    req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+    const grupos = await getGruposPorMarca(brandId, tipo);
     res.status(200).json(grupos);
   } catch (error: any) {
     console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);
@@ -76,7 +84,9 @@ app.get("/infoauto/marcas/:brandId/grupos/:groupId/modelos", async (req: Request
   const { brandId, groupId } = req.params;
 
   try {
-    const grupos = await getModelosPorMarcaYGrupo(brandId, groupId);
+    const tipo =
+    req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+    const grupos = await getModelosPorMarcaYGrupo(brandId, groupId, tipo);
     res.status(200).json(grupos);
   } catch (error: any) {
     console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);

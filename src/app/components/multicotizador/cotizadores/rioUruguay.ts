@@ -1,7 +1,7 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../interfaces/cotizacionRioUruguay";
-import { TipoDeUso } from "../../../interfaces/tiposDeUso";
+import { TipoDeUso } from "../../../enums/tiposDeUso";
 import { getTipo, getYesNo } from "../utils/utils";
 
 export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
@@ -30,6 +30,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
 
 }
 
+/*
   export function setTiposUsoRUS(id: number) {
 
     let tiposDeUso: TipoDeUso[]=[];
@@ -81,13 +82,13 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
           break;
       }
       return tiposDeUso;
-  }
+  }*/
 
   export function buildRusRequest(form: CotizacionFormValue,infoauto:number):CotizacionRioUruguay{
         let codigoTipo= getTipo(form.tipoVehiculo.id);
         const yes = "SI";
         const no = "NO";
-        const USO:TipoDeUso = form.uso;
+        const USO:TipoDeUso = TipoDeUso.PARTICULAR;
         const medioCobro= form.medioPago.codigo === 1 ? 1 : 3;
 
         const vehiculo: VehiculosRus[]=[{
@@ -98,7 +99,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
             codia:infoauto,
             sumaAseguradaGnc:form.gnc,
            // sumaAseguradaAccesorios:"aca monto de la suma de accesorios",
-            uso: USO.uso,
+            uso: USO,
             rastreoACargoRUS: getYesNo(form.tieneRastreador,yes,no),
         }];
 

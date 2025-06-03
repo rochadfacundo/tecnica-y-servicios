@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RioUruguayService } from '../../services/rio-uruguay.service';
 import { RusCotizado, TipoVehiculoRUS } from '../../interfaces/cotizacionRioUruguay';
 import { MercantilAndinaService } from '../../services/mercantil-andina.service';
-import { TipoDeUso } from '../../interfaces/tiposDeUso';
+import { TipoDeUso } from '../../enums/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
@@ -22,11 +22,12 @@ import { EProvincia, Provincia } from '../../interfaces/provincia';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
-import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS, setTiposUsoRUS } from './cotizadores/rioUruguay';
+import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
+import { TipoVehiculo } from '../../enums/tipoVehiculos';
 
 @Component({
   selector: 'app-multicotizador',
@@ -58,7 +59,7 @@ export class MulticotizadorComponent implements OnInit {
 
   //riv
   provincias:Provincia[]=[];
-  codigoTipoInteres:string='';
+  tipoInteres:string='';
   codModelo:number=0;
   tieneGnc:boolean=false;
   gnc:number=0;
@@ -100,10 +101,10 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
-  public readonly tipoInteresOpciones=
+  public readonly tipoInteresOpciones:Tipo[]=
   [
-    { id: 1, nombre: 'VEHICULO' },
-    { id: 2, nombre: 'MOTOVEHICULO'},
+    { codigo: 1, descripcion: TipoVehiculo.VEHICULO },
+    { codigo: 2, descripcion: TipoVehiculo.MOTOVEHICULO},
   ];
 
   public readonly cuotas=[1,2,3,4,5,6];
@@ -149,7 +150,7 @@ export class MulticotizadorComponent implements OnInit {
       apellido: [""],
       cascoConosur:false,
       clausulaAjuste: [{ value: { codigo: 10, descripcion: '10%' }, disabled: true }],
-      codigoTipoInteres: [{ value: null }, Validators.required],
+      tipoInteres: [{ value: null }, Validators.required],
       condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
       controlSatelital: false,
       cpLocalidadGuarda: [{ value: null }, Validators.required],
@@ -172,7 +173,6 @@ export class MulticotizadorComponent implements OnInit {
       tipoRefacturacion:[],
       tipoVigencia: [{ value: null }, Validators.required],
       tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
-      uso: [{ value: null, disabled: true }, Validators.required],
       version: [{ value: null, disabled: true }, Validators.required],
       vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
@@ -265,11 +265,10 @@ export class MulticotizadorComponent implements OnInit {
 
   private getMarcasInfoAuto()
   {
-    this.s_infoauto.getMarcas().subscribe({
+    this.s_infoauto.getMarcas(this.getTipoVehiculo()).subscribe({
       next: (response:Brand[]) => {
         console.log(response);
         this.marcas=response;
-        downloadJSON(this.marcas,'marcasINFOAUTO');
 
       },
       error: (error) => {
@@ -280,7 +279,7 @@ export class MulticotizadorComponent implements OnInit {
 
   getGruposPorMarca(brandId: number) {
 
-    this.s_infoauto.getGruposPorMarca(brandId).subscribe({
+    this.s_infoauto.getGruposPorMarca(brandId,this.getTipoVehiculo()).subscribe({
       next: (response) => {
         console.log(response);
         this.grupos = response;
@@ -294,7 +293,7 @@ export class MulticotizadorComponent implements OnInit {
 
   getModelosPorGrupoYMarca(brand_id:number,group_id:number){
 
-    this.s_infoauto.getModelosPorGrupoYMarca(brand_id,group_id).subscribe({
+    this.s_infoauto.getModelosPorGrupoYMarca(brand_id,group_id,this.getTipoVehiculo()).subscribe({
       next: (response) => {
         console.log(response);
         this.modelos = response;
@@ -309,10 +308,10 @@ export class MulticotizadorComponent implements OnInit {
   //subscripciones a form
   private setupValueChanges(): void {
 
-    this.cotizacionForm.get('codigoTipoInteres')?.valueChanges.subscribe((tipo) => {
+    this.cotizacionForm.get('tipoInteres')?.valueChanges.subscribe((tipo) => {
 
       if (tipo) {
-        this.tiposVehiculo = getTiposVehiculoRUS(tipo.nombre);
+        this.tiposVehiculo = getTiposVehiculoRUS(tipo.descripcion);
 
         this.cotizacionForm.get('tipoVehiculo')?.enable();
       } else {
@@ -324,11 +323,6 @@ export class MulticotizadorComponent implements OnInit {
     });
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
-
-      if(tipo){
-        this.tiposDeUso=setTiposUsoRUS(Number(tipo.id));
-      }
-
 
       this.cdr.detectChanges(); // Fuerza la actualización del template
       if (tipo) {
@@ -605,10 +599,20 @@ export class MulticotizadorComponent implements OnInit {
 
   }
 
+  getForm()
+  {
+    return this.cotizacionForm.getRawValue();
+  }
+
+  getTipoVehiculo(){
+    const form:CotizacionFormValue=this.getForm();
+    return form.tipoInteres.descripcion;
+  }
+
 
   cotizar()
   {
-    this.form = this.cotizacionForm.getRawValue();
+    this.form = this.getForm();
   this.cotizarRivadavia();
 
   this.cotizarATM();
@@ -616,7 +620,7 @@ export class MulticotizadorComponent implements OnInit {
   this.cotizarMercantil();
   this.cotizarRUS();
 
-  this.cotizarFederacion();
+  //this.cotizarFederacion();
 
 
   }

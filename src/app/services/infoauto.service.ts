@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, doc, setDoc, getDoc } from 'firebase/firestore'; // Importa las funciones necesarias de Firebase
 import { getFirestore } from 'firebase/firestore';
 import { Observable } from 'rxjs';
+import { TipoVehiculo } from '../enums/tipoVehiculos';
 
 @Injectable({
   providedIn: 'root'
@@ -20,26 +21,22 @@ export class InfoautoService {
     }
 
     // Obtener marcas de Infoauto
-    getMarcas(): Observable<any[]> {
-      return this.http.get<any[]>(`${this.apiUrl}/marcas`);
+    getMarcas(tipoVehiculo: string): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/marcas`, {
+        params: { tipo: tipoVehiculo }
+      });
     }
-
     // Obtener grupos de una marca específica
-    getGruposPorMarca(brandId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos`);
+    getGruposPorMarca(brandId: number, tipoVehiculo: string): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos`, {
+        params: { tipo: tipoVehiculo }
+      });
     }
-
 
     // Obtener modelos de una marca y grupo específico
-    getModelosPorGrupoYMarca(brandId: number,groupId:number): Observable<any[]> {
-      return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos/${groupId}/modelos`);
-      }
-
-    // Obtener modelos de Infoauto
-    getModelos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/modelos`);
+    getModelosPorGrupoYMarca(brandId: number, groupId: number, tipoVehiculo: string): Observable<any[]> {
+      return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos/${groupId}/modelos`, {
+        params: { tipo: tipoVehiculo }
+      });
     }
-
-
-
 }

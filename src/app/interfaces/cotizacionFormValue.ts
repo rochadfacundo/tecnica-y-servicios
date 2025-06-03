@@ -4,7 +4,7 @@ import { Tipo, TipoPersoneria, TipoRefacturacion } from "./tipos";
 import { Provincia } from "./provincia";
 
 export interface CotizacionFormValue {
-  codigoTipoInteres: any;
+  tipoInteres: Tipo;
   //federacion
   //tipoPersoneria:TipoPersoneria;
   nombre?: any

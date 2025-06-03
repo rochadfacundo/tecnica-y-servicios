@@ -3,10 +3,10 @@
 
  <!-- Código Tipo Interés  SACAR -->
 <div class="mb-3">
-  <label for="codigoTipoInteres" class="form-label">Código Tipo Interés</label>
-  <select id="codigoTipoInteres" class="form-select" formControlName="codigoTipoInteres">
+  <label for="tipoInteres" class="form-label">Código Tipo Interés</label>
+  <select id="tipoInteres" class="form-select" formControlName="tipoInteres">
     <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
-    <option *ngFor="let tipo of tipoInteresOpciones" [ngValue]="tipo">{{ tipo.nombre }}</option>
+    <option *ngFor="let tipo of tipoInteresOpciones" [ngValue]="tipo">{{ tipo.descripcion }}</option>
   </select>
 </div>
 
@@ -37,8 +37,6 @@
         <input type="text" formControlName="nroId" class="form-control">
       </div>
     </div>
-
-
 
     <!-- SECCION VEHICULOS -->
 
@@ -125,18 +123,6 @@
       </select>
        -->
     </div>
-
-      <!-- TIpo de uso   SACAR -->
-      <div class="mb-3">
-        <label for="uso" class="form-label">Tipo de uso</label>
-        <select id="uso" class="form-select" formControlName="uso">
-          <option *ngFor="let uso of tiposDeUso" [ngValue]="uso">
-            {{ uso.desc }}
-          </option>
-        </select>
-      </div>
-
-
 
     <div class="row">
       <div class="mb-3 col-md-6 form-check custom_check">

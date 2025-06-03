@@ -1,0 +1,4 @@
+export enum TipoDeUso {
+  PARTICULAR='PARTICULAR',
+  COMERCIAL='COMERCIAL'
+}
