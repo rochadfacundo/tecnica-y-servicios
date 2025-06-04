@@ -1,34 +1,25 @@
 import * as admin from "firebase-admin";
 import axios from "axios";
 import qs from "qs";
+import { defineSecret } from "firebase-functions/params";
 
 // Inicializar Firebase si aún no está
 if (!admin.apps.length) {
   admin.initializeApp();
 }
-
 const db = admin.firestore();
 
-const SUBSCRIPTION_KEY =
-"c6b637fc51";
+// 🔐 Secrets desde Firebase
+const SUBSCRIPTION_KEY = defineSecret("RIVADAVIA_SUBSCRIPTION_KEY_DEMO");
+const TOKEN_URL = defineSecret("RIVADAVIA_TOKEN_URL_DEMO");
+const COTIZACION_URL = defineSecret("RIVADAVIA_COTIZACION_URL_DEMO");
+const SUMA_URL = defineSecret("RIVADAVIA_SUMA_URL_DEMO");
+const CODIGO_VEHICULO_URL = defineSecret("RIVADAVIA_CODIGO_VEHICULO_URL_DEMO");
 
-const API_URL =
-"https://ssotest.apps.segurosrivadavia.com/auth/realms/api-brokers/protocol/openid-connect/token";
-
-const API_SUMA_ASEGURADA=
-"https://apibrokerstest.apps.segurosrivadavia.com/consulta/api/emision/v1/consulta/suma_asegurada";
-
-const API_CODIGO_VEHICULO=
-"https://apibrokerstest.apps.segurosrivadavia.com/consulta/api/emision/v1/consulta/codigo_vehiculo";
-
-
-const API_COTIZACION =
-"https://apibrokerstest.apps.segurosrivadavia.com/solicitud/api/emision/v1/solicitud/cotizacion";
-
-const USERNAME = "tsgr";
-const PASSWORD = "vbVdGFsWnQ81Dg9";
-const CLIENT_ID = "24bea14a";
-const CLIENT_SECRET = "e946749e9e1cdce8a8709b5604a3e0e5";
+const USERNAME = defineSecret("RIVADAVIA_USERNAME_DEMO");
+const PASSWORD = defineSecret("RIVADAVIA_PASSWORD_DEMO");
+const CLIENT_ID = defineSecret("RIVADAVIA_CLIENT_ID_DEMO");
+const CLIENT_SECRET = defineSecret("RIVADAVIA_CLIENT_SECRET_DEMO");
 
 export const getTokenRivadavia = async () => {
   const tokenRef = db.doc("Rivadavia/token");
@@ -38,76 +29,62 @@ export const getTokenRivadavia = async () => {
   const tokenDoc = await tokenRef.get();
   const refreshDoc = await refreshRef.get();
 
-
-  // Token válido
   if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
     return tokenDoc.data()?.value;
   }
 
-  // Intentar refresh
   if (refreshDoc.exists && refreshDoc.data()?.expiration > now) {
     try {
       const refreshToken = refreshDoc.data()?.value;
 
       const refreshBody = qs.stringify({
         grant_type: "refresh_token",
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        client_id: await CLIENT_ID.value(),
+        client_secret: await CLIENT_SECRET.value(),
         refresh_token: refreshToken,
       });
 
-      const response = await axios.post(API_URL, refreshBody, {
+      const response = await axios.post(await TOKEN_URL.value(), refreshBody, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      const newAccessToken = response.data.access_token;
-      const newExpiresIn = response.data.expires_in * 1000;
-      const newExpiration = now + newExpiresIn - 60000;
+      const accessToken = response.data.access_token;
+      const expiration = now + response.data.expires_in * 1000 - 60000;
 
-      await tokenRef.set({
-        value: newAccessToken,
-        expiration: newExpiration,
-      });
-      return newAccessToken;
+      await tokenRef.set({ value: accessToken, expiration });
+      return accessToken;
     } catch (error) {
-      console.error("❌ Error al refrescar token Rivadavia,");
+      console.error("❌ Error al refrescar token Rivadavia");
     }
   }
 
   // Login completo
   try {
-    console.log("🔑 Obteniendo nuevo access_token con login Rivadavia...");
     const loginBody = qs.stringify({
       grant_type: "password",
-      username: USERNAME,
-      password: PASSWORD,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
+      username: await USERNAME.value(),
+      password: await PASSWORD.value(),
+      client_id: await CLIENT_ID.value(),
+      client_secret: await CLIENT_SECRET.value(),
     });
 
-    const response = await axios.post(API_URL, loginBody, {
+    const response = await axios.post(await TOKEN_URL.value(), loginBody, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
     const accessToken = response.data.access_token;
     const refreshToken = response.data.refresh_token;
-    const expiresIn= response.data.expires_in;
-    const refreshExpiresIn= response.data.refresh_expires_in;
+    const accessExpiration = now + response.data.expires_in * 1000 - 60000;
+    const refreshExpiration = now + response.data.refresh_expires_in * 1000;
 
-    const accessExpiration = now + expiresIn * 1000 - 60000;
-    const refreshExpiration = now + refreshExpiresIn * 1000;
-
-    await tokenRef.set({ value: accessToken,
-      expiration: accessExpiration });
-    await refreshRef.set({ value: refreshToken,
-      expiration: refreshExpiration });
+    await tokenRef.set({ value: accessToken, expiration: accessExpiration });
+    await refreshRef.set({ value: refreshToken, expiration: refreshExpiration});
 
     return accessToken;
   } catch (error: any) {
     console.error("❌ Error obteniendo token de Rivadavia:",
       error.response?.data || error.message);
-    const errorMessage =error.response?.data || error.message;
-    throw errorMessage;
+    throw error.response?.data || error.message;
   }
 };
 
@@ -115,101 +92,78 @@ export const cotizarRivadavia = async (datos: any) => {
   try {
     const token = await getTokenRivadavia();
 
-    const response = await axios.post(API_COTIZACION, datos, {
+    const response = await axios.post(await COTIZACION_URL.value(), datos, {
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
         "accept": "*/*",
-        "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+        "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       },
     });
     console.log("cotiza Riv ok");
     return response.data;
-  } catch (error:any) {
-    console.log(error.response.data);
-    const errorMessage =
-    error.response?.data ||
-    // error.response?.data?.fieldErrors?.[0]?.message ||
-    "Error desconocido";
-
+  } catch (error: any) {
+    console.log(error.response?.data);
+    const errorMessage = error.response?.data || "Error desconocido";
     console.error("❌ Error en cotización Rivadavia:", errorMessage);
-
     throw errorMessage;
   }
 };
 
-// ✅ Función para obtener tipo de vehiculo que tiene esa marca y modelo
-export const getSumaAsegurada =
-  async (
-    nroProductor: string,
-    codigoInfoAuto: number,
-    modelo: string // anio
-  ) => {
-    try {
-      const token = await getTokenRivadavia();
-
-      const params: any = {
-        nroProductor: nroProductor,
-        codigoInfoAuto: codigoInfoAuto,
-        modelo: modelo,
-      };
-
-      const response = await axios.get(API_SUMA_ASEGURADA, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "accept": "*/*",
-          "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
-        },
-        params,
-      });
-
-      return response.data;
-    } catch (error: any) {
-      console.log("error al traer suma asegurada", error.response.data);
-      const errorMessage =
-      error.response?.data ||
-      error.message ||
-      "Error desconocido";
-
-      throw errorMessage;
-    }
-  };
-
-// ✅ Función para obtener Luego con el tipo de vehículo, el codigo_vehiculo:
-export const getCodigoVehiculo =
-async (
+export const getSumaAsegurada = async (
   nroProductor: string,
-  TipoVehiculo: string,
-  tipoUso: string
-) =>{
+  codigoInfoAuto: number,
+  modelo: string
+) => {
   try {
     const token = await getTokenRivadavia();
 
-    const params: any = {
-      nro_productor: nroProductor,
-      tipo_vehiculo: TipoVehiculo,
-      tipo_uso: tipoUso,
-    };
+    const params = { nroProductor, codigoInfoAuto, modelo };
 
-    const response = await axios.get(API_CODIGO_VEHICULO, {
+    const response = await axios.get(await SUMA_URL.value(), {
       headers: {
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
         "accept": "*/*",
-        "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+        "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       },
       params,
     });
 
     return response.data;
   } catch (error: any) {
-    console.log("error al traer codigo", error.response.data);
-    console.log(error);
-    const errorMessage =
-    error.response?.data ||
-    "Error desconocido";
+    console.log("error al traer suma asegurada", error.response?.data);
+    throw error.response?.data || error.message || "Error desconocido";
+  }
+};
 
-    throw errorMessage;
+export const getCodigoVehiculo = async (
+  nroProductor: string,
+  tipoVehiculo: string,
+  tipoUso: string
+) => {
+  try {
+    const token = await getTokenRivadavia();
+
+    const params = {
+      nro_productor: nroProductor,
+      tipo_vehiculo: tipoVehiculo,
+      tipo_uso: tipoUso,
+    };
+
+    const response = await axios.get(await CODIGO_VEHICULO_URL.value(), {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "accept": "*/*",
+        "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
+      },
+      params,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.log("error al traer código", error.response?.data);
+    throw error.response?.data || "Error desconocido";
   }
 };
