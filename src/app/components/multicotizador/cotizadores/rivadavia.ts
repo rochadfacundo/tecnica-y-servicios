@@ -9,7 +9,7 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
 
     const valorGnc= form.gnc? form.gnc : 0;
 
-    const formaPago= form.medioPago.codigo === 1 ? FormaPago.PAGO_FACIL : FormaPago.TARJETA_CREDITO;
+    const formaPago= form.medioPago.codigo === 1 ? FormaPago.CBU : FormaPago.TARJETA_CREDITO;
 
     console.log("forma pago rivadavia",formaPago);
     const cotizacion: DatosCotizacionRivadavia = {

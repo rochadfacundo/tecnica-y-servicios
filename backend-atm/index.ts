@@ -1,8 +1,9 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import { cotizarATMXML } from "./atm-service";
-import bodyParser from "body-parser";
-import xmlparser from 'express-xml-bodyparser';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 
 const app: Application = express();

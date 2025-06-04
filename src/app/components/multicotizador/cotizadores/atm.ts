@@ -43,46 +43,44 @@ export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):strin
 
   const xml = `
   <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-      <soapenv:Body>
-         <tem:AUTOS_Cotizar>
-            <tem:doc_in>
-   <auto>
-     <usuario>
-       <usa>TECYSEG</usa>
-       <pass>TECYSEG%24</pass>
-       <fecha>${atmFormatDay}</fecha>
-       <vendedor>0956109561</vendedor>
-       <origen>WS</origen>
-       <plan>${plan}</plan>
-     </usuario>
-     <asegurado>
-       <persona>${CodigosPersoneria.Atm.personaFisica}</persona>
-       <iva>${form.condicionFiscal.cfFedRusATM}</iva>
-       <cupondscto></cupondscto>
-       <bonificacion></bonificacion>
-     </asegurado>
-     <bien>
-       <cerokm>N</cerokm>
-       <rastreo>${getYesNo(form.tieneRastreador,yes,no)}</rastreo>
-       <micrograbado>N</micrograbado>
-       <alarma>${alarma}</alarma>
-       <ajuste>${ajuste}</ajuste>
-       <codpostal>${form.cpLocalidadGuarda}</codpostal>
-       <cod_infoauto>${infoAuto}</cod_infoauto>
-       <anofab>${form.anio}</anofab>
-       <seccion>${seccionAuto}</seccion>
-       <uso>${uso}</uso>
-       <suma></suma>
-     </bien>
-   </auto>
-            </tem:doc_in>
-         </tem:AUTOS_Cotizar>
-      </soapenv:Body>
-   </soapenv:Envelope>`.trim();
+    <soapenv:Body>
+      <tem:AUTOS_Cotizar>
+        <tem:doc_in>
+              <auto>
+            <usuario>
+              <usa>__USUARIO__</usa>
+              <pass>__CLAVE__</pass>
+              <fecha>${atmFormatDay}</fecha>
+              <vendedor>__VENDEDOR__</vendedor>
+              <origen>WS</origen>
+              <plan>${plan}</plan>
+            </usuario>
+            <asegurado>
+              <persona>${CodigosPersoneria.Atm.personaFisica}</persona>
+              <iva>${form.condicionFiscal.cfFedRusATM}</iva>
+              <cupondscto></cupondscto>
+              <bonificacion></bonificacion>
+            </asegurado>
+            <bien>
+              <cerokm>N</cerokm>
+              <rastreo>${getYesNo(form.tieneRastreador,yes,no)}</rastreo>
+              <micrograbado>N</micrograbado>
+              <alarma>${alarma}</alarma>
+              <ajuste>${ajuste}</ajuste>
+              <codpostal>${form.cpLocalidadGuarda}</codpostal>
+              <cod_infoauto>${infoAuto}</cod_infoauto>
+              <anofab>${form.anio}</anofab>
+              <seccion>${seccionAuto}</seccion>
+              <uso>${uso}</uso>
+              <suma></suma>
+            </bien>
+          </auto>
+        </tem:doc_in>
+      </tem:AUTOS_Cotizar>
+    </soapenv:Body>
+  </soapenv:Envelope>`.trim();
 
-
-return xml;
-
+  return xml;
 }
 
 export function parsearXML(res:string):CotizacionATM[]{

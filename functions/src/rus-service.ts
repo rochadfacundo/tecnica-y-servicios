@@ -4,17 +4,20 @@
 import * as admin from "firebase-admin";
 import axios from "axios";
 import { CotizacionRioUruguay } from "./interfaces/CotizacionRioUruguay";
+import { defineSecret } from "firebase-functions/params";
 
-const API_URL = "https://sandbox.sis.rus.com.ar/api-rus";
+// 🔒 Secrets DEMO
+const RUS_AUTH_URL_DEMO = defineSecret("RUS_AUTH_URL_DEMO");
+const RUS_COTIZACION_URL_DEMO = defineSecret("RUS_COTIZACION_URL_DEMO");
+const RUS_USUARIO_DEMO = defineSecret("RUS_USUARIO_DEMO");
+const RUS_CLAVE_DEMO = defineSecret("RUS_CLAVE_DEMO");
 
-const USERNAME = "18291036ws";
-const PASSWORD = "qwe123$$$";
-// const PASSWORD = "qwe123$$";
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
+
 /**
  * Obtiene el token de autenticación.
  * Si el token está en caché y no ha expirado, lo reutiliza.
@@ -25,16 +28,18 @@ export async function getTokenRus(): Promise<string | null> {
 
   const tokenDoc = await tokenRef.get();
 
-  // ✅ Reutilizar si aún es válido
   if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
     return tokenDoc.data()?.value;
   }
 
-  // 🔐 Solicitar nuevo token
   try {
-    const response = await axios.post(`${API_URL}/login/token`, {
-      userName: USERNAME,
-      password: PASSWORD,
+    const authUrl = await RUS_AUTH_URL_DEMO.value();
+    const username = await RUS_USUARIO_DEMO.value();
+    const password = await RUS_CLAVE_DEMO.value();
+
+    const response = await axios.post(authUrl, {
+      userName: username,
+      password: password,
     }, {
       headers: { "Content-Type": "application/json" },
     });
@@ -49,14 +54,14 @@ export async function getTokenRus(): Promise<string | null> {
 
     return accessToken;
   } catch (error: any) {
-    console.error("Error obteniendo token RUS:", error.response?.data || error.message);
+    console.error("Error obteniendo token RUS:"
+      , error.response?.data || error.message);
     throw new Error("No se pudo obtener el token de Río Uruguay");
   }
 }
 
 /**
  * Obtiene las marcas de vehículos según el tipo de unidad.
- * @param tipoUnidad Código del tipo de unidad.
  */
 export async function getMarcas(tipoUnidad: number): Promise<any> {
   if (!tipoUnidad) {
@@ -65,23 +70,23 @@ export async function getMarcas(tipoUnidad: number): Promise<any> {
 
   try {
     const token = await getTokenRus();
-    const response = await axios.get(`${API_URL}/vehiculos/marcas`, {
-      headers: {Authorization: token},
-      params: {TipoUnidad: tipoUnidad},
+    const cotizacionUrl = await RUS_COTIZACION_URL_DEMO.value();
+
+    const response = await axios.get(`${cotizacionUrl}/vehiculos/marcas`, {
+      headers: { Authorization: token },
+      params: { TipoUnidad: tipoUnidad },
     });
 
     return response.data;
   } catch (error: any) {
-    console.error("Error obteniendo marcas:", error.response?.data || error.message);
+    console.error("Error obteniendo marcas:",
+      error.response?.data || error.message);
     throw new Error("No se pudieron obtener las marcas");
   }
 }
 
 /**
  * Obtiene los modelos de vehículos según la marca, el año y el tipo de unidad.
- * @param marca Código de la marca del vehículo.
- * @param anio Año de fabricación del vehículo.
- * @param tipoUnidad Tipo de unidad (ej: 8 para motos).
  */
 export async function getModelos(marca: number, anio: number, tipoUnidad?: number): Promise<any> {
   if (!marca || !anio) {
@@ -90,14 +95,16 @@ export async function getModelos(marca: number, anio: number, tipoUnidad?: numbe
 
   try {
     const token = await getTokenRus();
+    const cotizacionUrl = await RUS_COTIZACION_URL_DEMO.value();
+
     const params: any = { Marca: marca, Año: anio };
     if (tipoUnidad !== undefined) {
-      params.TipoUnidad = tipoUnidad; // Solo agrega si está definido
+      params.TipoUnidad = tipoUnidad;
     }
 
-    const response = await axios.get(`${API_URL}/vehiculos/gruposModelo`, {
+    const response = await axios.get(`${cotizacionUrl}/vehiculos/gruposModelo`, {
       headers: { Authorization: token },
-      params, // Se envían los parámetros correctamente
+      params,
     });
 
     return response.data;
@@ -106,7 +113,6 @@ export async function getModelos(marca: number, anio: number, tipoUnidad?: numbe
     throw new Error("No se pudieron obtener los modelos");
   }
 }
-
 
 /**
  * Obtiene los modelos de vehículos según la marca y el año.
@@ -119,14 +125,14 @@ export async function getVersiones(
 ): Promise<any> {
   try {
     const token = await getTokenRus();
-    const params: any = { IdGrupoModelo: idGrupoModelo };
+    const cotizacionUrl = await RUS_COTIZACION_URL_DEMO.value();
 
+    const params: any = { IdGrupoModelo: idGrupoModelo };
     if (anio) params.Año = anio;
     if (tipoUnidad) params.TipoUnidad = tipoUnidad;
     if (idMarca) params.IdMarca = idMarca;
 
-
-    const response = await axios.get(`${API_URL}/vehiculos/modelos`, {
+    const response = await axios.get(`${cotizacionUrl}/vehiculos/modelos`, {
       headers: { Authorization: token },
       params,
     });
@@ -140,35 +146,34 @@ export async function getVersiones(
 
 /**
  * Realiza una cotización de seguro.
- * @param cotizacionData Datos de la cotización.
  */
 export async function cotizarRus(cotizacionData: CotizacionRioUruguay): Promise<any> {
   try {
     const token = await getTokenRus();
+    const cotizacionUrl = await RUS_COTIZACION_URL_DEMO.value();
 
-    const apiUrlCotizacion=`${API_URL}/cotizaciones`;
-
-    if (cotizacionData.codigoTipoInteres=="VEHICULO") {
-      const response = await axios.put(`${apiUrlCotizacion}/autos`, cotizacionData, {
-        headers: { Authorization: token},
+    if (cotizacionData.codigoTipoInteres === "VEHICULO") {
+      const response = await axios.put(`${cotizacionUrl}/autos`, cotizacionData, {
+        headers: { Authorization: token },
       });
-
       return response.data;
-    } else if (cotizacionData.codigoTipoInteres=="MOTOVEHICULO") {
-      const response = await axios.put(`${apiUrlCotizacion}/motos`, cotizacionData, {
-        headers: { Authorization: token},
+    } else if (cotizacionData.codigoTipoInteres === "MOTOVEHICULO") {
+      const response =
+      await axios.put(`${cotizacionUrl}/motos`, cotizacionData, {
+        headers: { Authorization: token },
       });
       console.log("cotiza RUS ok");
       return response.data;
     }
   } catch (error: any) {
-    console.error("Error realizando cotización RUS:", error.response?.data || error.message);
+    console.error("Error realizando cotización RUS:",
+      error.response?.data || error.message);
 
     const errorMessage =
-        error.response?.data?.validationErrors?.[0]?.message ||
-        error.response?.data?.cause ||
-        error.message ||
-        "Error desconocido";
+      error.response?.data?.validationErrors?.[0]?.message ||
+      error.response?.data?.cause ||
+      error.message ||
+      "Error desconocido";
 
     throw new Error(errorMessage);
   }
