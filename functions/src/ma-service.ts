@@ -2,19 +2,23 @@
 import axios from "axios";
 import * as admin from "firebase-admin";
 import qs from "qs";
+import { defineSecret } from "firebase-functions/params";
 import { CotizacionMercantil } from "./interfaces/CotizacionMercantil";
 
+// Inicialización de Firebase
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 
-const API_URL_MARCAS="https://apidev.mercantilandina.com.ar/vehiculos/v1/marcas";
-const API_URL_VEHICULOS="https://apidev.mercantilandina.com.ar/vehiculos/v1/";
+// 🔐 Secrets desde Firebase
+const SUBSCRIPTION_KEY = defineSecret("MERCANTIL_SUBSCRIPTION_KEY_DEMO");
+const BASIC_AUTH = defineSecret("MERCANTIL_BASIC_AUTH_DEMO");
+const USERNAME = defineSecret("MERCANTIL_USERNAME_DEMO");
+const PASSWORD = defineSecret("MERCANTIL_PASSWORD_DEMO");
 
-const API_URL = "https://apidev.mercantilandina.com.ar/credenciales/v2/";
-const SUBSCRIPTION_KEY = "5a51821ce0134a54ad1f46c3f5736f0b";
-
-const USERNAME = "ROCHATST";
-const PASS = "rochatst24";
+const TOKEN_URL = defineSecret("MERCANTIL_TOKEN_URL_DEMO");
+const MARCAS_URL = defineSecret("MERCANTIL_MARCAS_URL_DEMO");
+const VEHICULOS_URL = defineSecret("MERCANTIL_VEHICULOS_URL_DEMO");
+const COTIZAR_BASE_URL = defineSecret("MERCANTIL_COTIZAR_URL_DEMO");
 
 export const obtenerTokenMercantil = async () => {
   const tokenRef = db.doc("Mercantil/token");
@@ -24,7 +28,6 @@ export const obtenerTokenMercantil = async () => {
   const tokenDoc = await tokenRef.get();
   const refreshDoc = await refreshRef.get();
 
-  // 🔄 Reutilizar access_token si está vigente
   if (tokenDoc.exists && tokenDoc.data()?.expiration > now) {
     console.log("🔄 Reutilizando access_token de Mercantil");
     return tokenDoc.data()?.value;
@@ -41,11 +44,11 @@ export const obtenerTokenMercantil = async () => {
         refresh_token: refreshToken,
       });
 
-      const response = await axios.post(API_URL, body, {
+      const response = await axios.post(await TOKEN_URL.value(), body, {
         headers: {
-          "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+          "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
           "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": "Basic Uk9DSEFUU1Q6cm9jaGF0c3QyNA==",
+          "Authorization": `Basic ${await BASIC_AUTH.value()}`,
         },
       });
 
@@ -53,33 +56,32 @@ export const obtenerTokenMercantil = async () => {
       const newExpiresIn = response.data.expires_in * 1000;
       const newExpiration = now + newExpiresIn - 60000;
 
-      await tokenRef.set({
-        value: newAccessToken,
-        expiration: newExpiration,
-      });
+      await tokenRef.set({ value: newAccessToken, expiration: newExpiration });
 
       console.log("✅ Token actualizado con refresh para Mercantil");
       return newAccessToken;
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("❌ Error al refrescar token de Mercantil:",
         error.response?.data || error.message);
     }
   }
 
+  // 🔐 Solicitar nuevo token con usuario y contraseña
   try {
     const headers = {
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Basic Uk9DSEFUU1Q6cm9jaGF0c3QyNA==",
+      "Authorization": `Basic ${await BASIC_AUTH.value()}`,
     };
 
     const body = qs.stringify({
       client_id: "api-clientes-login",
-      username: USERNAME,
-      password: PASS,
+      username: await USERNAME.value(),
+      password: await PASSWORD.value(),
     });
 
-    const response = await axios.post(API_URL, body, { headers });
+    const response =
+    await axios.post(await TOKEN_URL.value(), body, { headers });
 
     const accessToken = response.data.access_token;
     const refreshToken = response.data.refresh_token;
@@ -94,8 +96,6 @@ export const obtenerTokenMercantil = async () => {
 
     console.log("✅ Token y refresh guardados en Firestore para Mercantil");
     return accessToken;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error token:", error.response?.data || error.message);
     throw new Error("No se pudo obtener el token de Mercantil Andina");
@@ -105,11 +105,11 @@ export const obtenerTokenMercantil = async () => {
 export const obtenerMarcasMercantil = async () => {
   try {
     const headers = {
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/json",
     };
 
-    const response = await axios.get(API_URL_MARCAS, { headers });
+    const response = await axios.get(await MARCAS_URL.value(), { headers });
     console.log("obtener marcas ok");
     return response.data;
   } catch (error: any) {
@@ -118,35 +118,31 @@ export const obtenerMarcasMercantil = async () => {
   }
 };
 
-// Función para obtener modelos
 export const obtenerModelosMercantil = async (
   marca: number,
   año: number,
   token: string
 ) => {
   try {
-    // Usamos los parámetros en la query string
-    const url = `${API_URL_MARCAS}/${marca}/${año}`;
+    const url = `${await MARCAS_URL.value()}/${marca}/${año}`;
     const headers = {
       "Authorization": `Bearer ${token}`,
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/json",
     };
 
-    // Realizamos la solicitud pasando los parámetros como query
     const response = await axios.get(url, {
       headers,
-      params: { marca, año }, // Los parámetros se envían como query string
+      params: { marca, año },
     });
     console.log("obtener modelos ok");
-    return response.data; // Devuelve los modelos
+    return response.data;
   } catch (error: any) {
     console.error("Error modelos:", error.response?.data || error.message);
     throw new Error("No se pudieron obtener los modelos");
   }
 };
 
-// ✅ Función para obtener vehículos de Mercantil Andina
 export const obtenerVehiculosMercantil = async (
   marca: string,
   año: number,
@@ -156,28 +152,31 @@ export const obtenerVehiculosMercantil = async (
   try {
     const headers = {
       "Authorization": `Bearer ${token}`,
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/json",
     };
 
     const params = { q: marca, anio: año, tipo };
 
-    const response = await axios.get(API_URL_VEHICULOS, { headers, params });
+    const response = await axios.get(await VEHICULOS_URL.value(), {
+      headers,
+      params,
+    });
     console.log("obtener vehiculo ok");
     return response.data;
   } catch (error: any) {
-    console.error("Error obterner VEhiculo MA:", error.response?.data || error.message);
-
+    console.error("Error obtener vehículo MA:",
+      error.response?.data ||
+      error.message);
     const errorMessage =
-        error.response?.data?.errores?.[0]?.texto ||
-        error.response?.data?.errores?.[0]?.mensaje ||
-         "Error desconocido";
+      error.response?.data?.errores?.[0]?.texto ||
+      error.response?.data?.errores?.[0]?.mensaje ||
+      "Error desconocido";
 
     throw new Error(errorMessage);
   }
 };
 
-// ✅ Función para obtener vehículos de Mercantil Andina
 export const obtenerVersionesMercantil = async (
   marca: number,
   año: number,
@@ -187,57 +186,56 @@ export const obtenerVersionesMercantil = async (
   try {
     const headers = {
       "Authorization": `Bearer ${token}`,
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/json",
     };
 
+    const url = `${await MARCAS_URL.value()}/${marca}/${año}/${modelo}`;
     const params = { marca, año, modelo };
-    const url = `${API_URL_MARCAS}/${marca}/${año}/${modelo}`;
 
     const response = await axios.get(url, { headers, params });
-    console.log("obtener version ok");
+    console.log("obtener versión ok");
     return response.data;
   } catch (error: any) {
-    console.error("Error obtener vehículos:", error.response?.data || error.message);
+    console.error("Error obtener versiones:", error.response?.data || error.message);
     throw new Error("No se pudieron obtener los vehículos");
   }
 };
 
-//  Metodo Cotizar mercantil
 export const cotizarMercantil = async (
-  data: CotizacionMercantil)=> {
+  data: CotizacionMercantil
+) => {
   try {
-    const token = await obtenerTokenMercantil(); // Obtener token
+    const token = await obtenerTokenMercantil();
     const headers = {
       "Authorization": `Bearer ${token}`,
-      "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+      "Ocp-Apim-Subscription-Key": await SUBSCRIPTION_KEY.value(),
       "Content-Type": "application/json",
     };
-    let API_URL_COTIZAR="https://apidev.mercantilandina.com.ar/cotizaciones/v2/";
+
+    let cotizarUrl = await COTIZAR_BASE_URL.value();
     switch (data.tipo) {
     case "VEHICULO":
-      API_URL_COTIZAR+="auto";
+      cotizarUrl += "auto";
       break;
     case "MOTOVEHICULO":
-      API_URL_COTIZAR+="moto";
-      data.canal=81;
+      cotizarUrl += "moto";
+      data.canal = 81;
       break;
     case "CAMION":
-      API_URL_COTIZAR+="camion";
+      cotizarUrl += "camion";
       break;
     }
-    const response = await axios.post(API_URL_COTIZAR, data, {
-      headers,
-    });
+
+    const response = await axios.post(cotizarUrl, data, { headers });
     console.log("cotiza MA ok");
     return response.data;
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error realizando cotización MA:", error.response?.data || error.message);
-
     const errorMessage =
-        error.response?.data?.errores?.[0]?.mensaje ||
-        error.response?.data?.errores?.[0]?.texto ||
-         "Error desconocido";
+      error.response?.data?.errores?.[0]?.mensaje ||
+      error.response?.data?.errores?.[0]?.texto ||
+      "Error desconocido";
 
     throw new Error(errorMessage);
   }
