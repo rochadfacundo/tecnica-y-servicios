@@ -2,7 +2,6 @@ import * as admin from "firebase-admin";
 import axios from "axios";
 import { defineSecret } from "firebase-functions/params";
 
-// 🔐 Secretos (usar .env.local o desde el panel de Firebase)
 const FED_TOKEN_URL = defineSecret("FED_TOKEN_URL_DEMO");
 const FED_BASIC_USER = defineSecret("FED_BASIC_USER_DEMO");
 const FED_BASIC_PASS = defineSecret("FED_BASIC_PASS_DEMO");
