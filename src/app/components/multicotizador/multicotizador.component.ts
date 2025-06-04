@@ -634,7 +634,7 @@ export class MulticotizadorComponent implements OnInit {
     this.s_ATM.cotizarATM(xmlAtm).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa ATM:');
-       console.log(res); // Agregá esto para ver qué llegó antes de parsear
+
     const resultado =parsearXML(res);
 
     const cotizacionATM = construirCotizacionATM(resultado);

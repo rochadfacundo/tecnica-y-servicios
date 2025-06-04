@@ -50,6 +50,7 @@ app.use(express_1.default.text({ type: "text/xml" }));
 app.post("/ATM/cotizar", async (req, res) => {
     try {
         const xmlData = req.body;
+        console.log("📦 XML recibido del frontend:\n", xmlData);
         const response = await (0, atm_service_1.cotizarATMXML)(xmlData);
         res.status(200).send(response);
     }

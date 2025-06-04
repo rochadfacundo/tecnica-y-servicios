@@ -13,8 +13,8 @@ export const cotizarATMXML = async (xmlBase: string): Promise<any> => {
       .replace("<usa>__USUARIO__</usa>", `<usa>${ATM_USUARIO}</usa>`)
       .replace("<pass>__CLAVE__</pass>", `<pass>${ATM_CLAVE}</pass>`)
       .replace("<vendedor>__VENDEDOR__</vendedor>", `<vendedor>${ATM_VENDEDOR}</vendedor>`)
-      console.log("🔐 Usuario ATM:", ATM_USUARIO);
-    console.log("🧾 XML Final enviado a ATM:\n", xmlFinal);
+
+
     const response = await axios.post(ATM_URL, xmlFinal, {
       headers: {
         "Content-Type": "text/xml; charset=utf-8",
