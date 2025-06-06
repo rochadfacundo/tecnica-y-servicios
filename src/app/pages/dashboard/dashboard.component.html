@@ -13,16 +13,5 @@
     <h2>Bienvenido al portal</h2>
     <p>Selecciona una opción del menú.</p>
 
-  <h2>Alta de Productor</h2>
-
-  <form (ngSubmit)="crearProductor()">
-    <input type="text" [(ngModel)]="productor.nombre" name="nombre" placeholder="Nombre" required />
-    <input type="text" [(ngModel)]="productor.apellido" name="apellido" placeholder="Apellido" required />
-    <input type="email" [(ngModel)]="productor.email" name="email" placeholder="Email" required />
-    <input type="password" [(ngModel)]="productor.password" name="password" placeholder="Contraseña" required />
-    <input type="text" [(ngModel)]="productor.uid" name="uid" placeholder="uid" required />
-    <button type="submit" class="btn btn-block btn-lg btn-success">Crear productor</button>
-  </form>
-
   </div>
 </div>

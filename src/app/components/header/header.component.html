@@ -48,9 +48,12 @@
           <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
             <i class="fa fa-file-signature"></i> Emitir pólizas
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
-            <i class="fa fa-user-cog"></i> Administrar PAS
-          </a>
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+          routerLink="/dashboard/gestionar-usuarios"
+          routerLinkActive="router-link-active"
+          (click)="closeMenu()">
+         <i class="fa fa-user-cog"></i> Administrar PAS
+       </a>
         </div>
 
         <div class="nav navbar-nav ms-auto">

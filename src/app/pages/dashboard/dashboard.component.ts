@@ -25,6 +25,7 @@ import { Productor } from '../../interfaces/productor';
 export class DashboardComponent implements OnInit {
 
   productor: Productor = {
+    uid:'',
     nombre: '',
     apellido: '',
     email: '',

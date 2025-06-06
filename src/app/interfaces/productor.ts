@@ -1,7 +1,7 @@
 import { Compania } from "./compania";
 
 export interface Productor {
-  uid?: string;
+  uid: string;
   password?:string;
   nombre: string;
   apellido: string;

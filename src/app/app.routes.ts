@@ -8,6 +8,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AuthGuard, NoAuthGuard } from './guards/auth.guard';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { GestionarUsuariosComponent } from './pages/dashboard/gestionar-usuarios/gestionar-usuarios.component';
 
 export const routes: Routes = [
   {
@@ -28,7 +29,8 @@ export const routes: Routes = [
     component: DashboardLayoutComponent, // Usa el layout del dashboard
     canActivate: [AuthGuard], // Protegido con el guard
     children: [
-      { path: '', component: DashboardComponent }
+      { path: '', component: DashboardComponent },
+      { path: 'gestionar-usuarios', component: GestionarUsuariosComponent }
     ]
   },
   { path: '**', redirectTo: 'home' }
