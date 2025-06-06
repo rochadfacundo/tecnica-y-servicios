@@ -4,6 +4,7 @@ import { Firestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { TipoVehiculo } from '../enums/tipoVehiculos';
+import { Year } from '../interfaces/year';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,26 @@ export class InfoautoService {
         params: { tipo: tipoVehiculo }
       });
     }
+
+     // Obtener anios de una marca
+    getAniosPorMarca(brandId: number, tipoVehiculo: string): Observable<Year[]> {
+      return this.http.get<Year[]>(`${this.apiUrl}/marcas/${brandId}/anios`, {
+        params: { tipo: tipoVehiculo }
+      });
+    }
+
+    // Obtener anios de una marca y grupo
+    getAniosPorMarcaYGrupo(
+      brandId: number,
+      groupId: number,
+      tipoVehiculo: string
+    ): Observable<Year[]> {
+      return this.http.get<Year[]>(
+        `${this.apiUrl}/marcas/${brandId}/grupos/${groupId}/anios`,
+        { params: { tipo: tipoVehiculo } }
+      );
+    }
+
     // Obtener grupos de una marca específica
     getGruposPorMarca(brandId: number, tipoVehiculo: string): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}/marcas/${brandId}/grupos`, {

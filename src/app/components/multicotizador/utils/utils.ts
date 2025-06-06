@@ -61,11 +61,6 @@ export function downloadJSON(data: any[], name: string): void {
 
 
 
-    //cargar Anios en el formulario
-    export function loadYears() {
-      const anioActual = new Date().getFullYear();
-      return Array.from({ length: anioActual - 1989 }, (_, i) => anioActual - i);
-    }
 
 
     //devuelve el tipo de vehiculo

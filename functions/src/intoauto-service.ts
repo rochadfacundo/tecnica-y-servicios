@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as admin from "firebase-admin";
 import axios from "axios";
 import { defineSecret } from "firebase-functions/params";
 import { Tipo } from "./enums/tipoVehiculo";
+import { fetchAllPaginated } from "./utils/util";
 
 const ENV = defineSecret("ENV");
 
@@ -148,30 +150,7 @@ export const getTodasLasMarcasInfoauto = async (unidad: Tipo) => {
   try {
     const token = await getTokenInfoauto(unidad);
     const { brandsUrl } = await getUrls(unidad);
-    const pageSize = 100;
-    let page = 1;
-    let todasLasMarcas: any[] = [];
-    let hayMas = true;
-
-    while (hayMas) {
-      const response = await axios.get(brandsUrl, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        params: {
-          page,
-          page_size: pageSize,
-        },
-      });
-
-      const marcas = response.data;
-      todasLasMarcas = [...todasLasMarcas, ...marcas];
-      hayMas = marcas.length >= pageSize;
-      page++;
-    }
-
-    return todasLasMarcas;
+    return await fetchAllPaginated(brandsUrl, token);
   } catch (error: any) {
     const message = error.response?.data?.message || "Error get marcas";
     throw new Error(message);
@@ -197,6 +176,46 @@ export const getMarcasInfoauto = async (unidad: Tipo) => {
   }
 };
 
+export const getAniosPorMarca = async (brandId: string, unidad: Tipo) => {
+  try {
+    const token = await getTokenInfoauto(unidad);
+    const { brandsUrl } = await getUrls(unidad);
+    const url = `${brandsUrl}/${brandId}/prices`;
+    const response = await axios.get(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // array de años
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error get años";
+    throw new Error(message);
+  }
+};
+
+export const getAniosPorMarcaYGrupo = async (
+  brandId: string,
+  groupId: string,
+  unidad: Tipo
+) => {
+  try {
+    const token = await getTokenInfoauto(unidad);
+    const { brandsUrl } = await getUrls(unidad);
+    const url = `${brandsUrl}/${brandId}/groups/${groupId}/prices`;
+    const response = await axios.get(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message || "Error get años grupo";
+    throw new Error(message);
+  }
+};
+
 export const getGruposPorMarca = async (
   brandId: string,
   unidad: Tipo
@@ -214,6 +233,22 @@ export const getGruposPorMarca = async (
     return response.data;
   } catch (error: any) {
     const message = error.response?.data?.message || "Error get grupos";
+    throw new Error(message);
+  }
+};
+
+export const getTodosLosGruposPorMarca = async (
+  brandId: string,
+  unidad: Tipo
+): Promise<any[]> => {
+  try {
+    const token = await getTokenInfoauto(unidad);
+    const { brandsUrl } = await getUrls(unidad);
+    const url = `${brandsUrl}/${brandId}/groups`;
+    return await fetchAllPaginated(url, token);
+  } catch (error: any) {
+    const message = error.response?.data?.message ||
+    "Error get todos los grupos";
     throw new Error(message);
   }
 };
@@ -239,3 +274,21 @@ export const getModelosPorMarcaYGrupo = async (
     throw new Error(message);
   }
 };
+
+export const getTodosLosModelosPorMarcaYGrupo = async (
+  brandId: string,
+  groupId: string,
+  unidad: Tipo
+): Promise<any[]> => {
+  try {
+    const token = await getTokenInfoauto(unidad);
+    const { brandsUrl } = await getUrls(unidad);
+    const url = `${brandsUrl}/${brandId}/groups/${groupId}/models`;
+    return await fetchAllPaginated(url, token);
+  } catch (error: any) {
+    const message = error.response?.data?.message ||
+    "Error get todos los modelos";
+    throw new Error(message);
+  }
+};
+

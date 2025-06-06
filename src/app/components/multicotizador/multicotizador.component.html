@@ -51,7 +51,6 @@
       </select>
     </div>
 
-    <!-- Marca  rus [value]="marca.id">{{ marca.descripcion }}  MA [value]="marca.codigo">{{ marca.desc }}-->
     <div class="mb-3">
       <label for="marca" class="form-label">Marca</label>
       <ng-select
@@ -64,24 +63,8 @@
       [appendTo]="'body'"
       formControlName="marca">
     </ng-select>
-      <!--
-      <select id="marcaVehiculo" class="form-select" formControlName="marca">
-        <option [ngValue]="null" disabled>Seleccione una marca</option>
-        <option *ngFor="let marca of marcas"   [ngValue]="marca">{{ marca.name }}  </option>
-      </select>
-      -->
     </div>
 
-    <!-- Año -->
-    <div class="mb-3">
-      <label for="anioVehiculo" class="form-label">Año</label>
-      <select id="anioVehiculo" class="form-select" formControlName="anio">
-        <option [ngValue]="null" disabled>Seleccione un año</option>
-        <option *ngFor="let anio of anios" [value]="anio">{{ anio }}</option>
-      </select>
-    </div>
-
-    <!-- Modelo   rus [value]="modelo.id">{{ modelo.descripcion }}    ma [value]="modelo">{{ modelo }}-->
     <div class="mb-3">
       <label for="modeloVehiculo" class="form-label">Modelo</label>
       <ng-select
@@ -94,16 +77,17 @@
       [appendTo]="'body'"
       formControlName="modelo">
     </ng-select>
-       <!--
-      <select id="modeloVehiculo" class="form-select" formControlName="modelo">
-        <option [ngValue]="null" disabled>Seleccione un modelo</option>
-        <option *ngFor="let grupo of this.grupos"  [ngValue]="grupo">{{ grupo.name }} </option>
-      </select>
-      -->
     </div>
 
-    <!-- Versión rus [value]="version.id">{{ version.descripcion }}    select   (change)="onVersionChange($event)"
-     MA [value]="version.codigo">{{ version.desc}} -->
+    <!-- Año -->
+    <div class="mb-3">
+      <label for="anioVehiculo" class="form-label">Año</label>
+      <select id="anioVehiculo" class="form-select" formControlName="anio">
+        <option [ngValue]="null" disabled>Seleccione un año</option>
+        <option *ngFor="let anio of anios" [value]="anio.year">{{ anio.year }}</option>
+      </select>
+    </div>
+
     <div class="mb-3" >
       <label for="versionVehiculo" class="form-label">Versión</label>
       <ng-select

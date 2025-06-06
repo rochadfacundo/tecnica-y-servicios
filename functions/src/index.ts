@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-len */
 import * as functions from "firebase-functions";
 
@@ -8,11 +9,12 @@ import { cotizarRus, getMarcas,
   getModelos,
   getVersiones,
   getTokenRus } from "./rus-service";
-import { getGruposPorMarca, getModelosPorMarcaYGrupo, getTokenInfoauto, getTodasLasMarcasInfoauto} from "./intoauto-service";
+import { getModelosPorMarcaYGrupo, getTokenInfoauto, getTodasLasMarcasInfoauto, getAniosPorMarca, getAniosPorMarcaYGrupo, getTodosLosGruposPorMarca} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getFranquiciaVigente, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
 import * as dotenv from "dotenv";
 import { Tipo } from "./enums/tipoVehiculo";
+import userRoutes from "./routes/user.routes";
 
 dotenv.config();
 
@@ -25,6 +27,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+// Usuarios
+app.use("/users", userRoutes);
 
 
 // ✅ Obtener token de INFOAUTO
@@ -61,6 +66,42 @@ app.get("/infoauto/marcas", async (req: Request, res: Response) => {
   }
 });
 
+// ✅ Obtener años disponibles para una marca
+app.get("/infoauto/marcas/:brandId/anios", async (req: Request, res: Response) => {
+  const { brandId } = req.params;
+
+  try {
+    const tipo = req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+    const anios = await getAniosPorMarca(brandId, tipo);
+    res.status(200).json(anios);
+  } catch (error: any) {
+    console.error(`Error obteniendo años para la marca ${brandId}:`, error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
+
+// ✅ Obtener años disponibles para una marca y grupo
+app.get("/infoauto/marcas/:brandId/grupos/:groupId/anios", async (
+  req: Request,
+  res: Response) => {
+  const { brandId, groupId } = req.params;
+
+  try {
+    const tipo = req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
+    const anios = await getAniosPorMarcaYGrupo(brandId, groupId, tipo);
+    res.status(200).json(anios);
+  } catch (error: any) {
+    console.error(`Error get años marca ${brandId} y grupo ${groupId}:`, error);
+    res.status(500).json({
+      message: error.message || "Error desconocido",
+      stack: error.stack,
+    });
+  }
+});
+
 // ✅ Obtener grupos de una marca específica en INFOAUTO
 app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) => {
   const { brandId } = req.params;
@@ -68,7 +109,7 @@ app.get("/infoauto/marcas/:brandId/grupos", async (req: Request, res: Response) 
   try {
     const tipo =
     req.query.tipo === Tipo.VEHICULO ? Tipo.VEHICULO : Tipo.MOTO;
-    const grupos = await getGruposPorMarca(brandId, tipo);
+    const grupos = await getTodosLosGruposPorMarca(brandId, tipo);
     res.status(200).json(grupos);
   } catch (error: any) {
     console.error(`Error obteniendo grupos para la marca ${brandId}:`, error);

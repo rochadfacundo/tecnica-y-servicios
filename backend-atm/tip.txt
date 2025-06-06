@@ -3,3 +3,62 @@ bash
 Copiar
 Editar
 pm2 restart ecosystem.config.js
+
+conectarse por ssh
+ssh -i ./aws-key.pem ubuntu@3.149.136.15
+
+compilar
+npx tsc
+
+subir archivo a pm2
+scp -i ./aws-key.pem ./atm-service.ts ubuntu@3.149.136.15:~/tecnica-y-servicios/backend_atm/src/
+
+Reinicia correctamente con entorno actualizado
+pm2 restart atm-backend --update-env
+
+✅ Mini Checklist – Mantenimiento y Actualización del Backend ATM
+(PM2 + EC2 + SCP)
+🧳 1. Subir archivos modificados desde tu máquina local
+Desde tu máquina, ubicándote en la carpeta donde están los archivos actualizados:
+
+# Ejemplo: subir todos los archivos del backend
+scp -i ./aws-key.pem -r ./atm-service.ts ubuntu@<IP-EC2>:/home/ubuntu/tecnica-y-servicios/backend_atm/   o sin /
+
+🔐 2. Conectarse al servidor
+ssh -i ./aws-key.pem ubuntu@3.149.136.15
+
+🔧 3. Entrar al proyecto y compilar
+cd ~/tecnica-y-servicios/backend_atm
+npx tsc
+
+♻️ 4. Reiniciar el backend con PM2
+pm2 restart ecosystem.config.js
+
+💾 5. Guardar el estado actual para que se recupere tras un reinicio
+Esto actualiza el archivo /home/ubuntu/.pm2/dump.pm2
+
+🔍 6. Verificar que todo esté en orden
+pm2 list
+pm2 logs atm-backend
+
+🔁 7. (Opcional) Simular reinicio de la instancia
+sudo reboot
+
+# Luego de reconectarte:
+pm2 list
+systemctl status pm2-ubuntu
+
+🧼 8. Mantenimiento general
+Ver logs en tiempo real: pm2 logs
+
+Eliminar procesos antiguos: pm2 delete <id>
+
+Limpiar logs si ocupan espacio: pm2 flush
+
+📝 Consejo Final
+Después de cualquier cambio en .ts, .env o ecosystem.config.js, siempre hacé:
+
+tsc
+pm2 restart ecosystem.config.js
+pm2 save
+Así te asegurás que la instancia quede lista para reiniciar sin perder nada.

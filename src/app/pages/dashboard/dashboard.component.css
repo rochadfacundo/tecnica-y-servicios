@@ -1,4 +1,7 @@
-.sidebar{
-  background-color: var(--menu-bg-color);
- width: auto;
+.navbar {
+  border-bottom: 3px solid #ffc107;
+}
+
+.nav-link:hover {
+  color: #ffc107 !important;
 }

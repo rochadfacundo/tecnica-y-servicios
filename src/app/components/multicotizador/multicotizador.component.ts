@@ -9,25 +9,26 @@ import { ChangeDetectorRef } from '@angular/core';
 import { InfoautoService } from '../../services/infoauto.service';
 import { Brand, Group, Model } from '../../classes/infoauto';
 import { RivadaviaService } from '../../services/rivadavia.service';
-import {  DatosCotizacionRivadavia, EstadoGNC, FormaPago, TipoDocumento, TipoFacturacion } from '../../interfaces/cotizacionRivadavia';
+import {  DatosCotizacionRivadavia} from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
 import {LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
-import { CondicionFiscalCodigo } from '../../enums/condicion';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
-import { EProvincia, Provincia } from '../../interfaces/provincia';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, formatDateSinceDay, formatDateSinceYear, getTipo, getYesNo, loadYears } from './utils/utils';
+import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
-import { TipoVehiculo } from '../../enums/tipoVehiculos';
+import { getAnios, getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
+import { CLAUSULAS_AJUSTE, CONDICIONES_FISCALES, CUOTAS, DESCUENTOS_COMISION, loadYears, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPO_INTERES_OPCIONES, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VIGENCIA } from './utils/formOptions';
+import { Provincia } from '../../interfaces/provincia';
+import { Year } from '../../interfaces/year';
 
 @Component({
   selector: 'app-multicotizador',
@@ -45,10 +46,9 @@ export class MulticotizadorComponent implements OnInit {
   marcas: Brand[] = [];
   brand_idSelected:number=0;
   group_idSelected:number=0;
-  anios: number[] = [];
+  anios: Year[] = [];
   //fed
   tipoPersona!: TipoPersoneria;
-  tipoVehiculo:string="";
   tiposId:TipoId[]=[];
   tiposDeRastreadores:Tipo[]=[];
   tiposDeRefacturacion:TipoRefacturacion[]=[];
@@ -59,14 +59,8 @@ export class MulticotizadorComponent implements OnInit {
 
   //riv
   provincias:Provincia[]=[];
-  tipoInteres:string='';
-  codModelo:number=0;
-  tieneGnc:boolean=false;
-  gnc:number=0;
   grupos: Group[] = [];
   modelos: Model[] = [];
-  versiones: any[] = [];
-  usos: any[] = [];
   codigosUso: any[] = [];
   anio:number=0;
   codigoInfoAuto:number=0;
@@ -78,7 +72,6 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
-  cotizacionError:string='';
   tiposDeUso: TipoDeUso[]= [];
 
   constructor(
@@ -96,49 +89,22 @@ export class MulticotizadorComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.anios= loadYears();
     this.setupValueChanges();
 
   }
 
-  public readonly tipoInteresOpciones:Tipo[]=
-  [
-    { codigo: 1, descripcion: TipoVehiculo.VEHICULO },
-    { codigo: 2, descripcion: TipoVehiculo.MOTOVEHICULO},
-  ];
+  //cosas del form
+  public readonly tipoInteresOpciones:Tipo[]=TIPO_INTERES_OPCIONES;
 
-  public readonly cuotas=[1,2,3,4,5,6];
+  public readonly cuotas=CUOTAS;
 
-  public readonly clausulasAjuste:Tipo[]=
-  [
-    { codigo: 0, descripcion: '0%' },
-    { codigo: 10, descripcion: '10%' },
-    { codigo: 20, descripcion: '20%' },
-    { codigo: 30, descripcion: '30%'}
-  ];
+  public readonly clausulasAjuste:Tipo[]= CLAUSULAS_AJUSTE;
 
-  public readonly opcionesSiNo = [
-    { id: 1, opcion: 'SI' },
-    { id: 2, opcion: 'NO' }
-  ];
+  public readonly opcionesSiNo = OPCIONES_SI_NO;
 
-  public readonly tiposVigencia = [
-    { id: 1,descripcion:'TRIMESTRAL  (valido solo Rio Uruguay)' , opcion: 'TRIMESTRAL' },
-    { id: 2, descripcion:'SEMESTRAL  (valido solo Rio Uruguay)', opcion: 'SEMESTRAL' },
-    { id: 3, descripcion:'ANUAL',opcion: 'ANUAL' }
-  ];
+  public readonly tiposVigencia = TIPOS_VIGENCIA;
 
-  public readonly condicionesFiscales: CondicionFiscal[] = [
-    { id: 1, cfFedRusATM: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', cfMercantil: 5, cfRivadavia:'CONSUMIDOR_FINAL'},
-    { id: 2, cfFedRusATM: CondicionFiscalCodigo.EX, descripcion: 'Exento', cfRivadavia:'EXCENTO'},
-    { id: 3, cfFedRusATM: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 4, cfFedRusATM: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 5, cfFedRusATM: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto', cfRivadavia:'RESPONSABLE_INSCRIPTO'},
-    { id: 6, cfFedRusATM: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo', cfRivadavia:'MONOTRIBUTISTA'},
-    { id: 7, cfFedRusATM: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto', cfRivadavia:'NO_CATEGORIZADO'},
-    { id: 8, cfFedRusATM: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal', cfRivadavia:'NO_CATEGORIZADO'},
-    { id: 9, cfFedRusATM: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior', cfRivadavia:'CONSUMIDOR_FINAL'}
-  ];
+  public readonly condicionesFiscales: CondicionFiscal[] = CONDICIONES_FISCALES;
 
 
   public tiposVehiculo:TipoVehiculoRUS[] = [];
@@ -178,80 +144,16 @@ export class MulticotizadorComponent implements OnInit {
       vigenciaHasta: [{ value: null }],
     });
 
-    this.tiposId=[
-      {tipo_id: 'DNI'},
-      {tipo_id: 'PA (pasaporte)'},
-      {tipo_id: 'Libreta Civica'},
-      {tipo_id: 'Libreta de enrolamiento'},
-    ];
+    this.tiposId=TIPOS_ID;
 
-    this.tiposDeRefacturacion=[
-    {codigo:2,descripcion:'SEMESTRAL', mercantilPeriodo:0}, //atm no MA tamp
-    {codigo:12,descripcion:'MENSUAL', mercantilPeriodo:1}, //todas
-    {codigo:0,descripcion:'CUATRIMESTRAL', mercantilPeriodo:4}, //SOLO RIV Y MA
-    {codigo:0,descripcion:'TRIMESTRAL', mercantilPeriodo:0},  // ni MA ni fed
-    {codigo:0,descripcion:'BIMESTRAL', mercantilPeriodo:0}, //SOLO ATM
-    ];
+    this.tiposDeRefacturacion=TIPOS_REFACTURACION;
 
+   //ver con el planchon
+    this.descuentoComision =DESCUENTOS_COMISION;
 
-      //ver con el planchon
-    this.descuentoComision =[
-        {codigo:1,descripcion:'1%'},
-        {codigo:2,descripcion:'2%'},
-        {codigo:3,descripcion:'3%'},
-        {codigo:4,descripcion:'4%'},
-        {codigo:5,descripcion:'5%'},
-        ];
+    this.mediosPago=MEDIOS_PAGO;
 
-    this.mediosPago=[
-      {codigo:1,descripcion:'Efectivo'},
-      {codigo:2,descripcion:'Debito/Credito'},
-    ];
-
-    this.provincias=[
-      {id:1,descripcion:'Buenos Aires', provinciaRiv:EProvincia.BUENOS_AIRES},
-      {id:2,descripcion:'Capital Federal', provinciaRiv:EProvincia.CAPITAL_FEDERAL},
-      {id:3,descripcion:'Catamarca', provinciaRiv:EProvincia.CATAMARCA},
-      {id:4,descripcion:'Chaco', provinciaRiv:EProvincia.CHACO},
-      {id:5,descripcion:'Chubut', provinciaRiv:EProvincia.CHUBUT},
-      {id:6,descripcion:'Cordoba', provinciaRiv:EProvincia.CORDOBA},
-      {id:7,descripcion:'Corrientes', provinciaRiv:EProvincia.CORRIENTES},
-      {id:8,descripcion:'Entre Rios', provinciaRiv:EProvincia.ENTRE_RIOS},
-      {id:9,descripcion:'Formosa', provinciaRiv:EProvincia.FORMOSA},
-      {id:10,descripcion:'Jujuy', provinciaRiv:EProvincia.JUJUY},
-      {id:11,descripcion:'La Pampa', provinciaRiv:EProvincia.LA_PAMPA},
-      {id:12,descripcion:'La Rioja', provinciaRiv:EProvincia.LA_RIOJA},
-      {id:13,descripcion:'Mendoza', provinciaRiv:EProvincia.MENDOZA},
-      {id:14,descripcion:'Misiones', provinciaRiv:EProvincia.MISIONES},
-      {id:15,descripcion:'Neuquen', provinciaRiv:EProvincia.NEUQUEN},
-      {id:16,descripcion:'Rio Negro', provinciaRiv:EProvincia.RIO_NEGRO},
-      {id:17,descripcion:'Salta', provinciaRiv:EProvincia.SALTA},
-      {id:18,descripcion:'San Juan', provinciaRiv:EProvincia.SAN_JUAN},
-      {id:19,descripcion:'San Luis', provinciaRiv:EProvincia.SAN_LUIS},
-      {id:20,descripcion:'Santa Cruz', provinciaRiv:EProvincia.SANTA_CRUZ},
-      {id:21,descripcion:'Santa Fe', provinciaRiv:EProvincia.SANTA_FE},
-      {id:22,descripcion:'Santiago Del Estero', provinciaRiv:EProvincia.SANTIAGO_DEL_ESTERO},
-      {id:23,descripcion:'Tierra Del Fuego', provinciaRiv:EProvincia.TIERRA_DEL_FUEGO},
-      {id:24,descripcion:'Tucuman', provinciaRiv:EProvincia.TUCUMAN},
-    ];
-    this.coberturas=[
-      {codigo:1,descripcion:'Todas las coberturas',valor:'N'},
-      {codigo:2,descripcion:'A-RESP. CIVIL Obligatoria',valor:'A'},
-      {codigo:3,descripcion:'A4-RESP.CIVIL LIMITE MAXIMO UNICA',valor:'A4'},
-      {codigo:4,descripcion:'B-RC.PERD TOTAL Accid. Inc. y Robo',valor:'B'},
-      {codigo:5,descripcion:'B1-RC.PERD TOTAL Inc. y Robo',valor:'B1'},
-      {codigo:6,descripcion:'C-RC.P.T Accid. y P.TyP Inc. y Robo',valor:'C'},
-      {codigo:7,descripcion:'C1-RC. P.TOTAL y PARCIAL Inc. y Robo',valor:'C1'},
-      {codigo:8,descripcion:'CF-RC.PT Ac. y P.TyP Inc. y Robo FULL',valor:'CF'},
-      {codigo:9,descripcion:'E-CUARENTENA',valor:'E'},
-      {codigo:10,descripcion:'E1-INCENDIO Y ROBO TOTAL EN GARAGE',valor:'E1'},
-      {codigo:11,descripcion:'LB-RC.P.T Acc, P.TyP Inc. yR.,RP TOT.',valor:'LB'},
-      {codigo:12,descripcion:'LB1-RC P.TyP Inc. y R.,RP Amp TOT.',valor:'LB1'},
-      {codigo:13,descripcion:'TD-TODO RIESGO CON FRANQUICIA',valor:'TD'},
-      {codigo:14,descripcion:'TD1-TODO RIESGO SIN FRANQUICIA',valor:'TD1'},
-      {codigo:15,descripcion:'TD3-TODO RIESGO CON FRANQUICIA FIJA.',valor:'TD3'},
-    ];
-
+    this.provincias=PROVINCIAS;
 
   }
 
@@ -263,47 +165,44 @@ export class MulticotizadorComponent implements OnInit {
 
 
 
-  private getMarcasInfoAuto()
-  {
-    this.s_infoauto.getMarcas(this.getTipoVehiculo()).subscribe({
-      next: (response:Brand[]) => {
-        console.log(response);
-        this.marcas=response;
-
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-    });
-  }
-
-  getGruposPorMarca(brandId: number) {
-
-    this.s_infoauto.getGruposPorMarca(brandId,this.getTipoVehiculo()).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.grupos = response;
-        this.cotizacionForm.get('modelo')?.enable();
-      },
-      error: (error:any) => {
-        console.error('Error:', error);
+      getMarcasInfoAuto() {
+        getMarcas(this.s_infoauto, this.getTipoVehiculo()).subscribe({
+          next: (response: Brand[]) => {
+            console.log(response);
+            this.marcas = response;
+          },
+          error: (error) => {
+            console.error('Error:', error);
+          },
+        });
       }
-    });
-  }
 
-  getModelosPorGrupoYMarca(brand_id:number,group_id:number){
-
-    this.s_infoauto.getModelosPorGrupoYMarca(brand_id,group_id,this.getTipoVehiculo()).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.modelos = response;
-        this.cotizacionForm.get('version')?.enable();
-      },
-      error: (error:any) => {
-        console.error('Error:', error);
+      getGruposPorMarca(brandId: number) {
+        getGrupos(this.s_infoauto, brandId, this.getTipoVehiculo()).subscribe({
+          next: (response) => {
+            console.log(response);
+            this.grupos = response;
+          this.cotizacionForm.get('modelo')?.enable();
+          },
+          error: (error) => {
+            console.error('Error:', error);
+          },
+        });
       }
-    });
-  }
+
+    getModelosPorGrupoYMarca(brandId: number, groupId: number) {
+      getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.modelos = response;
+          this.cotizacionForm.get('version')?.enable();
+        },
+        error: (error) => {
+          console.error('Error:', error);
+          this.cotizacionForm.get('version')?.disable();
+        },
+      });
+    }
 
   //subscripciones a form
   private setupValueChanges(): void {
@@ -338,43 +237,52 @@ export class MulticotizadorComponent implements OnInit {
     });
 
     this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca:number) => {
-      this.cotizacionForm.get('anio')?.setValue(null);
+      this.cotizacionForm.get('modelo')?.setValue(null);
       if (idMarca) {
-        console.log(idMarca);
         this.brand_idSelected=idMarca;
-        this.cotizacionForm.get('anio')?.enable();
+        this.getGruposPorMarca(this.brand_idSelected);
+      } else {
+        this.cotizacionForm.get('modelo')?.disable();
+      }
+    });
+
+
+    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo:number) => {
+      this.cotizacionForm.get('anio')?.setValue(null);
+      if (idModelo) {
+        this.group_idSelected=idModelo;
+
+
+          getAniosPorGrupo(this.s_infoauto, this.brand_idSelected, idModelo, this.getTipoVehiculo()).subscribe({
+            next: (anios: Year[]) => {
+              this.anios = anios.sort((a, b) => b.year - a.year);
+              this.cotizacionForm.get('anio')?.enable();
+            },
+            error: (err) => {
+              console.error("Error obteniendo años del grupo:", err);
+              this.anios = [];
+              this.cotizacionForm.get('anio')?.disable();
+            }
+          });
+
       } else {
         this.cotizacionForm.get('anio')?.disable();
       }
     });
 
     this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
-      this.cotizacionForm.get('modelo')?.setValue(null);
+      this.cotizacionForm.get('version')?.setValue(null);
       if (anio && this.brand_idSelected) {
         this.anio=anio;
-        //this.obtenerModelosRUS();
-        this.getGruposPorMarca(this.brand_idSelected);
-        //this.obtenerModelosMA();
-       // this.obtenerVersionesMA();
+
+      this.getModelosPorGrupoYMarca(this.brand_idSelected,this.group_idSelected);
 
       } else {
         this.modelos = [];
-        this.cotizacionForm.get('modelo')?.disable();
-      }
-    });
-
-    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo:number) => {
-      this.cotizacionForm.get('version')?.setValue(null);
-      if (idModelo) {
-        //this.obtenerVersionesRUS();
-        this.group_idSelected=idModelo;
-        this.getModelosPorGrupoYMarca(this.brand_idSelected,this.group_idSelected);
-       //this.obtenerVersionesMA();
-      } else {
-        this.versiones = [];
         this.cotizacionForm.get('version')?.disable();
       }
     });
+
 
     //Para traer codigo de Rivadavia y franquicia federacion.
     this.cotizacionForm.get('version')?.valueChanges.subscribe((codia:number) => {
@@ -634,7 +542,7 @@ export class MulticotizadorComponent implements OnInit {
     this.s_ATM.cotizarATM(xmlAtm).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa ATM:');
-
+        console.log(res);
     const resultado =parsearXML(res);
 
     const cotizacionATM = construirCotizacionATM(resultado);

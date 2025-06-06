@@ -9,12 +9,20 @@ const ATM_VENDEDOR = process.env.ATM_VENDEDOR_DEMO || "";
 export const cotizarATMXML = async (xmlBase: string): Promise<any> => {
   try {
 
+    if (!ATM_USUARIO || !ATM_CLAVE || !ATM_VENDEDOR) {
+      throw new Error("Faltan variables de entorno para ATM");
+    }
+
+
     const xmlFinal = xmlBase
       .replace("<usa>__USUARIO__</usa>", `<usa>${ATM_USUARIO}</usa>`)
       .replace("<pass>__CLAVE__</pass>", `<pass>${ATM_CLAVE}</pass>`)
       .replace("<vendedor>__VENDEDOR__</vendedor>", `<vendedor>${ATM_VENDEDOR}</vendedor>`)
-
-
+      console.log("🔐 ATM_USUARIO:", ATM_USUARIO);
+      console.log("🔐 ATM_CLAVE:", ATM_CLAVE);
+      console.log("🔐 ATM_VENDEDOR:", ATM_VENDEDOR);
+      console.log("🧪 XML FINAL ATM:");
+      console.log(xmlFinal);
     const response = await axios.post(ATM_URL, xmlFinal, {
       headers: {
         "Content-Type": "text/xml; charset=utf-8",

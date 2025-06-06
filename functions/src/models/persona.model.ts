@@ -1,7 +1,7 @@
-import { Compania } from "../interfaces/compania";
+/* eslint-disable require-jsdoc */
 
-export class Persona{
 
+export class Persona {
   private id:string;
   private nombre: string;
   private apellido: string;
@@ -15,7 +15,7 @@ export class Persona{
     apellido:string,
     email: string,
     role: Role,
-   password:string){
+    password:string) {
     this.id=id;
     this.nombre=nombre;
     this.apellido=apellido;
@@ -24,4 +24,12 @@ export class Persona{
     this.password=password;
   }
 
+  toString() {
+    return this.id + " "+
+           this.nombre + " "+
+           this.apellido + " "+
+           this.email + " "+
+           this.role + " "+
+           this.password;
+  }
 }
