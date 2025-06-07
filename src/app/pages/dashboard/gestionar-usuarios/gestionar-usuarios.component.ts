@@ -147,7 +147,7 @@ export class GestionarUsuariosComponent implements OnInit {
     }
 
     const productor: Productor = this.form.value;
-
+    console.log(productor);
     try {
       await this.authService.register(productor);
       alert('✅ Productor registrado correctamente');

@@ -10,7 +10,7 @@ export const crearUsuario = async (
   req: Request<{}, {}, Productor>,
   res: Response
 ) => {
-  const { nombre, apellido, email, password, role } = req.body;
+  const { nombre, apellido, email, password, role, companias } = req.body;
 
   try {
     const userRecord = await admin.auth().createUser({
@@ -23,6 +23,7 @@ export const crearUsuario = async (
       apellido,
       email,
       role,
+      companias,
       creadoEn: admin.firestore.FieldValue.serverTimestamp(),
     };
 
@@ -34,6 +35,7 @@ export const crearUsuario = async (
     res.status(500).json({ error: error.message || "Error al crear usuario" });
   }
 };
+
 
 // Actualizar usuario
 export const actualizarUsuario = async (
