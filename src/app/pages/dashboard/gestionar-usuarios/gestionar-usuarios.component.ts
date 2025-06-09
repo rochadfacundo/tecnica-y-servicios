@@ -168,7 +168,8 @@ export class GestionarUsuariosComponent implements OnInit {
       password: '',
       role: user.role
     });
-
+  // 🔒 Desactivar campo de contraseña
+  this.form.get('password')?.disable();
     this.companias.clear();
     if (user.companias?.length) {
       user.companias.forEach(c => {
