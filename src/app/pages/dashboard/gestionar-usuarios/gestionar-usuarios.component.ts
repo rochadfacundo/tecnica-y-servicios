@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ECompania } from '../../../enums/Ecompania';
 import { Productor } from '../../../interfaces/productor';
 import { AuthService } from '../../../services/auth.service';
+import { RioUruguayService } from '../../../services/rio-uruguay.service';
+import { configCompanias } from '../../../components/utils/utils';
 
 @Component({
   selector: 'app-gestionar-usuarios',
@@ -17,8 +19,13 @@ export class GestionarUsuariosComponent implements OnInit {
   companiasDisponibles: string[] = Object.values(ECompania);
   agregandoCompania = false;
   editandoCompaniaIndex: number | null = null;
+  public configCompanias = configCompanias;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private s_rus: RioUruguayService
+  ) {}
 
   ngOnInit(): void {
     this.crearFormulario();
@@ -46,11 +53,74 @@ export class GestionarUsuariosComponent implements OnInit {
       compania: [''],
       nroProductor: [''],
       claveProductor: [''],
-      refacturacion: [''],
-      vigencia: [''],
-      ajuste: [''],
+      refacturaciones: [''], // Federación
+      periodo: [''],         // Mercantil
+      cuotas: [''],          // Mercantil / Río Uruguay
+      vigenciaPolizaId: [''],// Río Uruguay
+      tipoFacturacion: [''],// Rivadavia
+      cantidadCuotas: [''], // Rivadavia
+      plan: [''],            // ATM
+      codigoVendedor: ['']  // ATM
     });
     this.companias.push(grupo);
+  }
+
+  async onCompaniaChange(index: number): Promise<void> {
+    const grupo = this.companias.at(index);
+    const compania = grupo.get('compania')?.value;
+
+    if (compania === 'RIO_URUGUAY') {
+      try {
+        const response = await this.s_rus.getVigencias();
+        //this.configCompanias.RIO_URUGUAY.vigencias = response.dtoList;
+      } catch (error) {
+        console.error('❌ Error al cargar vigencias de Río Uruguay', error);
+      }
+    }
+
+    grupo.patchValue({
+      refacturaciones: '',
+      periodo: '',
+      cuotas: '',
+      vigenciaPolizaId: '',
+      tipoFacturacion: '',
+      cantidadCuotas: '',
+      plan: '',
+      codigoVendedor: ''
+    });
+  }
+
+  guardar() {}
+
+  getClaveRefacturacion(valor: any): string {
+    const mapa = configCompanias['FEDERACION PATRONAL'].refacturaciones;
+    for (const clave in mapa) {
+      if (Number(mapa[clave]) === Number(valor)) return clave;
+    }
+    return '';
+  }
+
+
+
+  actualizarCantidadCuotasRivadavia(index: number): void {
+    const grupo = this.companias.at(index);
+    const tipo = grupo.get('tipoFacturacion')?.value;
+
+    const mapa: Record<string, string> = {
+      CUATRIMESTRAL: '4',
+      ANUAL: '12',
+      SEMESTRAL: '6',
+      TRIMESTRAL: '3',
+      MENSUAL: '1',
+    };
+
+    grupo.get('cantidadCuotas')?.setValue(mapa[tipo] || '');
+  }
+
+  actualizarCuotasMercantil(index: number): void {
+    const grupo = this.companias.at(index);
+    const periodo = grupo.get('periodo')?.value;
+    grupo.get('cuotas')?.setValue(periodo);
   }
 
   confirmarCompania(): void {
@@ -82,11 +152,6 @@ export class GestionarUsuariosComponent implements OnInit {
     }
   }
 
-  guardar() {
-    console.log(this.form.value);
-    // Acá iría el servicio para guardar en backend
-  }
-
   async obtenerUsuarios() {
     try {
       this.usuarios = await this.authService.getAllUsers();
@@ -111,9 +176,14 @@ export class GestionarUsuariosComponent implements OnInit {
           compania: [c.compania],
           nroProductor: [c.nroProductor],
           claveProductor: [c.claveProductor],
-          refacturacion: [c.refacturacion],
-          vigencia: [c.vigencia],
-          ajuste: [c.ajuste]
+          refacturaciones: [c.refacturaciones ?? null],
+          periodo: [c.periodo],
+          cuotas: [c.cuotas],
+          vigenciaPolizaId: [c.vigenciaPolizaId],
+          tipoFacturacion: [c.tipoFacturacion],
+          cantidadCuotas: [c.cantidadCuotas],
+          plan: [c.plan],
+          codigoVendedor: [c.codigoVendedor],
         }));
       });
     }
@@ -132,6 +202,36 @@ export class GestionarUsuariosComponent implements OnInit {
     }
   }
 
+  getClavePeriodoMercantil(valor: any): string {
+    const mapa = configCompanias['MERCANTIL ANDINA'].periodos;
+    for (const clave in mapa) {
+      if (Number(mapa[clave]) === Number(valor)) return clave;
+    }
+    return '';
+  }
+
+  getClaveTipoFacturacionRivadavia(valor: any): string {
+    const mapa: Record<string, string> = {
+      CUATRIMESTRAL: '4',
+      ANUAL: '12',
+      SEMESTRAL: '6',
+      TRIMESTRAL: '3',
+      MENSUAL: '1',
+    };
+
+    for (const clave in mapa) {
+      if (mapa[clave] === String(valor)) return clave;
+    }
+    return '';
+  }
+
+  getDescripcionPlanATM(planCode: string): string {
+    const planes = configCompanias['ATM'].planes;
+    const plan = planes.find((p: { plan: string; }) => p.plan === planCode);
+    return plan ? `${plan.descripcion} (${plan.formaPago})` : '';
+  }
+
+
   getCompaniasFiltradas(index: number): string[] {
     const companiaActual = this.companias.at(index).get('compania')?.value;
     const seleccionadas = this.companias.value.map((v: any) => v.compania);
@@ -147,7 +247,6 @@ export class GestionarUsuariosComponent implements OnInit {
     }
 
     const productor: Productor = this.form.value;
-    console.log(productor);
     try {
       await this.authService.register(productor);
       alert('✅ Productor registrado correctamente');
@@ -159,5 +258,4 @@ export class GestionarUsuariosComponent implements OnInit {
       alert('❌ No se pudo registrar el productor. Intentá nuevamente.');
     }
   }
-
 }

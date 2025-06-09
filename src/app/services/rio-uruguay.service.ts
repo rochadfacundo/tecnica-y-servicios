@@ -36,6 +36,10 @@ export class RioUruguayService {
     return this.http.get(`${this.apiBaseUrl}/versiones`, { params });
   }
 
+  getVigencias(){
+    return {vigencia:0};
+  }
+
   cotizar(data: CotizacionRioUruguay): Observable<any> {
     console.log("📩 Enviando a la API RUS: ", JSON.stringify(data, null, 2));
     return this.http.put(`${this.apiBaseUrl}/cotizaciones`, data);

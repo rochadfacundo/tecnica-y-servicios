@@ -6,5 +6,19 @@ export interface Compania{
    claveProductor:string;
    ajuste?:string;
    vigencia?:string;
-   refacturacion?:string;
+   //fedpat
+   refacturaciones?:number;
+   //MA
+   periodo?:number;
+   cuotas?:number; //tambien rus
+   //rus
+   vigenciaPolizaId?:string;
+   //Riv
+   cantidadCuotas?:string;
+   tipoFacturacion?:string;
+
+   //ATM
+   plan?:string;
+   codigoVendedor?:string;
+
 }

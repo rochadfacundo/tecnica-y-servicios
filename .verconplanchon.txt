@@ -1,3 +1,12 @@
+Cuchame sanjon.
+para definir:
+RIVADAVIA: refacturacion cuatri, anual, semestral, trimestral, mensual
+RIO URUGUAY: semestral, trimestral, mensual (vigencia semestral trimestral)
+FEDERACION: semestral, mensual.
+ATM:bimestral, trimestral, mensual
+MERCANTIL: ?
+DIGNA: ?
+
 
 alfa romeo
 spyder
