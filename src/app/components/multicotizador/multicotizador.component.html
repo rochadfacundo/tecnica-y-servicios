@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <form [formGroup]="cotizacionForm">
 
- <!-- Código Tipo Interés  SACAR -->
+ <!-- Código Tipo Interés  SACAR
 <div class="mb-3">
   <label for="tipoInteres" class="form-label">Código Tipo Interés</label>
   <select id="tipoInteres" class="form-select" formControlName="tipoInteres">
@@ -9,6 +9,17 @@
     <option *ngFor="let tipo of tipoInteresOpciones" [ngValue]="tipo">{{ tipo.descripcion }}</option>
   </select>
 </div>
+-->
+
+<!-- Tipo de Vehículo  SACAR TAMBIEN -->
+<div class="mb-3">
+  <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
+  <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
+    <option [ngValue]="null" disabled>Seleccione un tipo</option>
+    <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.nombre }}</option>
+  </select>
+</div>
+
 
 
     <!-- Fila: Nombre y Apellido -->
@@ -41,16 +52,6 @@
     <!-- SECCION VEHICULOS -->
 
 <div class="" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
-
-    <!-- Tipo de Vehículo  SACAR TAMBIEN -->
-    <div class="mb-3">
-      <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
-      <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
-        <option [ngValue]="null" disabled>Seleccione un tipo</option>
-        <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.nombre }}</option>
-      </select>
-    </div>
-
     <div class="mb-3">
       <label for="marca" class="form-label">Marca</label>
       <ng-select
@@ -113,9 +114,7 @@
           <input type="checkbox" id="alarma" class="form-check-input" formControlName="alarma">
           <label for="alarma" class="form-check-label">¿Tiene alarma?</label>
       </div>
-
       <div class="mb-3 col-md-6 form-check custom_check">
-
       </div>
 
     </div>
@@ -125,7 +124,6 @@
         <input type="checkbox" id="tieneGnc" class="form-check-input" formControlName="tieneGnc">
         <label for="tieneGnc" class="form-check-label">¿Tiene GNC?</label>
       </div>
-
       <div class="mb-3 col-md-6" *ngIf="this.cotizacionForm.get('tieneGnc')?.value">
         <label for="gnc" >Valor gnc:</label>
         <input type="number" id="gnc" formControlName="gnc">
@@ -180,28 +178,6 @@
 
     </div>
 
-
-
-    <div class="row" >
-          <!-- vigencia y refacturacion-->              <!-- SACAR -->
-      <div class="mb-3 col-md-6">
-        <label for="tipoVigencia" class="form-label">Tipo de vigencia</label>
-        <select id="tipoVigencia" class="form-select" formControlName="tipoVigencia">
-          <option *ngFor="let vigencia of tiposVigencia" [ngValue]="vigencia">{{ vigencia.descripcion }}</option>
-        </select>
-
-      </div>
-      <div class="mb-3 col-md-6">              <!-- SACAR -->
-        <label for="tipoRefacturacion" class="form-label">Tipo de Refacturacion</label>
-        <select id="tipoRefacturacion" class="form-select" formControlName="tipoRefacturacion">
-          <option *ngFor="let refacturacion of this.tiposDeRefacturacion" [ngValue]="refacturacion">{{ refacturacion.descripcion }}</option>
-        </select>
-      </div>
-
-
-    </div>
-
-
     <div class="row" >
     <!-- MEdio pago y descuento comision-->
       <div class="mb-3 col-md-6 "  >
@@ -210,48 +186,13 @@
           <option *ngFor="let medioPago of this.mediosPago" [ngValue]="medioPago">{{ medioPago.descripcion }}</option>
         </select>
       </div>
-      <div class="mb-3 col-md-6"> <!-- DESCUENTO DEL 10 SACAR EL BOTON
-        ofreceer boton que tenga descuentos del 10 o nada.
-        (varia segun grilla de comisiones)-->
-        <label for="descuentoComision" class="form-label">Descuento comision</label>
-        <select id="descuentoComision" class="form-select" formControlName="descuentoComision">
-          <option *ngFor="let descuento of this.descuentoComision" [ngValue]="descuento">{{ descuento.descripcion }}</option>
-        </select>
-      </div>
     </div>
-
-    <!-- Cuotas  SACAR-->
-    <div class="mb-3">
-      <label for="cuotas" class="form-label">Cuotas</label>
-      <select id="cuotas" class="form-select" formControlName="cuotas">
-        <option *ngFor="let cuota of this.cuotas" [value]="cuota">{{ cuota }}</option>
-      </select>
-      </div>
 
  <!-- Clausula de ajuste
 
  20 TODAS       o         todas 10
  25 MERCANTIL       rio 20
  -->
- <div class="mb-3">
-  <label for="clausulaAjuste" class="form-label">Clausula de ajuste</label>
-  <select id="clausulaAjuste" class="form-select"  [compareWith]="compararClausula" formControlName="clausulaAjuste">
-    <option [ngValue]="null" disabled>Seleccione una clausula de ajuste</option>
-    <option *ngFor="let ajuste of clausulasAjuste" [ngValue]="ajuste">{{ ajuste.descripcion }}</option>
-  </select>
-</div>
-
-
-
-    <!-- Condición Fiscal        SACAR-->
-    <div class="mb-3">
-      <label for="condicionFiscal" class="form-label">Condición Fiscal</label>
-      <select id="condicionFiscal" class="form-select" formControlName="condicionFiscal">
-        <option *ngFor="let condicion of condicionesFiscales" [ngValue]="condicion">
-          {{ condicion.cfFedRusATM }} -   {{ condicion.descripcion }}
-        </option>
-      </select>
-    </div>
 
     <!-- Provincia -->
     <div class="mb-3">
@@ -279,12 +220,6 @@
     <div class="mb-3">
       <label for="vigenciaDesde" class="form-label">Vigencia Desde</label>
       <input type="date" id="vigenciaDesde" class="form-control" formControlName="vigenciaDesde">
-    </div>
-
-    <!-- Vigencia Hasta  sacar-->
-    <div class="mb-3">
-      <label for="vigenciaHasta" class="form-label">Vigencia Hasta</label>
-      <input type="date" id="vigenciaHasta" class="form-control" formControlName="vigenciaHasta">
     </div>
 
     <!-- Botón Cotizar -->

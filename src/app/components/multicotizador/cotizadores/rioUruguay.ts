@@ -7,24 +7,17 @@ import { getTipo, getYesNo } from "../utils/utils";
 export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
 
   let tiposVehiculo:TipoVehiculoRUS[]=[];
-
-  if(tipo==='VEHICULO')
-  {
-    tiposVehiculo =[{ id: 1, nombre: 'AUTO' },
+    tiposVehiculo =[
+      { id: 7, nombre: 'MOTO MENOS 50 CC' },
+      { id: 8, nombre: 'MOTO MAS 50 CC' },
+      { id: 1, nombre: 'AUTO' },
       { id: 2, nombre: 'PICK-UP "A"' },
       { id: 3, nombre: 'PICK-UP "B"' },
       { id: 4, nombre: 'CAMION HASTA 5 TN' },
       { id: 5, nombre: 'CAMION HASTA 10 TN' },
       { id: 6, nombre: 'CAMION MAS 10 TN' },
-      //{ id: 25, nombre: 'MOTORHOME' },
-      //{ id: 26, nombre: 'M3 OMNIBUS' },
-      ];
 
-  }else if(tipo==='MOTOVEHICULO'){
-
-    tiposVehiculo= [{ id: 7, nombre: 'MOTO MENOS 50 CC' },
-      { id: 8, nombre: 'MOTO MAS 50 CC' }];
-  }
+    ];
 
   return tiposVehiculo;
 
@@ -85,7 +78,7 @@ export function getTiposVehiculoRUS(tipo:string):TipoVehiculoRUS[]{
   }*/
 
   export function buildRusRequest(form: CotizacionFormValue,infoauto:number):CotizacionRioUruguay{
-        let codigoTipo= getTipo(form.tipoVehiculo.id);
+
         const yes = "SI";
         const no = "NO";
         const USO:TipoDeUso = TipoDeUso.PARTICULAR;

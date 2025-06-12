@@ -15,18 +15,18 @@ import {LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
 import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
-import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion } from '../../interfaces/tipos';
+import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
-import { buildRusRequest, construirCotizacionRus, getTiposVehiculoRUS } from './cotizadores/rioUruguay';
+import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getAnios, getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { CLAUSULAS_AJUSTE, CONDICIONES_FISCALES, CUOTAS, DESCUENTOS_COMISION, loadYears, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPO_INTERES_OPCIONES, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VIGENCIA } from './utils/formOptions';
+import { CLAUSULAS_AJUSTE, CONDICIONES_FISCALES, CUOTAS, DESCUENTOS_COMISION, loadYears, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPO_INTERES_OPCIONES, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
 import { Provincia } from '../../interfaces/provincia';
 import { Year } from '../../interfaces/year';
 
@@ -92,22 +92,12 @@ export class MulticotizadorComponent implements OnInit {
     this.setupValueChanges();
 
   }
-
-  //cosas del form
-  public readonly tipoInteresOpciones:Tipo[]=TIPO_INTERES_OPCIONES;
-
-  public readonly cuotas=CUOTAS;
-
-  public readonly clausulasAjuste:Tipo[]= CLAUSULAS_AJUSTE;
-
   public readonly opcionesSiNo = OPCIONES_SI_NO;
-
-  public readonly tiposVigencia = TIPOS_VIGENCIA;
 
   public readonly condicionesFiscales: CondicionFiscal[] = CONDICIONES_FISCALES;
 
 
-  public tiposVehiculo:TipoVehiculoRUS[] = [];
+  public tiposVehiculo:TipoVehiculo[] = [];
 
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
@@ -116,7 +106,6 @@ export class MulticotizadorComponent implements OnInit {
       apellido: [""],
       cascoConosur:false,
       clausulaAjuste: [{ value: { codigo: 10, descripcion: '10%' }, disabled: true }],
-      tipoInteres: [{ value: null }, Validators.required],
       condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
       controlSatelital: false,
       cpLocalidadGuarda: [{ value: null }, Validators.required],
@@ -138,7 +127,7 @@ export class MulticotizadorComponent implements OnInit {
       tipoId: "DNI",
       tipoRefacturacion:[],
       tipoVigencia: [{ value: null }, Validators.required],
-      tipoVehiculo: [{ value: null, disabled: true }, Validators.required],
+      tipoVehiculo: [{ value: null}, Validators.required],
       version: [{ value: null, disabled: true }, Validators.required],
       vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
@@ -154,6 +143,8 @@ export class MulticotizadorComponent implements OnInit {
     this.mediosPago=MEDIOS_PAGO;
 
     this.provincias=PROVINCIAS;
+
+    this.tiposVehiculo=TIPOS_VEHICULO;
 
   }
 
@@ -206,20 +197,6 @@ export class MulticotizadorComponent implements OnInit {
 
   //subscripciones a form
   private setupValueChanges(): void {
-
-    this.cotizacionForm.get('tipoInteres')?.valueChanges.subscribe((tipo) => {
-
-      if (tipo) {
-        this.tiposVehiculo = getTiposVehiculoRUS(tipo.descripcion);
-
-        this.cotizacionForm.get('tipoVehiculo')?.enable();
-      } else {
-        this.cotizacionForm.get('tipoVehiculo')?.disable();
-      }
-
-      this.cdr.detectChanges(); // ✅ está bien que lo fuerces si usás *ngIf
-
-    });
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
 
@@ -514,7 +491,7 @@ export class MulticotizadorComponent implements OnInit {
 
   getTipoVehiculo(){
     const form:CotizacionFormValue=this.getForm();
-    return form.tipoInteres.descripcion;
+    return form.tipoVehiculo.nombre;
   }
 
 

@@ -5,6 +5,12 @@ export interface TipoPersoneria{
 
 }
 
+export interface TipoVehiculo{
+  idRus:number;
+  nombre:string;
+  nombreRus:string;
+}
+
 export interface Tipo{
 
   codigo:number;

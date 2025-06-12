@@ -1,6 +1,6 @@
 import { FormControl } from "@angular/forms";
 import { CondicionFiscal } from "./condicionFiscal";
-import { Tipo, TipoPersoneria, TipoRefacturacion } from "./tipos";
+import { Tipo, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from "./tipos";
 import { Provincia } from "./provincia";
 
 export interface CotizacionFormValue {
@@ -14,7 +14,7 @@ export interface CotizacionFormValue {
   alarma?:any;
   tieneRastreador:boolean;
   rastreador?:Tipo;
-  tipoRefacturacion:TipoRefacturacion ;
+  tipoRefacturacion:TipoRefacturacion;
   tipoPago?:Tipo|any;
   pagoContado?:boolean;
   descuentoComision?:Tipo|any;
@@ -26,7 +26,7 @@ export interface CotizacionFormValue {
 
   //rivadavia
   provincia:Provincia;
-  tipoVehiculo: any;
+  tipoVehiculo: TipoVehiculo;
   marca: any;
   anio: any;
   modelo: any;
