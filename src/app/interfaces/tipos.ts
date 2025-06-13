@@ -8,7 +8,7 @@ export interface TipoPersoneria{
 export interface TipoVehiculo{
   idRus:number;
   nombre:string;
-  nombreRus:string;
+  descripcion:string;
 }
 
 export interface Tipo{

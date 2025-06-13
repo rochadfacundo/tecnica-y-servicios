@@ -21,6 +21,17 @@ export interface CotizacionRioUruguay{
 
 }
 
+export interface VigenciaRus {
+  id: number;
+  descripcion: string;
+  cantidadDias: number | null;
+  cantidadMeses: number | null;
+  toleranciaInferior: number;
+  toleranciaSuperior: number;
+  descripcionPeriodoFacturacion: string;
+  cantidadMesesFacturacion: number;
+}
+
 export interface VehiculoRioUruguay{
   id:number;
   descripcion:string;

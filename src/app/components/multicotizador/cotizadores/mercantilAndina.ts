@@ -1,11 +1,9 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, Productor } from "../../../interfaces/cotizacionMercantil";
-import { TipoDeUso } from "../../../enums/tiposDeUso";
-import { getTipo } from "../utils/utils";
 
 export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):CotizacionMercantil{
-      const TIPO_VEHICULO = getTipo(form.tipoVehiculo.id);
+      const TIPO_VEHICULO = form.tipoVehiculo.nombre;
       const ANIO = Number(form.anio);
       const codigoParticular=1;
       const PRODUCTOR:Productor={ id: 86322 };

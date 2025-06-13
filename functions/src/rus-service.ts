@@ -11,6 +11,7 @@ const RUS_AUTH_URL_DEMO = defineSecret("RUS_AUTH_URL_DEMO");
 const RUS_COTIZACION_URL_DEMO = defineSecret("RUS_COTIZACION_URL_DEMO");
 const RUS_USUARIO_DEMO = defineSecret("RUS_USUARIO_DEMO");
 const RUS_CLAVE_DEMO = defineSecret("RUS_CLAVE_DEMO");
+const RUS_AUTH_VIGENCIAS = defineSecret("RUS_AUTH_VIGENCIAS");
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -57,6 +58,27 @@ export async function getTokenRus(): Promise<string | null> {
     console.error("Error obteniendo token RUS:"
       , error.response?.data || error.message);
     throw new Error("No se pudo obtener el token de Río Uruguay");
+  }
+}
+
+
+/**
+ * Obtiene vigencias de vehiculos
+ */
+export async function getVigencias(): Promise<any> {
+  try {
+    const token = await getTokenRus();
+    const urlVigencia = await RUS_AUTH_VIGENCIAS.value();
+
+    const response = await axios.get(urlVigencia, {
+      headers: { Authorization: token },
+    });
+
+    return response.data.dtoList;
+  } catch (error: any) {
+    console.error("Error obteniendo vigencias:",
+      error.response?.data || error.message);
+    throw new Error("No se pudieron obtener las vigencias");
   }
 }
 

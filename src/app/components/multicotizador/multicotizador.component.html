@@ -16,7 +16,7 @@
   <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
   <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
     <option [ngValue]="null" disabled>Seleccione un tipo</option>
-    <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.nombre }}</option>
+    <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.descripcion }}</option>
   </select>
 </div>
 

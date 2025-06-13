@@ -8,7 +8,8 @@ import { cotizarMercantil, obtenerMarcasMercantil, obtenerModelosMercantil, obte
 import { cotizarRus, getMarcas,
   getModelos,
   getVersiones,
-  getTokenRus } from "./rus-service";
+  getTokenRus,
+  getVigencias} from "./rus-service";
 import { getModelosPorMarcaYGrupo, getTokenInfoauto, getTodasLasMarcasInfoauto, getAniosPorMarca, getAniosPorMarcaYGrupo, getTodosLosGruposPorMarca} from "./intoauto-service";
 import { cotizarRivadavia, getCodigoVehiculo, getSumaAsegurada, getTokenRivadavia } from "./rivadavia-service";
 import { cotizarFederacion, getFranquiciaVigente, getLocalidadesFederacion, getRastreadores, getTiposPersoneria, getTipoVehiculoFederacion, getTokenFederacion } from "./federacion-service";
@@ -135,6 +136,17 @@ app.get("/infoauto/marcas/:brandId/grupos/:groupId/modelos", async (req: Request
       message: error.message || "Error desconocido",
       stack: error.stack,
     });
+  }
+});
+
+// ✅ Obtener vigencias
+app.get("/RUS/vigencias", async (req: Request, res: Response) => {
+  try {
+    const vigencias = await getVigencias();
+    return res.status(200).json(vigencias);
+  } catch (error) {
+    console.error("Error obteniendo vigencias:", error);
+    return res.status(500).json({ error: "Error interno al obtener vigencias"});
   }
 });
 

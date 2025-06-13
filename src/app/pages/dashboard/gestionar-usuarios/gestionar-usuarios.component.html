@@ -56,8 +56,10 @@
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'RIO URUGUAY'">
-                  <select class="form-select mb-2" formControlName="vigenciaPolizaId">
-                    <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">{{ v.descripcionPeriodoFacturacion }}</option>
+                  <select class="form-select mb-2" formControlName="vigenciaPolizaId" (change)="actualizarCuotasRioUruguay(i)">
+                    <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
+                      Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                    </option>
                   </select>
                   <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
                 </ng-container>
@@ -110,7 +112,9 @@
 
                   <ng-container *ngSwitchCase="'RIO URUGUAY'">
                     <select class="form-select mb-2" formControlName="vigenciaPolizaId">
-                      <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">{{ v.descripcionPeriodoFacturacion }}</option>
+                      <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
+                        Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                      </option>
                     </select>
                     <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
                   </ng-container>
@@ -194,6 +198,12 @@
               type="button" class="btn btn-secondary w-auto" (click)="iniciarAgregarCompania()">
               Agregar compañía
             </button>
+
+            <div class="mb-3">
+              <label for="foto">Foto de perfil</label>
+              <input type="file" class="form-control" (change)="onFotoSeleccionada($event)" />
+            </div>
+
             <button *ngIf="!agregandoCompania && editandoCompaniaIndex === null"
               type="submit" class="btn btn-primary w-auto" (click)="confirmarProductor()">
               Confirmar productor

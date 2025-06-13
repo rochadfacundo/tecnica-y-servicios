@@ -25,8 +25,8 @@ import { Cotizacion } from '../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
-import { getAnios, getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { CLAUSULAS_AJUSTE, CONDICIONES_FISCALES, CUOTAS, DESCUENTOS_COMISION, loadYears, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPO_INTERES_OPCIONES, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
+import { getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
+import { CONDICIONES_FISCALES, DESCUENTOS_COMISION, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
 import { Provincia } from '../../interfaces/provincia';
 import { Year } from '../../interfaces/year';
 
@@ -109,7 +109,6 @@ export class MulticotizadorComponent implements OnInit {
       condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
       controlSatelital: false,
       cpLocalidadGuarda: [{ value: null }, Validators.required],
-      cuotas: [{ value: null }, Validators.required],
       descuentoComision:0,
       franquicia:[],
       tieneGnc:false,

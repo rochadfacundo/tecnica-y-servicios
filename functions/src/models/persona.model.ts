@@ -8,6 +8,7 @@ export class Persona {
   private email: string;
   private role: Role;
   private password:string;
+  private path:string;
 
   constructor(
     id:string,
@@ -15,13 +16,16 @@ export class Persona {
     apellido:string,
     email: string,
     role: Role,
-    password:string) {
+    password:string,
+    path:string
+  ) {
     this.id=id;
     this.nombre=nombre;
     this.apellido=apellido;
     this.email=email;
     this.role=role;
     this.password=password;
+    this.path=path;
   }
 
   toString() {
@@ -30,6 +34,7 @@ export class Persona {
            this.apellido + " "+
            this.email + " "+
            this.role + " "+
-           this.password;
+           this.password+ " "+
+          this.path;
   }
 }

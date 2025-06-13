@@ -11,9 +11,10 @@ export class Administrador extends Persona {
     apellido: string,
     email: string,
     role:Role,
-    password: string
+    password: string,
+    path:string,
   ) {
-    super(id, nombre, apellido, email, role, password);
+    super(id, nombre, apellido, email, role, password, path);
   }
 
   agregarPermiso(permiso: string) {

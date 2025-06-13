@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { Productor } from '../../models/productor.model';
 
 declare var bootstrap: any;
 
@@ -16,11 +17,16 @@ export class HeaderComponent implements OnInit {
 
   @Output() openMulticotizador = new EventEmitter<void>();
   isLoggedIn = false;
+  productorLogueado!:Productor |null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private s_auth: AuthService, private router: Router) {}
 
-  ngOnInit() {
-    this.authService.isAuthenticated$.subscribe(state => {
+  async ngOnInit() {
+
+    const productor = await this.s_auth.obtenerProductorLogueado();
+    console.log('🧑‍💼 Productor logueado:', productor);
+    this.productorLogueado=productor;
+    this.s_auth.isAuthenticated$.subscribe(state => {
       this.isLoggedIn = state;
     });
 
@@ -30,7 +36,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout().then(() => {
+    this.s_auth.logout().then(() => {
       this.router.navigateByUrl('/home');
     });
   }

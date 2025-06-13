@@ -3,27 +3,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import * as admin from "firebase-admin";
-import { Productor } from "../interfaces/productor";
+import { RegisterUserDTO } from "../interfaces/userDTO";
 
 // Crear usuario
 export const crearUsuario = async (
-  req: Request<{}, {}, Productor>,
+  req: Request<{}, {}, RegisterUserDTO>,
   res: Response
 ) => {
-  const { nombre, apellido, email, password, role, companias } = req.body;
+  const { nombre, apellido, email, password, role, companias, path } = req.body;
 
   try {
-    const userRecord = await admin.auth().createUser({
-      email,
-      password,
-    });
+    const userRecord = await admin.auth().createUser({ email, password });
 
-    const nuevoProductor: Productor = {
+    const nuevoProductor: RegisterUserDTO = {
       nombre,
       apellido,
       email,
       role,
-      companias,
+      path: path ?? "",
+      companias: companias ?? [],
       creadoEn: admin.firestore.FieldValue.serverTimestamp(),
     };
 
@@ -36,22 +34,22 @@ export const crearUsuario = async (
   }
 };
 
-
 // Actualizar usuario
 export const actualizarUsuario = async (
-  req: Request<{ uid: string }, {}, Productor>,
+  req: Request<{ uid: string }, {}, RegisterUserDTO>,
   res: Response
 ) => {
   const { uid } = req.params;
-  const { nombre, apellido, email, role } = req.body;
+  const { nombre, apellido, email, role, companias, path } = req.body;
 
   try {
-    // 🔧 Solo los campos necesarios para Firestore
     const dataToUpdate = {
       nombre,
       apellido,
       email,
       role,
+      path: path ?? "",
+      companias: companias ?? [],
       actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
     };
 
@@ -73,10 +71,7 @@ export const eliminarUsuario = async (
   const { uid } = req.params;
 
   try {
-    // ✅ 1. Eliminar de Firestore
     await admin.firestore().collection("usuarios").doc(uid).delete();
-
-    // ✅ 2. Eliminar de Firebase Auth
     await admin.auth().deleteUser(uid);
 
     res.status(200).json({ message: "✅ Usuario eliminado correctamente" });
@@ -123,4 +118,3 @@ export const getUsuarioPorId = async (
     res.status(500).json({ error: error.message || "Error al obtener usuario" });
   }
 };
-

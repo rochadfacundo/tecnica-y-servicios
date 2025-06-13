@@ -5,23 +5,16 @@ import { Tipo, TipoVehiculo } from "../../../interfaces/tipos";
 
 
   export const TIPOS_VEHICULO:TipoVehiculo[]=[
-      { idRus: 7,nombre:'MOTOVEHICULO', nombreRus: 'MOTO MENOS 50 CC'},
-      { idRus: 8,nombre:'MOTOVEHICULO', nombreRus: 'MOTO MAS 50 CC' },
-      { idRus: 1,nombre:'VEHICULO', nombreRus: 'AUTO' },
-      { idRus: 2,nombre:'VEHICULO', nombreRus: 'PICK-UP "A"' },
-      { idRus: 3,nombre:'VEHICULO', nombreRus: 'PICK-UP "B"' },
-      { idRus: 4,nombre:'VEHICULO', nombreRus: 'CAMION HASTA 5 TN' },
-      { idRus: 5,nombre:'VEHICULO', nombreRus: 'CAMION HASTA 10 TN' },
-      { idRus: 6,nombre:'VEHICULO', nombreRus: 'CAMION MAS 10 TN' },
+      { idRus: 7,nombre:'MOTOVEHICULO', descripcion: 'MOTO MENOS 50 CC'},
+      { idRus: 8,nombre:'MOTOVEHICULO', descripcion: 'MOTO MAS 50 CC' },
+      { idRus: 1,nombre:'VEHICULO', descripcion: 'AUTO' },
+      { idRus: 2,nombre:'VEHICULO', descripcion: 'PICK-UP "A"' },
+      { idRus: 3,nombre:'VEHICULO', descripcion: 'PICK-UP "B"' },
+      { idRus: 4,nombre:'CAMION', descripcion: 'CAMION HASTA 5 TN' },
+      { idRus: 5,nombre:'CAMION', descripcion: 'CAMION HASTA 10 TN' },
+      { idRus: 6,nombre:'CAMION', descripcion: 'CAMION MAS 10 TN' },
 
     ];
-
-
-export const TIPO_INTERES_OPCIONES: Tipo[] = [
-  { codigo: 1, descripcion: 'VEHICULO' },
-  { codigo: 2, descripcion: 'MOTOVEHICULO' },
-];
-
 
     //cargar Anios en el formulario
 export function loadYears() {

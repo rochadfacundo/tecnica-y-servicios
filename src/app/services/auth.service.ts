@@ -1,7 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { Productor } from '../interfaces/productor';
+import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, User } from '@angular/fire/auth';
+import { doc, Firestore, getDoc } from '@angular/fire/firestore';
+import { Productor } from '../models/productor.model';
+import { Compania } from '../interfaces/compania';
+import { Role } from '../enums/role';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +15,9 @@ export class AuthService {
 
 
   private _auth = inject(Auth);
+  private firestore = inject(Firestore);
+
+  public productorActual: Productor | null = null;
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -21,7 +27,31 @@ export class AuthService {
     authState(this._auth).subscribe(user => {
       this.isAuthenticatedSubject.next(!!user);
     });
+
   }
+
+  async obtenerProductorLogueado(): Promise<Productor | null> {
+    const user = this._auth.currentUser;
+
+    if (!user) {
+      console.warn('⚠️ No hay usuario logueado');
+      return null;
+    }
+
+    const docRef = doc(this.firestore, 'usuarios', user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data() as Productor;
+      this.productorActual = { ...data, uid: user.uid };
+      return this.productorActual;
+    } else {
+      console.error('❌ No se encontró el documento del usuario');
+      return null;
+    }
+  }
+
+
 
   get authState$(): Observable<any> {
     return authState(this._auth); // lo siguen usando tus guards
@@ -38,7 +68,6 @@ export class AuthService {
   async login(email: string, password: string) {
     try {
       const userCredential = await signInWithEmailAndPassword(this._auth, email, password);
-      console.log('✅ Usuario logueado');
       return userCredential.user;
     } catch (error) {
       console.error('❌ Error al iniciar sesión', error);
@@ -82,6 +111,7 @@ export class AuthService {
           apellido: productor.apellido,
           email: productor.email,
           role: productor.role,
+          companias: productor.companias ?? []
         }),
       });
 
@@ -98,6 +128,8 @@ export class AuthService {
       throw error;
     }
   }
+
+
 
   async getAllUsers(): Promise<Productor[]> {
     const response = await fetch(this.apiUrl);

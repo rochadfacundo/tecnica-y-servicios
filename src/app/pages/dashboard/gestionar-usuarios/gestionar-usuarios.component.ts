@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ECompania } from '../../../enums/Ecompania';
-import { Productor } from '../../../interfaces/productor';
 import { AuthService } from '../../../services/auth.service';
 import { RioUruguayService } from '../../../services/rio-uruguay.service';
 import { configCompanias } from '../../../components/utils/utils';
+import { firstValueFrom } from 'rxjs';
+import { Productor } from '../../../models/productor.model';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
+import { getApp } from 'firebase/app';
+
 
 @Component({
   selector: 'app-gestionar-usuarios',
@@ -15,21 +19,30 @@ import { configCompanias } from '../../../components/utils/utils';
 })
 export class GestionarUsuariosComponent implements OnInit {
   form!: FormGroup;
-  usuarios: Productor[] = [];
+  usuarios: Productor[]=[];
   companiasDisponibles: string[] = Object.values(ECompania);
   agregandoCompania = false;
   editandoCompaniaIndex: number | null = null;
+  fotoSeleccionada: File | null = null;
   public configCompanias = configCompanias;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private s_rus: RioUruguayService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.crearFormulario();
     this.obtenerUsuarios();
+  }
+
+  onFotoSeleccionada(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.fotoSeleccionada = input.files[0];
+    }
   }
 
   private crearFormulario() {
@@ -55,7 +68,7 @@ export class GestionarUsuariosComponent implements OnInit {
       claveProductor: [''],
       refacturaciones: [''], // Federación
       periodo: [''],         // Mercantil
-      cuotas: [''],          // Mercantil / Río Uruguay
+      cuotas: [{ value: '', disabled: true }],   // Mercantil / Río Uruguay
       vigenciaPolizaId: [''],// Río Uruguay
       tipoFacturacion: [''],// Rivadavia
       cantidadCuotas: [''], // Rivadavia
@@ -65,14 +78,29 @@ export class GestionarUsuariosComponent implements OnInit {
     this.companias.push(grupo);
   }
 
+  actualizarCuotasRioUruguay(index: number): void {
+    const grupo = this.companias.at(index);
+    const vigenciaId = Number(grupo.get('vigenciaPolizaId')?.value); // ⚠️ importante
+
+    const vigencias = this.configCompanias['RIO URUGUAY'].vigencias;
+    const seleccionada = vigencias.find((v: any) => v.id === vigenciaId);
+
+    if (seleccionada) {
+      const control = grupo.get('cuotas');
+      control?.setValue(seleccionada.cantidadMesesFacturacion);;
+    }
+  }
+
+
   async onCompaniaChange(index: number): Promise<void> {
     const grupo = this.companias.at(index);
     const compania = grupo.get('compania')?.value;
 
-    if (compania === 'RIO_URUGUAY') {
+    if (compania === 'RIO URUGUAY') {
       try {
-        const response = await this.s_rus.getVigencias();
-        //this.configCompanias.RIO_URUGUAY.vigencias = response.dtoList;
+        const response = await firstValueFrom(this.s_rus.getVigencias());
+        console.log(response);
+        this.configCompanias['RIO URUGUAY'].vigencias = response;
       } catch (error) {
         console.error('❌ Error al cargar vigencias de Río Uruguay', error);
       }
@@ -191,7 +219,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   prepararEliminacion(user: Productor) {
-    const confirmar = confirm(`¿Seguro que querés eliminar a ${user.nombre} ${user.apellido}?`);
+    const confirmar = confirm(`¿Seguro que querés eliminar a ${user.nombre}?`);
     if (confirmar && user.uid) {
       this.authService.deleteUser(user.uid).then(() => {
         this.obtenerUsuarios();
@@ -248,6 +276,24 @@ export class GestionarUsuariosComponent implements OnInit {
     }
 
     const productor: Productor = this.form.value;
+
+    // Subir foto si fue seleccionada
+    if (this.fotoSeleccionada && productor.email) {
+      try {
+        const storage = getStorage(); // ✅ Usar getStorage() directamente
+        const email = productor.email.split('@')[0]; // prefijo del email
+        const ruta = `usuarios/${email}.png`;
+        const storageRef = ref(storage, ruta);
+
+        await uploadBytesResumable(storageRef, this.fotoSeleccionada);
+        const downloadUrl = await getDownloadURL(storageRef);
+        productor.path = downloadUrl; // ✅ se asigna acá
+        console.log('📸 Foto subida:', downloadUrl);
+      } catch (error) {
+        console.error('❌ Error al subir foto de perfil:', error);
+      }
+    }
+
     try {
       await this.authService.register(productor);
       alert('✅ Productor registrado correctamente');
@@ -259,4 +305,7 @@ export class GestionarUsuariosComponent implements OnInit {
       alert('❌ No se pudo registrar el productor. Intentá nuevamente.');
     }
   }
+
+
+
 }

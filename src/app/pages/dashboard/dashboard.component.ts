@@ -8,8 +8,6 @@ import { Cotizacion } from '../../interfaces/cotizacion';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
 import { Role } from '../../enums/role';
-import { Productor } from '../../interfaces/productor';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -24,16 +22,6 @@ import { Productor } from '../../interfaces/productor';
 })
 export class DashboardComponent implements OnInit {
 
-  productor: Productor = {
-    uid:'',
-    nombre: '',
-    apellido: '',
-    email: '',
-    password: '',
-    role: 'PRODUCTOR',
-    companias:[]
-  };
-
   multicotizador:boolean=false;
   misCotizaciones:Cotizacion[];
 
@@ -44,7 +32,8 @@ export class DashboardComponent implements OnInit {
     this.misCotizaciones= [];
   }
 
-ngOnInit() {
+  async ngOnInit() {
+
   this.route.queryParams.subscribe(params => {
     if (params['openMulticotizador']) {
       this.multicotizador = true;
