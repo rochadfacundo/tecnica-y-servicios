@@ -6,6 +6,7 @@
       </a>
     </div>
 
+
     <!-- Botón para pantallas pequeñas -->
     <button class="navbar-toggler" style="background-color: #b9b4b4;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +41,13 @@
         </div>
       } @else {
         <!-- Menú logueado -->
+         <!-- 👋 Saludo -->
+<div class="nav navbar-nav ms-auto align-items-center pe-3 text-white">
+  <span class="badge d-none d-md-inline fs-6">
+    👋 Hola, {{ productorLogueado?.nombre }} {{ productorLogueado?.apellido }}
+  </span>
+</div>
+
         <div class="navbar-nav mx-auto">
           <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
           routerLink="/dashboard" (click)="emitMulticotizador()">
@@ -48,12 +56,19 @@
           <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
             <i class="fa fa-file-signature"></i> Emitir pólizas
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+          <a *ngIf="this.productorLogueado?.role=='Administrador'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
           routerLink="/dashboard/gestionar-usuarios"
           routerLinkActive="router-link-active"
           (click)="closeMenu()">
          <i class="fa fa-user-cog"></i> Administrar PAS
-       </a>
+          </a>
+
+          <a *ngIf="this.productorLogueado?.role=='Productor'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
+          routerLink="/dashboard/cambiar-configuracion"
+          routerLinkActive="router-link-active"
+          (click)="closeMenu()">
+         <i class="fa fa-user-cog"></i> Configuracion
+          </a>
         </div>
 
         <div class="nav navbar-nav ms-auto">

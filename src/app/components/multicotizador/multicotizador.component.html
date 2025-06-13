@@ -115,6 +115,9 @@
           <label for="alarma" class="form-check-label">¿Tiene alarma?</label>
       </div>
       <div class="mb-3 col-md-6 form-check custom_check">
+
+        <input type="checkbox" id="cascoConosur" class="form-check-input" formControlName="cascoConosur">
+        <label for="cascoConosur" class="form-check-label">Casco conosur</label>
       </div>
 
     </div>
@@ -150,8 +153,8 @@
 
     <div class="row" >
       <div class="mb-3 col-md-6 form-check custom_check">
-          <input type="checkbox" id="cascoConosur" class="form-check-input" formControlName="cascoConosur">
-          <label for="cascoConosur" class="form-check-label">Casco conosur</label>
+        <input type="checkbox" id="tallerExclusivo" class="form-check-input" formControlName="tallerExclusivo">
+          <label for="tallerExclusivo" class="form-check-label">Taller exclusivo</label>
       </div>
 
       <div class="mb-3 col-md-6  form-check custom_check">
@@ -161,31 +164,21 @@
 
     </div>
 
-
-    <div class="row" >
-      <div class="mb-3 col-md-6 form-check custom_check">
-          <input type="checkbox" id="tallerExclusivo" class="form-check-input" formControlName="tallerExclusivo">
-          <label for="tallerExclusivo" class="form-check-label">Taller exclusivo</label>
-      </div>
-
-                <!-- SACAR -->
-      <div class="mb-3 col-md-6">
-        <label for="franquicia" class="form-label">Franquicia</label>
-        <select id="franquicia" class="form-select" formControlName="franquicia">
-          <option *ngFor="let franquicia of this.franquicias" [ngValue]="franquicia">{{ franquicia.descripcion }}</option>
-        </select>
-      </div>
-
-    </div>
-
     <div class="row" >
     <!-- MEdio pago y descuento comision-->
-      <div class="mb-3 col-md-6 "  >
+      <div class="mb-3 col-md-6"  >
         <label for="medioPago" class="form-label">Medio de pago</label>
         <select id="medioPago" class="form-select" formControlName="medioPago">
           <option *ngFor="let medioPago of this.mediosPago" [ngValue]="medioPago">{{ medioPago.descripcion }}</option>
         </select>
       </div>
+
+      <div class="mb-3 col-md-6 form-check custom_check"  >
+        <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
+        <label for="controlSatelital" class="form-check-label">Control satelital?</label>
+
+      </div>
+
     </div>
 
  <!-- Clausula de ajuste
@@ -210,11 +203,6 @@
       <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
     </div>
 
-      <!-- Control satelital -->
-      <div class="mb-3  form-check custom_check">
-        <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
-        <label for="controlSatelital" class="form-check-label">Control satelital?</label>
-      </div>
 
     <!-- Vigencia Desde -->
     <div class="mb-3">

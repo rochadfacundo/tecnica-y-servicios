@@ -3,7 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Productor } from '../../models/productor.model';
-
+import { Role } from '../../enums/role';
 declare var bootstrap: any;
 
 @Component({
