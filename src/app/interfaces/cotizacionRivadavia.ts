@@ -4,12 +4,12 @@
 import { EProvincia } from "./provincia";
 
 export interface DatosCotizacionRivadavia {
-  nroProductor: string;
-  claveProductor: string;
-  datoAsegurado: DatoAsegurado;
-  datoVehiculo: DatoVehiculo;
-  datoPoliza: DatoPoliza;
-  polizasVinculadas: PolizasVinculadas;
+  nroProductor?: string;
+  claveProductor?: string;
+  datoAsegurado?: DatoAsegurado;
+  datoVehiculo?: DatoVehiculo;
+  datoPoliza?: DatoPoliza;
+  polizasVinculadas?: PolizasVinculadas;
 }
 
 export interface DatoAsegurado {
@@ -38,8 +38,8 @@ export interface DatoPoliza {
   nroPoliza: string;
   fechaVigenciaDesde: string;
   fechaVigenciaHasta: string;
-  cantidadCuotas: string;
-  tipoFacturacion: string;
+  cantidadCuotas?: string;
+  tipoFacturacion?: string;
   provincia: EProvincia;
   codigoPostal: string;
   sumaAseguradaAccesorios: number;
@@ -87,6 +87,16 @@ export enum CondicionIB {
   CONVENIO_LOCAL= 'CONVENIO_LOCAL',
   CONVENIO_MULTILATERAL= 'CONVENIO_MULTILATERAL',
   EXCENTO='EXCENTO'
+}
+
+export enum CondicionIVA {
+  CONSUMIDOR_FINAL = 'CONSUMIDOR_FINAL',
+  RESPONSABLE_INSCRIPTO= 'RESPONSABLE_INSCRIPTO',
+  RESPONSABLE_INSCRIPTO_AGENTE_PERCEPCION= 'RESPONSABLE_INSCRIPTO_AGENTE_PERCEPCION',
+  MONOTRIBUTISTA= 'MONOTRIBUTISTA',
+  CONVENIO_MULTILATERAL= 'CONVENIO_MULTILATERAL',
+  EXCENTO='EXCENTO',
+  NO_CATEGORIZADO='NO_CATEGORIZADO',
 }
 
 export enum TipoFacturacion {

@@ -1,5 +1,4 @@
 import { FormControl } from "@angular/forms";
-import { CondicionFiscal } from "./condicionFiscal";
 import { Tipo, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from "./tipos";
 import { Provincia } from "./provincia";
 
@@ -36,7 +35,6 @@ export interface CotizacionFormValue {
   tipoVigencia: any;
   cuotas: any;
   clausulaAjuste: Tipo;
-  condicionFiscal: CondicionFiscal;
   cpLocalidadGuarda: any;
 
   //rio uruguay

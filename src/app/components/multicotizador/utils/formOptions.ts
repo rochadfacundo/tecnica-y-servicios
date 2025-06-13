@@ -1,5 +1,4 @@
-import { CondicionFiscalCodigo } from "../../../enums/condicion";
-import { CondicionFiscal } from "../../../interfaces/condicionFiscal";
+
 import { EProvincia, Provincia } from "../../../interfaces/provincia";
 import { Tipo, TipoVehiculo } from "../../../interfaces/tipos";
 
@@ -40,18 +39,6 @@ export const TIPOS_VIGENCIA = [
   { id: 1, descripcion: 'TRIMESTRAL  (valido solo Rio Uruguay)', opcion: 'TRIMESTRAL' },
   { id: 2, descripcion: 'SEMESTRAL  (valido solo Rio Uruguay)', opcion: 'SEMESTRAL' },
   { id: 3, descripcion: 'ANUAL', opcion: 'ANUAL' }
-];
-
-export const CONDICIONES_FISCALES: CondicionFiscal[] = [
-  { id: 1, cfFedRusATM: CondicionFiscalCodigo.CF, descripcion: 'Consumidor final', cfMercantil: 5, cfRivadavia: 'CONSUMIDOR_FINAL' },
-  { id: 2, cfFedRusATM: CondicionFiscalCodigo.EX, descripcion: 'Exento', cfRivadavia: 'EXCENTO' },
-  { id: 3, cfFedRusATM: CondicionFiscalCodigo.FM, descripcion: 'Resp. Inscp. Fac. M', cfRivadavia: 'RESPONSABLE_INSCRIPTO' },
-  { id: 4, cfFedRusATM: CondicionFiscalCodigo.GC, descripcion: 'Gran contribuyente', cfRivadavia: 'RESPONSABLE_INSCRIPTO' },
-  { id: 5, cfFedRusATM: CondicionFiscalCodigo.RI, descripcion: 'Responsable inscripto', cfRivadavia: 'RESPONSABLE_INSCRIPTO' },
-  { id: 6, cfFedRusATM: CondicionFiscalCodigo.RMT, descripcion: 'Responsable monotributo', cfRivadavia: 'MONOTRIBUTISTA' },
-  { id: 7, cfFedRusATM: CondicionFiscalCodigo.RNI, descripcion: 'No inscripto', cfRivadavia: 'NO_CATEGORIZADO' },
-  { id: 8, cfFedRusATM: CondicionFiscalCodigo.SSF, descripcion: 'Sin situación fiscal', cfRivadavia: 'NO_CATEGORIZADO' },
-  { id: 9, cfFedRusATM: CondicionFiscalCodigo.CDE, descripcion: 'Cliente del exterior', cfRivadavia: 'CONSUMIDOR_FINAL' }
 ];
 
 export const TIPOS_ID = [

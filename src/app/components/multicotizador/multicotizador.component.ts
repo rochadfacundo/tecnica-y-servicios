@@ -13,7 +13,6 @@ import {  DatosCotizacionRivadavia} from '../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../services/federacion.service';
 import {LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../services/atm.service';
-import { CondicionFiscal } from '../../interfaces/condicionFiscal';
 import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../interfaces/tipos';
 import { Cobertura } from '../../interfaces/cobertura';
@@ -26,9 +25,11 @@ import { buildFederacionRequest, construirCotizacionFederacion } from './cotizad
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { CONDICIONES_FISCALES, DESCUENTOS_COMISION, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
+import { DESCUENTOS_COMISION, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
 import { Provincia } from '../../interfaces/provincia';
 import { Year } from '../../interfaces/year';
+import { AuthService } from '../../services/auth.service';
+import { Productor } from '../../models/productor.model';
 
 @Component({
   selector: 'app-multicotizador',
@@ -73,6 +74,7 @@ export class MulticotizadorComponent implements OnInit {
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
   tiposDeUso: TipoDeUso[]= [];
+  productorLog!: Productor|null;
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -81,21 +83,20 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(RivadaviaService) private s_riv: RivadaviaService,
     @Inject(FederacionService) private s_fedPat: FederacionService,
     @Inject(AtmService) private s_ATM: AtmService,
+    @Inject(AuthService) private s_auth: AuthService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
 
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.initForm();
     this.setupValueChanges();
-
+    this.productorLog= await this.s_auth.obtenerProductorLogueado();
+    console.log(this.productorLog);
   }
   public readonly opcionesSiNo = OPCIONES_SI_NO;
-
-  public readonly condicionesFiscales: CondicionFiscal[] = CONDICIONES_FISCALES;
-
 
   public tiposVehiculo:TipoVehiculo[] = [];
 
@@ -379,8 +380,11 @@ export class MulticotizadorComponent implements OnInit {
 
   //RIO URUGUAY
   cotizarRUS(): void {
-
-    const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto);
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
+    const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog);
 
     this.s_rus.cotizar(cotizacionData).subscribe({
       next: (response) => {
@@ -410,8 +414,14 @@ export class MulticotizadorComponent implements OnInit {
   //MERCANTIL ANDINA
   cotizarMercantil()
   {
-
-    const cotizacionData= buildMercantilRequest(this.form,this.codigoInfoAuto);
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
+    const cotizacionData= buildMercantilRequest(
+      this.form,
+      this.codigoInfoAuto,
+      this.productorLog);
 
     this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
 
@@ -435,12 +445,16 @@ export class MulticotizadorComponent implements OnInit {
   //Rivadavia
   cotizarRivadavia()
   {
-
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
     const cotizacion:DatosCotizacionRivadavia = buildRivadaviaRequest(
       this.form,
       this.codigoInfoAuto,
       this.codigoRivadavia,
-      this.sumaRivadavia
+      this.sumaRivadavia,
+      this.productorLog
     );
 
     this.s_riv.cotizarRivadavia(cotizacion).subscribe({
@@ -463,8 +477,15 @@ export class MulticotizadorComponent implements OnInit {
   //Federacion patronal
   cotizarFederacion()
   {
-
-    const cotizacionFederacion= buildFederacionRequest(this.form,this.codigoInfoAuto,this.tipoVehiculoFederacion,this.codigoPostalFederacion);
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
+    const cotizacionFederacion= buildFederacionRequest(
+      this.form,this.codigoInfoAuto,
+      this.tipoVehiculoFederacion,
+      this.codigoPostalFederacion,
+      this.productorLog);
 
     this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
       next: (res) => {
@@ -496,6 +517,7 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizar()
   {
+
     this.form = this.getForm();
   this.cotizarRivadavia();
 
@@ -511,14 +533,21 @@ export class MulticotizadorComponent implements OnInit {
 
 
 
-  cotizarATM(){
 
-    const xmlAtm=buildATMRequest(this.form,String(this.codigoInfoAuto));
+  cotizarATM(){
+if (!this.productorLog) {
+  console.error('❌ No hay productor logueado');
+  return;
+}
+
+    const xmlAtm=buildATMRequest(
+      this.form,String(this.codigoInfoAuto),
+      this.productorLog);
 
     this.s_ATM.cotizarATM(xmlAtm).subscribe({
       next: (res) => {
        console.log('✅ Cotización exitosa ATM:');
-        console.log(res);
+
     const resultado =parsearXML(res);
 
     const cotizacionATM = construirCotizacionATM(resultado);

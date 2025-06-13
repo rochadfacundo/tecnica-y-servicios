@@ -1,18 +1,26 @@
 import { formatDate } from "@angular/common";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CotizacionFederacion } from "../../../interfaces/cotizacionfederacion";
+import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../../interfaces/cotizacionfederacion";
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CodigosPersoneria } from "../utils/utils";
+import { Productor } from "../../../models/productor.model";
 
 
 // Armar el request para cotizar federacion
-export function buildFederacionRequest(form: CotizacionFormValue,infoauto:number,tipoVehiculo:any,codPostal:any)
+export function buildFederacionRequest(
+  form: CotizacionFormValue,
+  infoauto:number,
+  tipoVehiculo:any,
+  codPostal:any,
+  productor:Productor)
 : CotizacionFederacion{
-
+  const configFedPat = productor.companias?.find(c => c.compania === 'FEDERACION PATRONAL');
       let rastreador= form.rastreador? Number(form.rastreador?.codigo): 99;
       let comision= form.descuentoComision? Number(form.descuentoComision.codigo):0;
       const fechaOriginal = form.vigenciaDesde;
       const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
+
+      const todasLasCoberturas="null";
 
       const cotizacionFederacion: CotizacionFederacion = {
         //numero_cotizacion: 129445013,
@@ -22,14 +30,14 @@ export function buildFederacionRequest(form: CotizacionFormValue,infoauto:number
         pago_contado: false,
         razon_social: CodigosPersoneria.Federacion.personaFisica,
         //cliente_nuevo: false,
-        refacturaciones: Number(form.tipoRefacturacion?.codigo),
+        refacturaciones: configFedPat?.refacturaciones,
         contratante: {
           id: Number(form.nroId),
           tipo_id: form.tipoId,
          // cuit: '20352928587',
           nombre: form.nombre,
           apellido: form.apellido,
-          condicion_iva: form.condicionFiscal.cfFedRusATM,
+          condicion_iva: CondicionesIvaFederacionPatronal.CONSUMIDOR_FINAL,
           //localidad: 0,
           //matricula: '1125554'
         },
@@ -52,8 +60,8 @@ export function buildFederacionRequest(form: CotizacionFormValue,infoauto:number
           grua:Boolean(form.grua),
           taller_exclusivo:Boolean(form.tallerExclusivo),
           casco_conosur:true,
-          plan: "null",
-          franquicia: Number(form.franquicia.codigo),
+          plan: todasLasCoberturas,
+          franquicia: 1, //cambiar dsp
         },/*
         producto_modular: {
           cant_modulos: 0,

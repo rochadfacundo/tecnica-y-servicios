@@ -21,6 +21,18 @@ export interface CotizacionRioUruguay{
 
 }
 
+export enum CondicionFiscalRus{
+  CF="CF",
+  EX="EX",
+  FM="FM",
+  GC="GC",
+  RI='RI',
+  RMT='RMT',
+  RNI='RNI',
+  SSF='SSF',
+  CDE='CDE'
+}
+
 export interface VigenciaRus {
   id: number;
   descripcion: string;

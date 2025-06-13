@@ -1,5 +1,3 @@
-import { CondicionFiscalCodigo } from "../enums/condicion";
-
 
 export interface CotizacionFederacion {
   fecha_desde: string; // formato "dd/MM/yyyy"
@@ -17,8 +15,21 @@ export interface CotizacionFederacion {
   asegura2?: Asegura2Federacion[]; // maximo 4 objetos
 }
 
+export enum CondicionesIvaFederacionPatronal {
+  INSCRIPTO = "IN",
+  CONSUMIDOR_FINAL = "CF",
+  EXENTO = "EA",
+  INSCRIPTO_REDUCIDO = "IR",
+  EXENTO_DTO = "ED",
+  MONOTRIBUTISTA = "MO",
+  NO_CATEGORIZADO = "NC",
+  NO_DEFINIDO = "0",
+  NO_APLICA = "NA"
+}
+
+
 export interface ContratanteFederacion {
-  condicion_iva: CondicionFiscalCodigo;
+  condicion_iva: CondicionesIvaFederacionPatronal;
   id?: number;
   tipo_id?: string;
   cuit?: string;

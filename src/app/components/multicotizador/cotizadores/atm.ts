@@ -3,43 +3,21 @@ import { MedioPago, Plan } from "../../../enums/EnumAtm";
 import { Cotizacion, CotizacionATM } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
 import { CodigosPersoneria, getYesNo } from "../utils/utils";
+import { Productor } from "../../../models/productor.model";
 
-export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):string{
+export function buildATMRequest(form: CotizacionFormValue,infoAuto:string,productor:Productor):string{
   const today = form.vigenciaDesde;
   const [year, month, day] = today.split('-');
   const atmFormatDay = `${day}${month}${year}`;
   const alarma= form.alarma ? 1: 0;
   const ajuste = form.clausulaAjuste.codigo;
   const seccionAuto=3;
+  const configATM = productor.companias?.find(c => c.compania === 'ATM');
   const yes = 'S';
   const no = 'N';
-  const descripcion = form.tipoRefacturacion.descripcion.trim().toUpperCase();
   const uso= '0101';
-
-
-
-  const medioPago: MedioPago =
-    form.medioPago.codigo === 1
-      ? MedioPago.EFVO
-      : form.medioPago.codigo === 2
-      ? MedioPago.TARJETA
-      : MedioPago.CBU;
-
-  let plan: Plan;
-
-  if (descripcion.includes('MENSUAL') && medioPago === MedioPago.TARJETA) {
-    plan = Plan.MENSUAL_TARJETA;
-  } else if (descripcion.includes('MENSUAL') && medioPago === MedioPago.CBU) {
-    plan = Plan.MENSUAL_CBU;
-  } else if (descripcion.includes('BIMESTRAL') && medioPago === MedioPago.TARJETA) {
-    plan = Plan.BIMESTRAL_TARJETA;
-  } else if (descripcion.includes('BIMESTRAL')  && medioPago === MedioPago.EFVO) {
-    plan = Plan.BIMESTRAL_EFVO;
-  } else if (descripcion.includes('TRIMESTRAL') && medioPago === MedioPago.EFVO) {
-    plan = Plan.TRIMESTRAL_EFVO;
-  } else {
-    plan = Plan.DESCONOCIDO;
-  }
+  const personaFisica="F";
+  const conficionFiscal="CF";
 
   const xml = `
   <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -53,11 +31,11 @@ export function buildATMRequest(form: CotizacionFormValue,infoAuto:string):strin
               <fecha>${atmFormatDay}</fecha>
               <vendedor>__VENDEDOR__</vendedor>
               <origen>WS</origen>
-              <plan>${plan}</plan>
+              <plan>${configATM?.plan}</plan>
             </usuario>
             <asegurado>
-              <persona>${CodigosPersoneria.Atm.personaFisica}</persona>
-              <iva>${form.condicionFiscal.cfFedRusATM}</iva>
+              <persona>${personaFisica}</persona>
+              <iva>${conficionFiscal}</iva>
               <cupondscto></cupondscto>
               <bonificacion></bonificacion>
             </asegurado>

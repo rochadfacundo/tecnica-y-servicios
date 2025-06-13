@@ -1,17 +1,26 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../interfaces/cotizacionRioUruguay";
+import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../enums/tiposDeUso";
 import { getYesNo } from "../utils/utils";
+import { Productor } from "../../../models/productor.model";
 
 
-  export function buildRusRequest(form: CotizacionFormValue,infoauto:number):CotizacionRioUruguay{
+  export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor):CotizacionRioUruguay{
+       //si id es 1 son 6 meses
+      // si id es 3 son 3
+      // si id es 65 son 3
+      // si id es 71 son 1
 
         const yes = "SI";
         const no = "NO";
         const USO:TipoDeUso = TipoDeUso.PARTICULAR;
         const medioCobro= form.medioPago.codigo === 1 ? 1 : 3;
-        const codigoTipoInteres= form.tipoVehiculo.idRus;
+        const codigoTipoInteres= form.tipoVehiculo.nombre;
+        const AJUSTE_RUS=20;
+        const configRus = productor.companias?.find(c => c.compania === 'RIO URUGUAY');
+
+
 
         const vehiculo: VehiculosRus[]=[{
             anio: String(form.anio),
@@ -26,35 +35,62 @@ import { getYesNo } from "../utils/utils";
         }];
 
         const cotizacionData: CotizacionRioUruguay = {
-          codigoProductor: 4504,
-          codigoSolicitante: 4504,
+          codigoProductor: Number(configRus?.nroProductor),
+          codigoSolicitante: Number(configRus?.claveProductor),
           codigoTipoInteres: String(codigoTipoInteres),
-          cuotas: Number(form.cuotas),
-          ajusteAutomatico:Number(form.clausulaAjuste.codigo),
-          condicionFiscal: form.condicionFiscal.cfFedRusATM,
+          cuotas: configRus?.cuotas,
+          ajusteAutomatico:AJUSTE_RUS,
+          condicionFiscal: CondicionFiscalRus.CF,
           //tipoVigencia: form.tipoVigencia.opcion,
-          tipoVigencia: "SEMESTRAL",
+          //tipoVigencia: "SEMESTRAL",
           medioCobro:medioCobro,
           vehiculos: vehiculo,
           vigenciaDesde: form.vigenciaDesde,
-          vigenciaHasta: form.vigenciaHasta,
+          vigenciaHasta: calcularVigenciaHasta(form.vigenciaDesde, Number(configRus?.vigenciaPolizaId)),
           sumaAseguradaGnc:Number(form.gnc),
           sumaAseguradaAccesorios:0,
           controlSatelital: getYesNo(form.controlSatelital,yes,no),
           excluirVida: 'NO',
-          aumentoRCPaisesLimitrofes: 'NO'
-         //vigenciaPolizaId: 65 //id de autos
+          aumentoRCPaisesLimitrofes: 'NO',
+         vigenciaPolizaId: Number(configRus?.vigenciaPolizaId)
         };
-
-        /*
-        if(codigoTipo=='MOTOVEHICULO')
-        {
-          cotizacionData.vigenciaPolizaId=70; //id para motos
-        }*/
 
           return cotizacionData;
 
   }
+
+  function calcularVigenciaHasta(desde: string, vigenciaId: number): string {
+    const fechaDesde = new Date(desde);
+    let meses = 0;
+
+    switch (vigenciaId) {
+      case 1:
+        meses = 6;
+        break;
+      case 3:
+      case 65:
+        meses = 3;
+        break;
+      case 71:
+        meses = 1;
+        break;
+      default:
+        meses = 6;
+        break;
+    }
+
+    // Sumamos los meses
+    const nuevaFecha = new Date(fechaDesde);
+    nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
+
+    // Formato YYYY-MM-DD
+    const yyyy = nuevaFecha.getFullYear();
+    const mm = String(nuevaFecha.getMonth() + 1).padStart(2, '0');
+    const dd = String(nuevaFecha.getDate()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
 
  export function construirCotizacionRus(coberturas: any[]): Cotizacion {
     const buscarPremio = (codigoCasco: string): number | undefined => {

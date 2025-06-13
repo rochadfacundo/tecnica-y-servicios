@@ -1,29 +1,33 @@
 import { Cotizacion } from "../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, Productor } from "../../../interfaces/cotizacionMercantil";
+import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../interfaces/cotizacionMercantil";
+import { Productor } from "../../../models/productor.model";
 
-export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):CotizacionMercantil{
+export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor):CotizacionMercantil{
       const TIPO_VEHICULO = form.tipoVehiculo.nombre;
       const ANIO = Number(form.anio);
       const codigoParticular=1;
-      const PRODUCTOR:Productor={ id: 86322 };
+      const configMA = productor.companias?.find(c => c.compania === 'MERCANTIL ANDINA');
       const LOCALIDAD:CotizacionLocalidad=
       { codigo_postal: Number(form.cpLocalidadGuarda),
-        id:10407,
         provincia: form.provincia.descripcion
       };
       const RASTREADOR=form.rastreador ? 1 : 0;
 
+      const prod: ProductorMercantil={id:Number(configMA?.nroProductor)};
+      const iva ={consumidorFinal:5};
+      const CANAL_AUTOS=78;
+      const CANAL_MOTOS=81;
 
       let cotizacionData: CotizacionMercantil = {
-        canal: 78, //canal autos
+        canal: CANAL_AUTOS,
         localidad: LOCALIDAD,
         vehiculo:null,
-        productor: PRODUCTOR,
-        cuotas:Number(form.cuotas),
+        productor: prod,
+        cuotas:configMA?.cuotas,
         tipo: TIPO_VEHICULO,//este lo agregue yo para validar en el backend el endpoint
-        periodo: Number(form.tipoRefacturacion?.mercantilPeriodo),
-        iva: Number(form.condicionFiscal.cfMercantil),
+        periodo: configMA?.periodo,
+        iva: iva.consumidorFinal,
         //   comision: nose,
         //   bonificacion: nose,
         //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
@@ -39,7 +43,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number):
           gnc: form.tieneGnc,
           rastreo: RASTREADOR };
          cotizacionData.vehiculo=MOTOVEHICULO;
-         cotizacionData.canal=81; //canal motos
+         cotizacionData.canal=CANAL_MOTOS;
 
       }else
       {

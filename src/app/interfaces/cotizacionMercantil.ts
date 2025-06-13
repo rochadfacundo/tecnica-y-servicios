@@ -1,7 +1,7 @@
 export interface CotizacionMercantil {
   localidad: CotizacionLocalidad;
   vehiculo: CotizacionVehiculo | CotizacionVehiculoMoto| null;
-  productor: Productor;
+  productor: ProductorMercantil;
   tipo?:string;
   canal?: number;
   periodo?:number;
@@ -63,7 +63,7 @@ export interface CotizacionVehiculoMoto {
   rastreo?: number;
 }
 
-export interface Productor {
+export interface ProductorMercantil {
   id: number;
   nombre?: string;
 }
@@ -85,7 +85,7 @@ export interface MercantilCotizado {
   comision: number;
   bonificacion: number;
   bonificacion_extraordinaria: number;
-  productor: Productor;
+  productor: ProductorMercantil;
   cantidad: number;
   resultado: Resultado[];
 }
