@@ -2,7 +2,8 @@
   <div class="container-fluid">
     <div class="logo pb-3">
       <a routerLink="/">
-        <img class="borde-r" [src]="this.productorLogueado?.path" alt="Logo Técnica y Servicios">
+        <img class="borde-r" [src]="this.productorLogueado.path"  *ngIf="this.productorLogueado"  alt="Logo Técnica y Servicios">
+        <img class="borde-r" src="../../../assets/logo.png" *ngIf="!this.productorLogueado" alt="Logo Técnica y Servicios">
       </a>
     </div>
 

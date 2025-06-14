@@ -19,10 +19,11 @@ export class HeaderComponent implements OnInit {
   isLoggedIn = false;
   productorLogueado!:Productor |null;
 
-  constructor(private s_auth: AuthService, private router: Router) {}
+  constructor(private s_auth: AuthService, private router: Router) {
+
+  }
 
   async ngOnInit() {
-
     const productor = await this.s_auth.obtenerProductorLogueado();
     console.log('🧑‍💼 Productor logueado:', productor);
     this.productorLogueado=productor;
