@@ -54,6 +54,7 @@ Thumbs.db
 # tips
 /backend-atm/tip.txt
 /planchon.txt
+/githubtoken.txt
 
 # environment
 /environment.ts

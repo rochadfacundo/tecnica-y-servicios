@@ -17,6 +17,9 @@ export class AuthService {
   private _auth = inject(Auth);
   private firestore = inject(Firestore);
 
+    private productorSubject = new BehaviorSubject<Productor | null>(null);
+    productor$ = this.productorSubject.asObservable();
+
   public productorActual: Productor | null = null;
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
@@ -44,6 +47,7 @@ export class AuthService {
     if (docSnap.exists()) {
       const data = docSnap.data() as Productor;
       this.productorActual = { ...data, uid: user.uid };
+      this.productorSubject.next(this.productorActual);
       return this.productorActual;
     } else {
       console.error('❌ No se encontró el documento del usuario');
@@ -51,6 +55,10 @@ export class AuthService {
     }
   }
 
+actualizarProductorLocal(productor: Productor) {
+  this.productorActual = productor;
+  this.productorSubject.next(productor);
+}
 
 
   get authState$(): Observable<any> {
@@ -111,6 +119,7 @@ export class AuthService {
           apellido: productor.apellido,
           email: productor.email,
           role: productor.role,
+          path: productor.path,
           companias: productor.companias ?? []
         }),
       });
@@ -157,10 +166,11 @@ export class AuthService {
   }
 
 
-  async logout() {
-    await this._auth.signOut();
+ async logout() {
+  this.productorSubject.next(null);
+  await this._auth.signOut();
+}
 
-  }
 
   async getState() {
     return this.isAuthenticated$;

@@ -1,4 +1,5 @@
 
+import { Role } from '../../enums/role';
 
 export const configCompanias: Record<string, any> = {
   'RIVADAVIA': {
@@ -26,3 +27,16 @@ export const configCompanias: Record<string, any> = {
     ]
   }
 };
+
+
+
+export function getRoles():Role[]{
+
+  const roles:Role[]=[];
+
+  roles.push(Role.Productor);
+  roles.push(Role.Supervisor);
+  roles.push(Role.Administrador);
+
+  return roles;
+}

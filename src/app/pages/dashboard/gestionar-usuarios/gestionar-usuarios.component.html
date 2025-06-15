@@ -11,7 +11,12 @@
           <div class="mb-3"><input formControlName="apellido" type="text" class="form-control" placeholder="Apellido" /></div>
           <div class="mb-3"><input formControlName="email" type="email" class="form-control" placeholder="Email" /></div>
           <div class="mb-3"><input formControlName="password" type="password" class="form-control" placeholder="Contraseña" /></div>
-          <div class="mb-3"><input formControlName="role" type="text" class="form-control" placeholder="Rol" /></div>
+          <div class="mb-3">
+            <select class="form-select" formControlName="role">
+              <option [ngValue]="null" disabled selected>Seleccionar compañía</option>
+              <option placeholder="Rol" *ngFor="let rol of this.roles" [ngValue]="rol">{{ rol }}</option>
+            </select>
+          </div>
         </ng-container>
 
         <!-- Compañías asociadas -->

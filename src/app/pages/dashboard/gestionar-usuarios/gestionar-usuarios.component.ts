@@ -1,15 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ECompania } from '../../../enums/Ecompania';
 import { AuthService } from '../../../services/auth.service';
 import { RioUruguayService } from '../../../services/rio-uruguay.service';
-import { configCompanias } from '../../../components/utils/utils';
+import { configCompanias, getRoles } from '../../../components/utils/utils';
 import { firstValueFrom } from 'rxjs';
 import { Productor } from '../../../models/productor.model';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
-import { getApp } from 'firebase/app';
-
+import {Role} from '../../../enums/role';
 
 @Component({
   selector: 'app-gestionar-usuarios',
@@ -25,6 +24,7 @@ export class GestionarUsuariosComponent implements OnInit {
   editandoCompaniaIndex: number | null = null;
   fotoSeleccionada: File | null = null;
   public configCompanias = configCompanias;
+  roles:string[]=[];
 
   constructor(
     private fb: FormBuilder,
@@ -36,6 +36,7 @@ export class GestionarUsuariosComponent implements OnInit {
   ngOnInit(): void {
     this.crearFormulario();
     this.obtenerUsuarios();
+    this.roles= getRoles();
   }
 
   onFotoSeleccionada(event: Event) {
@@ -51,7 +52,7 @@ export class GestionarUsuariosComponent implements OnInit {
       apellido: [''],
       email: [''],
       password: [''],
-      role: [''],
+      role: [Role.Productor],
       companias: this.fb.array([]),
     });
   }
