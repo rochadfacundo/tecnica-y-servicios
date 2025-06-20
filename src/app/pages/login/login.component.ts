@@ -3,13 +3,14 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { SpinnerService } from '../../services/spinner.service'; // 👈 importar spinner
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'], // Cambié "styleUrl" a "styleUrls"
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   public loginForm: FormGroup;
@@ -17,10 +18,11 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private s_auth: AuthService
+    private s_auth: AuthService,
+    private spinner: SpinnerService // 👈 inyectar
   ) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]], // 👈 corregido a email
       password: ['', Validators.required],
     });
   }
@@ -31,19 +33,13 @@ export class LoginComponent {
       return;
     }
 
-    const { username, password } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
     try {
-      // Convertimos el username en un correo electrónico ficticio
-      //const email = `${username}@tecnicayservicios.com`;
-
-      const email = `${username}`;
-
-      // Llamamos al servicio de autenticación
-      const user = await this.s_auth.login(email, password);
+      const user = await this.spinner.runWithSpinner(
+        this.s_auth.login(email, password)
+      );
       console.log('Usuario logueado:', user);
-
-      // Redirigir al dashboard
       this.router.navigateByUrl('dashboard');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
