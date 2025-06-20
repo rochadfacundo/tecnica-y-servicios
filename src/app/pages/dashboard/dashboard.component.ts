@@ -62,7 +62,7 @@ export class DashboardComponent implements OnInit {
     const index = this.misCotizaciones.findIndex(c => c.compania === cot.compania);
 
     if (index !== -1) {
-      this.misCotizaciones[index] = { ...this.misCotizaciones[index], ...cot };
+      this.misCotizaciones[index] = cot;
     } else {
       this.misCotizaciones.push(cot);
     }

@@ -28,7 +28,6 @@ export class Group extends EntityBase {
   id: number=0;
   brand_id: number=0;
   name: string='';
-
   constructor(data: Partial<Group>) {
     super(data);
     Object.assign(this, data);

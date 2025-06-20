@@ -25,7 +25,7 @@ import { buildFederacionRequest, construirCotizacionFederacion } from './cotizad
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { DESCUENTOS_COMISION, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
+import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
 import { Provincia } from '../../interfaces/provincia';
 import { Year } from '../../interfaces/year';
 import { AuthService } from '../../services/auth.service';
@@ -62,6 +62,7 @@ export class MulticotizadorComponent implements OnInit {
   provincias:Provincia[]=[];
   grupos: Group[] = [];
   modelos: Model[] = [];
+  modelosTodos: Model[] = [];
   codigosUso: any[] = [];
   anio:number=0;
   codigoInfoAuto:number=0;
@@ -161,6 +162,7 @@ export class MulticotizadorComponent implements OnInit {
           next: (response: Brand[]) => {
             console.log(response);
             this.marcas = response;
+            this.cdr.detectChanges();
           },
           error: (error) => {
             console.error('Error:', error);
@@ -172,8 +174,12 @@ export class MulticotizadorComponent implements OnInit {
         getGrupos(this.s_infoauto, brandId, this.getTipoVehiculo()).subscribe({
           next: (response) => {
             console.log(response);
-            this.grupos = response;
+          this.grupos = response;
           this.cotizacionForm.get('modelo')?.enable();
+
+          // Forzar render async para asegurar que el ng-select detecte el cambio
+          setTimeout(() => this.cdr.detectChanges(), 0);
+
           },
           error: (error) => {
             console.error('Error:', error);
@@ -181,26 +187,48 @@ export class MulticotizadorComponent implements OnInit {
         });
       }
 
-    getModelosPorGrupoYMarca(brandId: number, groupId: number) {
-      getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
-        next: (response) => {
-          console.log(response);
-          this.modelos = response;
-          this.cotizacionForm.get('version')?.enable();
-        },
-        error: (error) => {
-          console.error('Error:', error);
-          this.cotizacionForm.get('version')?.disable();
-        },
+  getModelosPorGrupoYMarca(brandId: number, groupId: number) {
+  getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
+    next: (response) => {
+    
+      this.modelosTodos = response;
+
+      // Extraer años únicos desde los modelos (desde prices_from hasta prices_to)
+      const añosUnicos = new Set<number>();
+
+      response.forEach((modelo:Model) => {
+        const desde = modelo.prices_from ?? 0;
+        const hasta = modelo.prices_to ?? new Date().getFullYear();
+        for (let y = desde; y <= hasta; y++) {
+          añosUnicos.add(y);
+        }
       });
-    }
+
+      this.anios = Array.from(añosUnicos)
+        .sort((a, b) => b - a)
+        .map(year => ({ year } as Year));
+
+      this.cotizacionForm.get('anio')?.enable();
+      this.cotizacionForm.get('version')?.disable();
+      this.modelos = []; 
+      this.cotizacionForm.get('version')?.setValue(null);
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('❌ Error modelos por grupo:', error);
+      this.anios = [];
+      this.cotizacionForm.get('anio')?.disable();
+    },
+  });
+}
+
 
   //subscripciones a form
   private setupValueChanges(): void {
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
 
-      this.cdr.detectChanges(); // Fuerza la actualización del template
+   
       if (tipo) {
 
         this.getMarcasInfoAuto();
@@ -224,41 +252,39 @@ export class MulticotizadorComponent implements OnInit {
     });
 
 
-    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo:number) => {
+   this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
       this.cotizacionForm.get('anio')?.setValue(null);
+      this.cotizacionForm.get('version')?.disable();
+      this.anios = [];
+
       if (idModelo) {
-        this.group_idSelected=idModelo;
-
-
-          getAniosPorGrupo(this.s_infoauto, this.brand_idSelected, idModelo, this.getTipoVehiculo()).subscribe({
-            next: (anios: Year[]) => {
-              this.anios = anios.sort((a, b) => b.year - a.year);
-              this.cotizacionForm.get('anio')?.enable();
-            },
-            error: (err) => {
-              console.error("Error obteniendo años del grupo:", err);
-              this.anios = [];
-              this.cotizacionForm.get('anio')?.disable();
-            }
-          });
-
+        this.group_idSelected = idModelo;
+        this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
       } else {
+        this.modelos = [];
         this.cotizacionForm.get('anio')?.disable();
       }
     });
 
-    this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
-      this.cotizacionForm.get('version')?.setValue(null);
-      if (anio && this.brand_idSelected) {
-        this.anio=anio;
 
-      this.getModelosPorGrupoYMarca(this.brand_idSelected,this.group_idSelected);
+ this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
+  this.cotizacionForm.get('version')?.setValue(null);
 
-      } else {
-        this.modelos = [];
-        this.cotizacionForm.get('version')?.disable();
-      }
-    });
+  if (anio && this.modelosTodos.length > 0) {
+    this.anio = anio;
+
+    this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
+
+    
+    this.cotizacionForm.get('version')?.enable();
+  } else {
+    this.modelos = [];
+    this.cotizacionForm.get('version')?.disable();
+  }
+
+  this.cdr.detectChanges();
+});
+
 
 
     //Para traer codigo de Rivadavia y franquicia federacion.
