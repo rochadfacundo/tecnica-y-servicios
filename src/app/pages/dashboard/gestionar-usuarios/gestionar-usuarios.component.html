@@ -1,0 +1,245 @@
+<!-- HTML corregido para gestión de compañías dinámicas -->
+<div class="container-fluid">
+  <div class="row">
+    <!-- 📝 Formulario (Izquierda) -->
+    <div class="col-md-6">
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <h3>Alta de Usuario Productor</h3>
+
+        <ng-container *ngIf="!agregandoCompania">
+          <div class="mb-3"><input formControlName="nombre" type="text" class="form-control" placeholder="Nombre" /></div>
+          <div class="mb-3"><input formControlName="apellido" type="text" class="form-control" placeholder="Apellido" /></div>
+          <div class="mb-3"><input formControlName="email" type="email" class="form-control" placeholder="Email" /></div>
+          <div class="mb-3"><input formControlName="password" type="password" class="form-control" placeholder="Contraseña" /></div>
+          <div class="mb-3">
+            <select class="form-select" formControlName="role">
+              <option [ngValue]="null" disabled selected>Seleccionar compañía</option>
+              <option placeholder="Rol" *ngFor="let rol of this.roles" [ngValue]="rol">{{ rol }}</option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- Compañías asociadas -->
+        <div formArrayName="companias">
+          <div *ngFor="let compania of companias.controls; let i = index" [formGroupName]="i" class="border rounded p-3 my-3">
+
+            <!-- 🟢 Agregar nueva compañía -->
+            <ng-container *ngIf="agregandoCompania && i === companias.length - 1; else resumenCompania">
+              <h6>Agregar nueva compañía</h6>
+              <div class="mb-2">
+                <select class="form-select" formControlName="compania" (change)="onCompaniaChange(i)">
+                  <option [ngValue]="null" disabled selected>Seleccionar compañía</option>
+                  <option *ngFor="let c of getCompaniasFiltradas(i)" [ngValue]="c">{{ c }}</option>
+                </select>
+              </div>
+
+              <!-- Campos comunes -->
+              <input type="text" class="form-control mb-2" formControlName="nroProductor" placeholder="Nº Productor" />
+              <input type="text" class="form-control mb-2" formControlName="claveProductor" placeholder="Clave Productor" />
+
+              <!-- Campos específicos por compañía -->
+              <ng-container [ngSwitch]="companias.at(i).get('compania')?.value">
+
+                <ng-container *ngSwitchCase="'RIVADAVIA'">
+                  <select class="form-select mb-2" formControlName="tipoFacturacion" (change)="actualizarCantidadCuotasRivadavia(i)">
+                    <option *ngFor="let tipo of configCompanias['RIVADAVIA'].tiposFacturacion" [value]="tipo">{{ tipo }}</option>
+                  </select>
+                  <input type="text" class="form-control mb-2" formControlName="cantidadCuotas" placeholder="Cantidad de Cuotas" />
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'MERCANTIL ANDINA'">
+                  <select class="form-select mb-2" formControlName="periodo" (change)="actualizarCuotasMercantil(i)">
+                    <option *ngFor="let p of configCompanias['MERCANTIL ANDINA']?.periodos | keyvalue" [value]="p.value">{{ p.key }}</option>
+                  </select>
+                  <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'FEDERACION PATRONAL'">
+                  <select class="form-select mb-2" formControlName="refacturaciones">
+                    <option *ngFor="let r of configCompanias['FEDERACION PATRONAL'].refacturaciones | keyvalue" [value]="r.value">{{ r.key }}</option>
+                  </select>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'RIO URUGUAY'">
+                  <select class="form-select mb-2" formControlName="vigenciaPolizaId" (change)="actualizarCuotasRioUruguay(i)">
+                    <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
+                      Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                    </option>
+                  </select>
+                  <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'ATM'">
+                  <input type="text" class="form-control mb-2" formControlName="codigoVendedor" placeholder="Código Vendedor" />
+                  <select class="form-select mb-2" formControlName="plan">
+                    <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
+                  </select>
+                </ng-container>
+
+              </ng-container>
+
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success mt-2" (click)="confirmarCompania()">Confirmar</button>
+                <button type="button" class="btn btn-secondary mt-2" (click)="cancelarAgregarCompania()">Cancelar</button>
+              </div>
+            </ng-container>
+
+            <!-- 🔧 Edición o Resumen -->
+            <ng-template #resumenCompania>
+              <ng-container *ngIf="editandoCompaniaIndex === i; else vistaResumen">
+                <h6>Editando compañía: {{ compania.get('compania')?.value }}</h6>
+
+                <!-- Campos comunes -->
+                <input type="text" class="form-control mb-2" formControlName="nroProductor" placeholder="Nº Productor" />
+                <input type="text" class="form-control mb-2" formControlName="claveProductor" placeholder="Clave Productor" />
+
+                <ng-container [ngSwitch]="compania.get('compania')?.value">
+
+                  <ng-container *ngSwitchCase="'RIVADAVIA'">
+                    <select class="form-select mb-2" formControlName="tipoFacturacion" (change)="actualizarCantidadCuotasRivadavia(i)">
+                      <option *ngFor="let tipo of configCompanias['RIVADAVIA'].tiposFacturacion" [value]="tipo">{{ tipo }}</option>
+                    </select>
+                    <input type="text" class="form-control mb-2" formControlName="cantidadCuotas" placeholder="Cantidad de Cuotas" />
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'MERCANTIL ANDINA'">
+                    <select class="form-select mb-2" formControlName="periodo" (change)="actualizarCuotasMercantil(i)">
+                      <option *ngFor="let p of configCompanias['MERCANTIL ANDINA']?.periodos | keyvalue" [value]="p.value">{{ p.key }}</option>
+                    </select>
+                    <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'FEDERACION PATRONAL'">
+                    <select class="form-select mb-2" formControlName="refacturaciones">
+                      <option *ngFor="let r of configCompanias['FEDERACION PATRONAL'].refacturaciones | keyvalue" [value]="r.value">{{ r.key }}</option>
+                    </select>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'RIO URUGUAY'">
+                    <select class="form-select mb-2" formControlName="vigenciaPolizaId">
+                      <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
+                        Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                      </option>
+                    </select>
+                    <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'ATM'">
+                    <input type="text" class="form-control mb-2" formControlName="codigoVendedor" placeholder="Código Vendedor" />
+                    <select class="form-select mb-2" formControlName="plan">
+                      <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
+                    </select>
+                  </ng-container>
+
+                </ng-container>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-success mt-2" (click)="confirmarEdicionCompania()">Confirmar</button>
+                  <button type="button" class="btn btn-secondary mt-2" (click)="cancelarEdicionCompania()">Cancelar</button>
+                </div>
+              </ng-container>
+
+              <!-- Vista solo lectura -->
+              <ng-template #vistaResumen>
+                <h6>Compañía agregada: {{ compania.get('compania')?.value }}</h6>
+                <ul class="list-unstyled ms-3">
+                  <li *ngIf="compania.get('nroProductor')?.value">
+                    <strong>Nº Productor:</strong> {{ compania.get('nroProductor')?.value }}
+                  </li>
+
+                  <li *ngIf="compania.get('claveProductor')?.value">
+                    <strong>Clave:</strong> {{ compania.get('claveProductor')?.value }}
+                  </li>
+
+                  <!-- Federación Patronal -->
+                  <li *ngIf="compania.get('refacturaciones')?.value">
+                    <strong>Refacturación:</strong> {{ getClaveRefacturacion(compania.get('refacturaciones')?.value) }}
+                  </li>
+
+                  <!-- Mercantil Andina -->
+                  <li *ngIf="compania.get('periodo')?.value">
+                    <strong>Periodo:</strong> {{ getClavePeriodoMercantil(compania.get('periodo')?.value) }}
+                  </li>
+                  <li *ngIf="compania.get('cuotas')?.value">
+                    <strong>Cuotas:</strong> {{ compania.get('cuotas')?.value }}
+                  </li>
+
+                  <!-- Rivadavia -->
+                  <li *ngIf="compania.get('tipoFacturacion')?.value">
+                    <strong>Tipo Facturación:</strong> {{ compania.get('tipoFacturacion')?.value }}
+                  </li>
+                  <li *ngIf="compania.get('cantidadCuotas')?.value">
+                    <strong>Cantidad Cuotas:</strong> {{ getClaveTipoFacturacionRivadavia(compania.get('cantidadCuotas')?.value) }}
+                  </li>
+
+                  <!-- Río Uruguay -->
+                  <li *ngIf="compania.get('vigenciaPolizaId')?.value">
+                    <strong>Vigencia:</strong> {{ compania.get('vigenciaPolizaId')?.value }}
+                  </li>
+
+                  <!-- ATM -->
+                  <li *ngIf="compania.get('plan')?.value">
+                    <strong>Plan ATM:</strong> {{ getDescripcionPlanATM(compania.get('plan')?.value) }}
+                  </li>
+                  <li *ngIf="compania.get('codigoVendedor')?.value">
+                    <strong>Cod. Vendedor ATM:</strong> {{ compania.get('codigoVendedor')?.value }}
+                  </li>
+                </ul>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-warning mt-2" (click)="modificarCompania(i)">Modificar</button>
+                  <button type="button" class="btn btn-danger mt-2" (click)="eliminarCompania(i)">Eliminar</button>
+                </div>
+              </ng-template>
+
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="mt-3">
+          <div class="mt-4 d-flex flex-column align-items-center gap-3">
+            <button *ngIf="!agregandoCompania && editandoCompaniaIndex === null && companias.length < companiasDisponibles.length"
+              type="button" class="btn btn-secondary w-auto" (click)="iniciarAgregarCompania()">
+              Agregar compañía
+            </button>
+
+            <div class="mb-3">
+              <label for="foto">Foto de perfil</label>
+              <input type="file" class="form-control" (change)="onFotoSeleccionada($event)" />
+            </div>
+
+            <button *ngIf="!agregandoCompania && editandoCompaniaIndex === null"
+              type="submit" class="btn btn-primary w-auto" (click)="confirmarProductor()">
+              Confirmar productor
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- 📋 Tabla de usuarios -->
+    <div class="col-md-6">
+      <h4>Usuarios existentes</h4>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of usuarios">
+            <td>{{ user.nombre }} {{ user.apellido }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <button class="btn btn-sm btn-warning me-1" (click)="editarUsuario(user)">Modificar</button>
+              <button class="btn btn-sm btn-danger" (click)="prepararEliminacion(user)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

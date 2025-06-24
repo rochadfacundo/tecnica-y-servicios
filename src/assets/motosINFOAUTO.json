@@ -1,0 +1,972 @@
+[
+  {
+    "id": 980,
+    "list_price": false,
+    "logo_url": null,
+    "name": "APPIA",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2020,
+    "summary": ""
+  },
+  {
+    "id": 942,
+    "list_price": true,
+    "logo_url": null,
+    "name": "APRILIA",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 885,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BABOON",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2010,
+    "summary": ""
+  },
+  {
+    "id": 884,
+    "list_price": true,
+    "logo_url": null,
+    "name": "BAJAJ",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 890,
+    "list_price": true,
+    "logo_url": null,
+    "name": "BENELLI",
+    "prices": true,
+    "prices_from": 2011,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 913,
+    "list_price": true,
+    "logo_url": null,
+    "name": "BETA",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 837,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BLACKSTONE",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": ""
+  },
+  {
+    "id": 852,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BLOOWER",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 914,
+    "list_price": true,
+    "logo_url": null,
+    "name": "BMW",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 928,
+    "list_price": true,
+    "logo_url": null,
+    "name": "BRAVA",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 887,
+    "list_price": false,
+    "logo_url": null,
+    "name": "CAGIVA",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 946,
+    "list_price": true,
+    "logo_url": null,
+    "name": "CAN AM",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 915,
+    "list_price": false,
+    "logo_url": null,
+    "name": "CERRO",
+    "prices": true,
+    "prices_from": 2007,
+    "prices_to": 2021,
+    "summary": ""
+  },
+  {
+    "id": 995,
+    "list_price": true,
+    "logo_url": null,
+    "name": "CF MOTO",
+    "prices": true,
+    "prices_from": 2012,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 925,
+    "list_price": false,
+    "logo_url": null,
+    "name": "CHIRETTE",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 939,
+    "list_price": true,
+    "logo_url": null,
+    "name": "CORVEN",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 973,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DA DALT",
+    "prices": true,
+    "prices_from": 2011,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 924,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DAELIM",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2021,
+    "summary": ""
+  },
+  {
+    "id": 846,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DAYAMA",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2018,
+    "summary": ""
+  },
+  {
+    "id": 936,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DAYANG",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 935,
+    "list_price": true,
+    "logo_url": null,
+    "name": "DUCATI",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 951,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DYNAMIC",
+    "prices": true,
+    "prices_from": 2012,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 611,
+    "list_price": true,
+    "logo_url": null,
+    "name": "ECOOTER",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 944,
+    "list_price": false,
+    "logo_url": null,
+    "name": "EUROMOT",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2016,
+    "summary": ""
+  },
+  {
+    "id": 917,
+    "list_price": false,
+    "logo_url": null,
+    "name": "FAMSA",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2016,
+    "summary": ""
+  },
+  {
+    "id": 839,
+    "list_price": true,
+    "logo_url": null,
+    "name": "GAMMA",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 850,
+    "list_price": true,
+    "logo_url": null,
+    "name": "GAS GAS",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 997,
+    "list_price": false,
+    "logo_url": null,
+    "name": "GHIGGERI",
+    "prices": true,
+    "prices_from": 2011,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 940,
+    "list_price": true,
+    "logo_url": null,
+    "name": "GILERA",
+    "prices": true,
+    "prices_from": 2007,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 941,
+    "list_price": false,
+    "logo_url": null,
+    "name": "GOES",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 930,
+    "list_price": true,
+    "logo_url": null,
+    "name": "GUERRERO",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 994,
+    "list_price": true,
+    "logo_url": null,
+    "name": "GUZZI",
+    "prices": true,
+    "prices_from": 2016,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 931,
+    "list_price": false,
+    "logo_url": null,
+    "name": "HAMATSU",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 926,
+    "list_price": true,
+    "logo_url": null,
+    "name": "HARLEY DAVI",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 961,
+    "list_price": true,
+    "logo_url": null,
+    "name": "HERO",
+    "prices": true,
+    "prices_from": 2015,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 881,
+    "list_price": true,
+    "logo_url": null,
+    "name": "HONDA",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 855,
+    "list_price": true,
+    "logo_url": null,
+    "name": "HUSQVARNA",
+    "prices": true,
+    "prices_from": 2015,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 848,
+    "list_price": false,
+    "logo_url": null,
+    "name": "HYOSUNG",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2019,
+    "summary": ""
+  },
+  {
+    "id": 843,
+    "list_price": false,
+    "logo_url": null,
+    "name": "IMSA",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 610,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-motorcycles-images/42093c72-ab86-438a-878e-c4ed792503ac.jpg",
+    "name": "ITALJET",
+    "prices": true,
+    "prices_from": 2023,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 998,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JAGUAR ATV",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2015,
+    "summary": ""
+  },
+  {
+    "id": 886,
+    "list_price": true,
+    "logo_url": null,
+    "name": "JAWA",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 966,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JIALING",
+    "prices": true,
+    "prices_from": 2011,
+    "prices_to": 2012,
+    "summary": ""
+  },
+  {
+    "id": 912,
+    "list_price": true,
+    "logo_url": null,
+    "name": "JIANSHE",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 923,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JINCHENG",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 972,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JINLING",
+    "prices": true,
+    "prices_from": 2011,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 888,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JUKI",
+    "prices": true,
+    "prices_from": 2014,
+    "prices_to": 2016,
+    "summary": ""
+  },
+  {
+    "id": 960,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KAWASAKI",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 609,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KAYO",
+    "prices": true,
+    "prices_from": 2017,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 937,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KELLER",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 608,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KIDEN",
+    "prices": true,
+    "prices_from": 2021,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 918,
+    "list_price": false,
+    "logo_url": null,
+    "name": "KIKAI",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 883,
+    "list_price": false,
+    "logo_url": null,
+    "name": "KONISA",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2013,
+    "summary": ""
+  },
+  {
+    "id": 849,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KTM",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 950,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KYMCO",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 842,
+    "list_price": false,
+    "logo_url": null,
+    "name": "LEGNANO",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2016,
+    "summary": ""
+  },
+  {
+    "id": 844,
+    "list_price": true,
+    "logo_url": null,
+    "name": "LIFAN",
+    "prices": true,
+    "prices_from": 2022,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 603,
+    "list_price": true,
+    "logo_url": null,
+    "name": "LUCKY LION",
+    "prices": true,
+    "prices_from": 2017,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 970,
+    "list_price": false,
+    "logo_url": null,
+    "name": "MAVERICK",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2021,
+    "summary": ""
+  },
+  {
+    "id": 919,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MINARELLI",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 910,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MONDIAL",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 616,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MORBIDELLI",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": ""
+  },
+  {
+    "id": 920,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MOTOMEL",
+    "prices": true,
+    "prices_from": 2007,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 606,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MOTO MORINI",
+    "prices": true,
+    "prices_from": 2023,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 982,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MV AGUSTA",
+    "prices": true,
+    "prices_from": 2015,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 604,
+    "list_price": true,
+    "logo_url": null,
+    "name": "NUUV",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 934,
+    "list_price": true,
+    "logo_url": null,
+    "name": "OKINOI",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 889,
+    "list_price": false,
+    "logo_url": null,
+    "name": "OLMO",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2012,
+    "summary": ""
+  },
+  {
+    "id": 921,
+    "list_price": false,
+    "logo_url": null,
+    "name": "PANTHER",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2017,
+    "summary": ""
+  },
+  {
+    "id": 836,
+    "list_price": false,
+    "logo_url": null,
+    "name": "PEUGEOT MOTOS",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": ""
+  },
+  {
+    "id": 841,
+    "list_price": true,
+    "logo_url": null,
+    "name": "PIAGGIO",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 851,
+    "list_price": false,
+    "logo_url": null,
+    "name": "PIT BIKE",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2014,
+    "summary": ""
+  },
+  {
+    "id": 847,
+    "list_price": true,
+    "logo_url": null,
+    "name": "POLARIS",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 612,
+    "list_price": true,
+    "logo_url": null,
+    "name": "QJMOTOR",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 845,
+    "list_price": false,
+    "logo_url": null,
+    "name": "RAFTER",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2012,
+    "summary": ""
+  },
+  {
+    "id": 991,
+    "list_price": true,
+    "logo_url": null,
+    "name": "ROYAL ENFIELD",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 614,
+    "list_price": true,
+    "logo_url": null,
+    "name": "RVM",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 615,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SHERCO",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 607,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SIAM",
+    "prices": true,
+    "prices_from": 2022,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 840,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SKYGO",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 932,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SUMO",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2016,
+    "summary": ""
+  },
+  {
+    "id": 601,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SUNRA",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 602,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SUPER SOCO",
+    "prices": true,
+    "prices_from": 2021,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 916,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SUZUKI",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 853,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SYM",
+    "prices": true,
+    "prices_from": 2016,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 613,
+    "list_price": true,
+    "logo_url": null,
+    "name": "TEKNIAL",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 838,
+    "list_price": false,
+    "logo_url": null,
+    "name": "TIBO",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2019,
+    "summary": ""
+  },
+  {
+    "id": 992,
+    "list_price": true,
+    "logo_url": null,
+    "name": "TRIUMPH",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 854,
+    "list_price": true,
+    "logo_url": null,
+    "name": "TVS",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 929,
+    "list_price": false,
+    "logo_url": null,
+    "name": "VELIMOTOR",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2012,
+    "summary": ""
+  },
+  {
+    "id": 922,
+    "list_price": false,
+    "logo_url": null,
+    "name": "VENTO",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 993,
+    "list_price": true,
+    "logo_url": null,
+    "name": "VESPA",
+    "prices": true,
+    "prices_from": 2017,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 600,
+    "list_price": true,
+    "logo_url": null,
+    "name": "VOGE",
+    "prices": true,
+    "prices_from": 2021,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 927,
+    "list_price": false,
+    "logo_url": null,
+    "name": "XQUAD",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2011,
+    "summary": ""
+  },
+  {
+    "id": 943,
+    "list_price": false,
+    "logo_url": null,
+    "name": "XSCREEMS",
+    "prices": true,
+    "prices_from": 2009,
+    "prices_to": 2013,
+    "summary": ""
+  },
+  {
+    "id": 911,
+    "list_price": true,
+    "logo_url": null,
+    "name": "YAMAHA",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  },
+  {
+    "id": 990,
+    "list_price": true,
+    "logo_url": null,
+    "name": "ZANELLA MOTOS",
+    "prices": true,
+    "prices_from": 2006,
+    "prices_to": 2024,
+    "summary": ""
+  }
+]

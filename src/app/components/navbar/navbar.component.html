@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <!-- Logo -->
+    <a class="navbar-brand" href="#">
+      <img src="../../../assets/logo.png" alt="Logo" width="30" height="30">
+      Técnica y Servicios
+    </a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenido -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- @if usuario NO logueado -->
+      @if (!isLoggedIn) {
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#acerca-de">Acerca de</a></li>
+          <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#login">
+              <i class="bi bi-person-circle"></i>
+            </a>
+          </li>
+        </ul>
+      } @else {
+        <!-- @if usuario logueado -->
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" (click)="openMulticotizador()" href="#">Multicotizador</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Emitir pólizas</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Ver productos</a></li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </a>
+          </li>
+        </ul>
+      }
+
+    </div>
+  </div>
+</nav>

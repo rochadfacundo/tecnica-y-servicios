@@ -1,0 +1,103 @@
+[
+  {
+    "email": "",
+    "role": "Director Técnico",
+    "name": "Horacio",
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "",
+    "role": "Director comercial",
+    "name": "Juan Pablo",
+    "surName": "Rodríguez",
+    "photo": "../assets/asesoramiento.png"
+
+  },
+  {
+    "email": "acollia@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Andrea",
+    "surName": "Collia",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "afranze@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "América",
+    "surName": "Franzé",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "jtassone@tecnicayservicios.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Jessica",
+    "surName": "Tassone",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "jorsi@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Julieta",
+    "surName": "Orsi",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "candrade@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Claudia",
+    "surName": "Andrade",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "fescalante@tecnicayseguros.com.ar",
+    "role": "Ejecutivo Comercial",
+    "name": "Federico",
+    "surName": "Escalante",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "sojeda@tecnicayseguros.com.ar",
+    "role": "Ejecutiva Comercial",
+    "name": "Sofía",
+    "surName": "Ojeda",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "mrocha@tecnicayseguros.com.ar",
+    "role": "Cobranzas",
+    "name": "Micaela",
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "ademarchi@tecnicayseguros.com.ar",
+    "role": "Encargada Siniestros",
+    "name": "Andrea",
+    "surName": "Demarchi",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "abarber@tecnicayseguros.com.ar",
+    "role": "Desarrollo comercial",
+    "name": "Adriana",
+    "surName": "Barber",
+    "photo": "../assets/asesoramiento.png"
+  },
+  {
+    "email": "brocha@tecnicayseguros.com.ar",
+    "role": "Community manager",
+    "name": "Belen",
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
+  }
+  ,
+  {
+    "email": "facundodrocha@gmail.com",
+    "role": "Sistemas",
+    "name": "Facundo",
+    "surName": "Rocha",
+    "photo": "../assets/asesoramiento.png"
+  }
+
+]

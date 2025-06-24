@@ -1,0 +1,7 @@
+.navbar {
+  border-bottom: 3px solid #ffc107;
+}
+
+.nav-link:hover {
+  color: #ffc107 !important;
+}

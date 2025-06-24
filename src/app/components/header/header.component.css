@@ -1,0 +1,112 @@
+
+.menu {
+  background: var(--menu-bg-color);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-bottom: 4px solid rgba(8, 19, 8, 0.2);
+  height: auto;
+  user-select: none;
+}
+
+/* Estilos para las opciones del menú */
+.navbar-nav .no-focus {
+  color: #fff;
+  font-size: 1rem;
+  text-transform: uppercase;
+  padding: 0 10px;
+  margin: 0 20px; /* Más distancia entre opciones */
+  letter-spacing: 2px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+    padding: 0 10px;
+  margin: 0 20px; /* Más distancia entre opciones */
+}
+
+.menu img{
+  max-width: 100%; /* Ocupa todo el ancho disponible */
+  width: 9rem;
+  height: auto; /* Mantén la proporción */
+  margin-left: 2rem;
+  margin-right: 2rem; /* Añadir espacio al lado derecho */
+  z-index: 1; /* Asegura que la imagen quede detrás de los elementos del menú */
+
+}
+
+.navbar-collapse {
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.collapsing {
+  height: 0 !important;
+  opacity: 0;
+}
+
+.borde {
+  /* Efecto de borde */
+  border: 2px solid rgba(0, 0, 0, 0.3); /* Borde más notable */
+  border-radius: 5px; /* Bordes ligeramente redondeados */
+
+  /* Sombra */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra más evidente */
+
+  /* Espaciado interno */
+  padding: 15px 20px;
+
+  /* Transición para efectos */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  /* Opciones de fuente */
+  font-size: 14px; /* Texto un poco más grande */
+  text-transform: uppercase; /* Estilo de texto */
+  letter-spacing: 1px; /* Espaciado entre letras */
+}
+
+/* Efecto al pasar el cursor */
+.borde:hover {
+  transform: scale(1.1); /* Aumenta ligeramente el tamaño */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Sombra más intensa */
+  background-color: rgba(255, 255, 255, 0.1); /* Efecto visual adicional */
+}
+
+
+.menu img:hover{
+  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Aumenta la sombra */
+}
+
+.navbar-nav .no-focus:hover,
+.navbar-nav .no-focus:focus {
+  color: #73a773;
+  text-decoration: underline;
+}
+
+a{
+  font-family: "libre-baskerville-bold";
+}
+
+/* Ajustes del icono de login */
+.nav .ms-auto {
+  margin-right: 10px; /* Menor margen derecho del contenedor */
+}
+
+.navbar-nav .bi-person-circle {
+  font-size: 1.8rem;
+  margin-right: 5px; /* Ajusta la posición del icono */
+}
+.navbar-nav .no-focus {
+  user-select: none; /* Impide que se seleccione el texto */
+}
+
+.navbar-nav .no-focus:focus {
+  outline: none; /* Eliminar el borde de enfoque */
+  box-shadow: none; /* Eliminar cualquier sombra extra */
+}
+
+/* Efectos de clic */
+nav a:active,
+button:active {
+  transform: scale(0.99);
+  transition: transform 0.2s ease;
+}

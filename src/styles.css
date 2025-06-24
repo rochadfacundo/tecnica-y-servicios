@@ -1,0 +1,110 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --menu-bg-color: #4c5c4c; /* Color de fondo para el menú */
+    --bg-color-light-green: #94c484;
+
+    --color-light2-green:#74b45c;
+  }
+
+  /*Dropdown paneles*/
+  body .ng-dropdown-panel {
+    position: absolute !important;
+    z-index: 9999 !important;
+  }
+/* Muestra el placeholder normalmente */
+.ng-select .ng-placeholder {
+  opacity: 1;
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1;
+}
+
+/* Oculta el placeholder solo si .ng-select-container tiene ng-has-value */
+.ng-select-container.ng-has-value .ng-placeholder {
+  opacity: 0 !important;
+}
+/* foco de los bordes ng select*/
+.ng-select.ng-select-focused:not(.ng-select-disabled) .ng-select-container {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+/* EStilo gris a ng select */
+.ng-select.ng-select-disabled .ng-select-container {
+  background-color: #e9ecef !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+  border-color: #ced4da !important;
+
+  height: calc(2.375rem + 2px); /* igual a select.form-select de Bootstrap */
+  padding: 0.375rem 0.75rem;    /* igual a select */
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.375rem;
+}
+
+
+  body .ng-dropdown-panel-items {
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
+  /*Font google*/
+  .libre-baskerville-regular {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .libre-baskerville-bold {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .libre-baskerville-regular-italic {
+    font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .borde-r{
+    /* Efecto de borde */
+    border: 2px solid rgba(0, 0, 0, 0.2); /* Borde sutil */
+    /* Sombra */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Sombra suave */
+
+    /* Transición para efectos */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 80%;
+    height: 60px;
+  }
+
+
+  .borde-r:hover{
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Aumenta la sombra */
+  }
+
+
+  .icon{
+    color:whitesmoke;
+  }
+
+  .icon:hover{
+    transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4); /* Aumenta la sombra */
+    color: var(--bg-color-light-green);
+    cursor: pointer;
+  }
+
+  .icon .no-focus:focus {
+    outline: none; /* Eliminar el borde de enfoque */
+    box-shadow: none; /* Eliminar cualquier sombra extra */
+  }
+

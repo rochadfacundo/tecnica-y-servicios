@@ -1,0 +1,50 @@
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+
+.spinner-overlay.ng-leave-active {
+  opacity: 0;
+}
+
+.spinner-logo-vaiven {
+  width: 100px;
+  animation: vaiven 1.2s ease-in-out infinite;
+}
+
+.spinner-logo-rebote {
+  width: 80px;
+  animation: rebote 1s ease-in-out infinite;
+}
+
+.spinner-text {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+@keyframes vaiven {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(180deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-180deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes rebote {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}

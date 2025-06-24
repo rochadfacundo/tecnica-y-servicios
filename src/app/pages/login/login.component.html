@@ -1,0 +1,47 @@
+<div class="image">
+<div class="container">
+  <div class="card">
+    <h3>Iniciar Sesión</h3>
+    <form [formGroup]="loginForm" (ngSubmit)="this.onLogin()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Usuario</label>
+        <input
+          type="text"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="Ingrese usuario"
+        />
+        <!-- Mensaje de error-->
+        <div
+          class="text-danger"
+          [class.visible]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        >
+          El usuario es requerido.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Ingrese contraseña"
+        />
+        <!-- Mensaje de error dinámico -->
+        <div
+          class="text-danger"
+          [class.visible]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        >
+          La contraseña es requerida.
+        </div>
+      </div>
+      <button type="submit" class="btn w-100" [disabled]="loginForm.invalid">
+        Ingresar
+      </button>
+    </form>
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,124 @@
+<div class="container mt-4">
+  <h3>⚙️ Mi Configuración</h3>
+
+  <div class="d-flex justify-content-end mb-3">
+    <button type="button" class="btn btn-outline-primary" (click)="alternarModoEdicion()">
+      {{ modoEdicion ? '❌ Cancelar' : '✏️ Editar datos' }}
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardarCambios()">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label>Nombre</label>
+          <input formControlName="nombre" type="text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label>Apellido</label>
+          <input formControlName="apellido" type="text" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label>Email</label>
+          <input formControlName="email" type="email" class="form-control" readonly />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label>Foto de perfil</label>
+          <input type="file" class="form-control" (change)="onFotoSeleccionada($event)" [disabled]="!modoEdicion" />
+        </div>
+        <img *ngIf="fotoUrl" [src]="fotoUrl" alt="Foto perfil" class="img-thumbnail" width="150" />
+      </div>
+    </div>
+
+    <h5 class="mt-4">📋 Compañías Asociadas</h5>
+    <div formArrayName="companias">
+      <div *ngFor="let compania of companias.controls; let i = index" [formGroupName]="i" class="border rounded p-3 my-3">
+        <h6>Compañía: {{ compania.get('compania')?.value }}</h6>
+
+        <div class="mb-2">
+          <label>Nº Productor</label>
+          <input type="text" class="form-control" formControlName="nroProductor"/>
+        </div>
+
+        <div class="mb-2">
+          <label>Clave Productor</label>
+          <input type="text" class="form-control" formControlName="claveProductor"/>
+        </div>
+
+        <ng-container [ngSwitch]="compania.get('compania')?.value">
+
+          <ng-container *ngSwitchCase="'RIVADAVIA'">
+            <div class="mb-2">
+              <label>Tipo Facturación</label>
+              <select class="form-select" formControlName="tipoFacturacion" [disabled]="!modoEdicion" (change)="actualizarCantidadCuotasRivadavia(i)">
+                <option *ngFor="let tipo of configCompanias['RIVADAVIA'].tiposFacturacion" [value]="tipo">{{ tipo }}</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label>Cantidad Cuotas</label>
+              <input type="text" class="form-control" formControlName="cantidadCuotas" />
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'MERCANTIL ANDINA'">
+            <div class="mb-2">
+              <label>Periodo</label>
+              <select class="form-select" formControlName="periodo" [disabled]="!modoEdicion" (change)="actualizarCuotasMercantil(i)">
+                <option *ngFor="let p of configCompanias['MERCANTIL ANDINA'].periodos | keyvalue" [value]="p.value">{{ p.key }}</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label>Cuotas</label>
+              <input type="number" class="form-control" formControlName="cuotas" />
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'FEDERACION PATRONAL'">
+            <div class="mb-2">
+              <label>Refacturaciones</label>
+              <select class="form-select" formControlName="refacturaciones">
+                <option *ngFor="let r of configCompanias['FEDERACION PATRONAL'].refacturaciones | keyvalue" [value]="r.value">{{ r.key }}</option>
+              </select>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'RIO URUGUAY'">
+            <div class="mb-2">
+              <label>Vigencia</label>
+              <select class="form-select" formControlName="vigenciaPolizaId" [disabled]="!modoEdicion" (change)="actualizarCuotasRioUruguay(i)">
+                <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
+                  Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label>Cuotas</label>
+              <input type="number" class="form-control" formControlName="cuotas" />
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'ATM'">
+            <div class="mb-2">
+              <label>Código Vendedor</label>
+              <input type="text" class="form-control" formControlName="codigoVendedor" [disabled]="!modoEdicion" />
+            </div>
+            <div class="mb-2">
+              <label>Plan</label>
+              <select class="form-select" formControlName="plan" [disabled]="!modoEdicion">
+                <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
+              </select>
+            </div>
+          </ng-container>
+
+        </ng-container>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3" [disabled]="!modoEdicion">Guardar Cambios</button>
+  </form>
+</div>

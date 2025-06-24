@@ -1,0 +1,222 @@
+<div class="container mt-4">
+  <form [formGroup]="cotizacionForm">
+
+ <!-- Código Tipo Interés  SACAR
+<div class="mb-3">
+  <label for="tipoInteres" class="form-label">Código Tipo Interés</label>
+  <select id="tipoInteres" class="form-select" formControlName="tipoInteres">
+    <option [ngValue]="null" disabled>Seleccione un tipo de interés</option>
+    <option *ngFor="let tipo of tipoInteresOpciones" [ngValue]="tipo">{{ tipo.descripcion }}</option>
+  </select>
+</div>
+-->
+
+<!-- Tipo de Vehículo  SACAR TAMBIEN -->
+<div class="mb-3">
+  <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
+  <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
+    <option [ngValue]="null" disabled>Seleccione un tipo</option>
+    <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.descripcion }}</option>
+  </select>
+</div>
+
+
+
+    <!-- Fila: Nombre y Apellido -->
+    <div class="row">
+      <div class="mb-3 col-md-6">
+        <label for="nombre" class="form-label">Nombre:</label>
+        <input type="text" formControlName="nombre" class="form-control">
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="apellido" class="form-label">Apellido:</label>
+        <input type="text" formControlName="apellido" class="form-control">
+      </div>
+    </div>
+
+    <!-- Fila: Tipo Doc y N° -->
+    <div class="row">
+      <div class="mb-3 col-md-6">
+        <label for="tipoId" class="form-label">Tipo de documento</label>
+        <select id="tipoId" class="form-select" formControlName="tipoId">
+          <option [ngValue]="null" disabled>Seleccione un tipo</option>
+          <option *ngFor="let tipo of tiposId" [value]="tipo.tipo_id">{{ tipo.tipo_id }}</option>
+        </select>
+      </div>
+      <div class="mb-3 col-md-6">
+        <label for="nroId" class="form-label">N°</label>
+        <input type="text" formControlName="nroId" class="form-control">
+      </div>
+    </div>
+
+    <!-- SECCION VEHICULOS -->
+
+<div class="" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
+    <div class="mb-3">
+      <label for="marca" class="form-label">Marca</label>
+      <ng-select
+      [items]="this.marcas"
+      bindLabel="name"
+      bindValue="id"
+      [searchable]="true"
+      placeholder="Seleccione o escriba una marca"
+      [notFoundText]="'No se encontraron marcas'"
+      [appendTo]="'body'"
+      formControlName="marca">
+    </ng-select>
+    </div>
+
+    <div class="mb-3">
+      <label for="modeloVehiculo" class="form-label">Modelo</label>
+      <ng-select
+      [items]="this.grupos"
+      bindLabel="name"
+      bindValue="id"
+      [searchable]="true"
+      placeholder="Seleccione o escriba un modelo"
+      [notFoundText]="'No se encontraron modelos'"
+      [appendTo]="'body'"
+      formControlName="modelo">
+    </ng-select>
+    </div>
+
+    <!-- Año -->
+    <div class="mb-3">
+      <label for="anioVehiculo" class="form-label">Año</label>
+      <select id="anioVehiculo" class="form-select" formControlName="anio">
+        <option [ngValue]="null" disabled>Seleccione un año</option>
+        <option *ngFor="let anio of anios" [value]="anio.year">{{ anio.year }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3" >
+      <label for="versionVehiculo" class="form-label">Versión</label>
+      <ng-select
+      [items]="this.modelos"
+      bindLabel="description"
+      bindValue="codia"
+      [searchable]="true"
+      placeholder="Seleccione o escriba una version"
+      [notFoundText]="'No se encontraron versiones'"
+      [appendTo]="'body'"
+      formControlName="version">
+    </ng-select>
+     <!--
+      <select id="versionVehiculo" class="form-select"   formControlName="version">
+        <option [ngValue]="null" disabled>Seleccione una versión</option>
+        <option *ngFor="let modelo of this.modelos" [ngValue]="modelo">{{ modelo.description }}</option>
+      </select>
+       -->
+    </div>
+
+    <div class="row">
+      <div class="mb-3 col-md-6 form-check custom_check">
+          <input type="checkbox" id="alarma" class="form-check-input" formControlName="alarma">
+          <label for="alarma" class="form-check-label">¿Tiene alarma?</label>
+      </div>
+      <div class="mb-3 col-md-6 form-check custom_check">
+
+        <input type="checkbox" id="cascoConosur" class="form-check-input" formControlName="cascoConosur">
+        <label for="cascoConosur" class="form-check-label">Casco conosur</label>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="mb-3 col-md-6 form-check custom_check">
+        <input type="checkbox" id="tieneGnc" class="form-check-input" formControlName="tieneGnc">
+        <label for="tieneGnc" class="form-check-label">¿Tiene GNC?</label>
+      </div>
+      <div class="mb-3 col-md-6" *ngIf="this.cotizacionForm.get('tieneGnc')?.value">
+        <label for="gnc" >Valor gnc:</label>
+        <input type="number" id="gnc" formControlName="gnc">
+
+      </div>
+
+    </div>
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check custom_check">
+          <input type="checkbox" id="tieneRastreador" class="form-check-input" formControlName="tieneRastreador">
+          <label for="tieneRastreador" class="form-check-label">¿Tiene rastreador?</label>
+      </div>
+
+      <div class="mb-3 col-md-6"  *ngIf="cotizacionForm.get('tieneRastreador')?.value">
+        <label for="rastreador" class="form-label">Rastreadores</label>
+        <select id="rastreador" class="form-select" formControlName="rastreador">
+          <option *ngFor="let rastreador of this.tiposDeRastreadores" [ngValue]="rastreador">{{ rastreador.descripcion }}</option>
+        </select>
+      </div>
+
+    </div>
+
+
+    <div class="row" >
+      <div class="mb-3 col-md-6 form-check custom_check">
+        <input type="checkbox" id="tallerExclusivo" class="form-check-input" formControlName="tallerExclusivo">
+          <label for="tallerExclusivo" class="form-check-label">Taller exclusivo</label>
+      </div>
+
+      <div class="mb-3 col-md-6  form-check custom_check">
+        <input type="checkbox" id="grua" class="form-check-input" formControlName="grua">
+        <label for="grua" class="form-check-label">Grua</label>
+      </div>
+
+    </div>
+
+    <div class="row" >
+    <!-- MEdio pago y descuento comision-->
+      <div class="mb-3 col-md-6"  >
+        <label for="medioPago" class="form-label">Medio de pago</label>
+        <select id="medioPago" class="form-select" formControlName="medioPago">
+          <option *ngFor="let medioPago of this.mediosPago" [ngValue]="medioPago">{{ medioPago.descripcion }}</option>
+        </select>
+      </div>
+
+      <div class="mb-3 col-md-6 form-check custom_check"  >
+        <input type="checkbox" id="controlSatelital" class="form-check-input" formControlName="controlSatelital">
+        <label for="controlSatelital" class="form-check-label">Control satelital?</label>
+
+      </div>
+
+    </div>
+
+ <!-- Clausula de ajuste
+
+ 20 TODAS       o         todas 10
+ 25 MERCANTIL       rio 20
+ -->
+
+    <!-- Provincia -->
+    <div class="mb-3">
+      <label for="provincia" class="form-label">Provincia</label>
+      <select id="provincia" class="form-select" formControlName="provincia">
+        <option *ngFor="let provincia of provincias" [ngValue]="provincia">
+         {{ provincia.descripcion }}
+        </option>
+      </select>
+  </div>
+
+    <!-- Código Postal -->
+    <div class="mb-3">
+      <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
+      <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
+    </div>
+
+
+    <!-- Vigencia Desde -->
+    <div class="mb-3">
+      <label for="vigenciaDesde" class="form-label">Vigencia Desde</label>
+      <input type="date" id="vigenciaDesde" class="form-control" formControlName="vigenciaDesde">
+    </div>
+
+    <!-- Botón Cotizar -->
+    <div class="d-grid gap-2">
+      <button type="button" class="btn btn-primary" (click)="cotizar()" [disabled]="this.cotizacionForm.invalid">Cotizar</button>
+    </div>
+
+  </div>
+
+  </form>
+</div>
+

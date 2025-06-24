@@ -1,0 +1,80 @@
+<nav class="menu navbar navbar-expand-md">
+  <div class="container-fluid">
+    <div class="logo pb-3">
+      <a routerLink="/">
+        <img class="borde-r" [src]="(productorLogueado$ | async)?.path" *ngIf="(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
+        <img class="borde-r" src="../../../assets/logo.png" *ngIf="!(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
+      </a>
+    </div>
+
+    <button class="navbar-toggler" style="background-color: #b9b4b4;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon">
+        <i class="fas fa-bars" style="color:#000; font-size:27px;"></i>
+      </span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+      <!-- Menú logueado -->
+      <ng-container *ngIf="productorLogueado$ | async as productor; else visitante">
+        <div class="navbar-nav mx-auto">
+
+           <span class="badge m-2 p-3 d-md-inline fs-6">
+            👋 Hola, {{ productor.nombre }} {{ productor.apellido }}
+          </span>
+
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+            routerLink="/dashboard" (click)="emitMulticotizador()">
+            <i class="fa fa-calculator"></i> Cotizar
+          </a>
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
+            <i class="fa fa-file-signature"></i> Emitir pólizas
+          </a>
+          <a *ngIf="productor.role === 'Administrador'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
+            routerLink="/dashboard/gestionar-usuarios"
+            routerLinkActive="router-link-active"
+            (click)="closeMenu()">
+            <i class="fa fa-user-cog"></i> Administrar PAS
+          </a>
+          <a *ngIf="productor.role === 'Productor'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
+            routerLink="/dashboard/cambiar-configuracion"
+            routerLinkActive="router-link-active"
+            (click)="closeMenu()">
+            <i class="fa fa-user-cog"></i> Configuración
+          </a>
+        </div>
+
+        <div class="nav navbar-nav ms-auto align-items-center pe-3 text-white">
+          <a class="m-2 p-3 text-center no-focus text-danger" href="#" (click)="logout()">
+            <i class="bi bi-box-arrow-right fs-1"></i>
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- Menú visitante -->
+      <ng-template #visitante>
+        <div class="navbar-nav mx-auto">
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="home" routerLinkActive="router-link-active" (click)="closeMenu()">
+            <i class="fa fa-home"></i> Home
+          </a>
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="acerca-de" routerLinkActive="router-link-active" (click)="closeMenu()">
+            <i class="fa fa-user"></i> Acerca de
+          </a>
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="servicios" routerLinkActive="router-link-active" (click)="closeMenu()">
+            <i class="fa fa-file-text"></i> Servicios
+          </a>
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="contacto" routerLinkActive="router-link-active" (click)="closeMenu()">
+            <i class="fa fa-envelope"></i> Contacto
+          </a>
+        </div>
+        <div class="nav navbar-nav ms-auto">
+          <a class="m-2 p-3 text-center no-focus" routerLink="login" routerLinkActive="router-link-active" (click)="closeMenu()">
+            <i class="bi bi-person-circle fs-1"></i>
+          </a>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+</nav>
