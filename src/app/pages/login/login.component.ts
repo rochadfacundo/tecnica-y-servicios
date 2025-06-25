@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SpinnerService } from '../../services/spinner.service'; // 👈 importar spinner
+import { ESpinner } from '../../enums/ESpinner';
 
 @Component({
   selector: 'app-login',
@@ -19,10 +20,10 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router,
     private s_auth: AuthService,
-    private spinner: SpinnerService // 👈 inyectar
+    private spinner: SpinnerService
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]], // 👈 corregido a email
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
@@ -37,7 +38,7 @@ export class LoginComponent {
 
     try {
       const user = await this.spinner.runWithSpinner(
-        this.s_auth.login(email, password)
+        this.s_auth.login(email, password),ESpinner.Vaiven
       );
       console.log('Usuario logueado:', user);
       this.router.navigateByUrl('dashboard');

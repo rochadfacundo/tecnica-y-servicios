@@ -1,10 +1,11 @@
 <div class="spinner-overlay" *ngIf="loading$ | async">
-  <img [ngClass]="{
-    'spinner-logo-vaiven': tipo === 'vaiven',
-    'spinner-logo-rebote': tipo === 'rebote'
-  }" src="assets/logo.png" alt="Cargando..." />
+<img [ngClass]="{
+  'spinner-logo-vaiven': tipo === ESpinner.Vaiven,
+  'spinner-logo-rebote': tipo === ESpinner.Rebote
+}" src="assets/logo.png" alt="Cargando..." />
 
-  <div class="spinner-text">
-    {{ tipo === 'rebote' ? 'Cargando datos...' : 'Espere un momento...' }}
-  </div>
+<div class="spinner-text">
+  {{ tipo === ESpinner.Rebote ? 'Cargando datos...' : 'Espere un momento...' }}
+</div>
+
 </div>

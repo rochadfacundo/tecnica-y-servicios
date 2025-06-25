@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { SpinnerComponent } from '../../components/spinner/spinner.component';
+import { ESpinner } from '../../enums/ESpinner';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -12,7 +13,7 @@ import { SpinnerComponent } from '../../components/spinner/spinner.component';
   styleUrl: './dashboard-layout.component.css'
 })
 export class DashboardLayoutComponent {
-
+  rebote:ESpinner=ESpinner.Rebote;
   constructor(private router:Router){
 
   }

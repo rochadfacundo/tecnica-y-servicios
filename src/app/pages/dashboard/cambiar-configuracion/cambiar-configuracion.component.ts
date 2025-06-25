@@ -21,7 +21,8 @@ export class CambiarConfiguracionComponent implements OnInit {
   configCompanias = configCompanias;
   productorLogueado: Productor | null = null;
   modoEdicion: boolean = false;
-  private datosOriginales!: Productor;
+  datosOriginales!: Productor;
+  user: Productor|null=null;
 
   private fb = inject(FormBuilder);
   private s_auth = inject(AuthService);
@@ -125,8 +126,8 @@ export class CambiarConfiguracionComponent implements OnInit {
   }
 
   async cargarDatosUsuario() {
-    const user = await this.s_auth.obtenerProductorLogueado();
-    if (!user) return;
+    this.user = await this.s_auth.obtenerProductorLogueado();
+    if (!this.user) return;
 ;
     try {
       const vigencias = await this.s_rus.getVigencias().pipe().toPromise();
@@ -135,19 +136,19 @@ export class CambiarConfiguracionComponent implements OnInit {
       console.error('❌ Error al obtener vigencias de Río Uruguay', error);
     }
 
-    this.productorLogueado = user;
-    this.datosOriginales = JSON.parse(JSON.stringify(user));
-    this.fotoUrl = user.path || null;
+    this.productorLogueado = this.user;
+    this.datosOriginales = JSON.parse(JSON.stringify(this.user));
+    this.fotoUrl = this.user.path || null;
 
     this.form.patchValue({
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      path: user.path
+      nombre: this.user.nombre,
+      apellido: this.user.apellido,
+      email: this.user.email,
+      path: this.user.path
     });
 
-    if (user.companias?.length) {
-      user.companias.forEach(c => {
+    if (this.user.companias?.length) {
+      this.user.companias.forEach(c => {
         const grupo = this.fb.group({
           compania: [c.compania],
           nroProductor: [c.nroProductor],

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { ESpinner } from '../enums/ESpinner';
 
 @Injectable({
   providedIn: 'root'
@@ -8,20 +9,21 @@ export class SpinnerService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
-  private estados: Record<string, BehaviorSubject<boolean>> = {
-    vaiven: new BehaviorSubject(false),
-    rebote: new BehaviorSubject(false)
+  private estados: Record<ESpinner, BehaviorSubject<boolean>> = {
+    Vaiven: new BehaviorSubject(false),
+    Rebote: new BehaviorSubject(false)
   };
 
-  vaiven$ = this.estados['vaiven'].asObservable();
-  rebote$ = this.estados['rebote'].asObservable();
+  vaiven$ = this.estados['Vaiven'].asObservable();
+  rebote$ = this.estados['Rebote'].asObservable();
 
   private timeoutMs = 15000;
 
-  async runWithSpinner<T>(promise: Promise<T>): Promise<T> {
-    this.show();
+  async runWithSpinner<T>(promise: Promise<T>,type:ESpinner): Promise<T|undefined> {
 
-    const minDurationMs = 1000;
+    this.show(type);
+    let result;
+    const minDurationMs = 4000;
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Timeout de seguridad alcanzado')), this.timeoutMs)
     );
@@ -30,15 +32,19 @@ export class SpinnerService {
     );
 
     try {
-      const result = await Promise.race([promise, timeout]);
+      result = await Promise.race([promise, timeout]);
       await minDuration;
-      return result;
+
+    }catch(e:any){
+      console.log(e);
     } finally {
-      this.hide();
+      this.hide(type);
     }
+
+    return result;
   }
 
-  show(tipo?: 'vaiven' | 'rebote') {
+  show(tipo?:ESpinner) {
     if (tipo) {
       this.estados[tipo].next(true);
     } else {
@@ -46,7 +52,8 @@ export class SpinnerService {
     }
   }
 
-  hide(tipo?: 'vaiven' | 'rebote') {
+  hide(tipo?:ESpinner) {
+     console.log('🎯 Mostrando spinner tipo:', tipo);
     if (tipo) {
       this.estados[tipo].next(false);
     } else {
