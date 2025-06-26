@@ -206,7 +206,7 @@ export class CambiarConfiguracionComponent implements OnInit {
   async guardarCambios() {
     if (this.form.invalid) return;
 
-    const productor: Productor = this.form.value;
+    const productor: Productor = this.form.getRawValue();
     productor.uid = this.productorLogueado?.uid;
     productor.role = this.productorLogueado?.role;
     productor.cotizaciones = this.productorLogueado?.cotizaciones;

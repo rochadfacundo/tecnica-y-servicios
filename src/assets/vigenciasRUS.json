@@ -1,0 +1,68 @@
+{
+  "1": [
+    {
+      "id": 27,
+      "descripcion": "ANUAL",
+      "meses": 12
+    },
+    {
+      "id": 29,
+      "descripcion": "2 AÑOS",
+      "meses": 24
+    },
+    {
+      "id": 83,
+      "descripcion": "TRIMESTRAL",
+      "meses": 3
+    },
+    {
+      "id": 30,
+      "descripcion": "SEMESTRAL",
+      "meses": 6
+    }
+  ],
+  "4": [
+    {
+      "id": 1,
+      "descripcion": "SEMESTRAL",
+      "meses": 6
+    },
+    {
+      "id": 3,
+      "descripcion": "TRIMESTRAL",
+      "meses": 3
+    },
+    {
+      "id": 65,
+      "descripcion": "SEMESTRAL",
+      "meses": 3
+    },
+    {
+      "id": 71,
+      "descripcion": "SEMESTRAL",
+      "meses": 1
+    }
+  ],
+  "20": [
+    {
+      "id": 7,
+      "descripcion": "SEMESTRAL",
+      "meses": 6
+    },
+    {
+      "id": 9,
+      "descripcion": "TRIMESTRAL",
+      "meses": 3
+    },
+    {
+      "id": 70,
+      "descripcion": "SEMESTRAL",
+      "meses": 3
+    },
+    {
+      "id": 72,
+      "descripcion": "SEMESTRAL",
+      "meses": 1
+    }
+  ]
+}

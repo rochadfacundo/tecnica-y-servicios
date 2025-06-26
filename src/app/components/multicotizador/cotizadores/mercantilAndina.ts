@@ -13,6 +13,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
         provincia: form.provincia.descripcion
       };
       const RASTREADOR=form.rastreador ? 1 : 0;
+      const AJUSTE=10;
 
       const prod: ProductorMercantil={id:Number(configMA?.nroProductor)};
       const iva ={consumidorFinal:5};
@@ -30,7 +31,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
         iva: iva.consumidorFinal,
         //   comision: nose,
         //   bonificacion: nose,
-        //    ajuste_suma?:number;  //10,25,50 clausula ajuste?
+        ajuste_suma:AJUSTE, //10,25,50 clausula ajuste?
         desglose:true     //desglose de montos totales y cuotas
       };
 

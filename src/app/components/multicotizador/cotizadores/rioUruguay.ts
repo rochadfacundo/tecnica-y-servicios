@@ -4,7 +4,14 @@ import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus
 import { TipoDeUso } from "../../../enums/tiposDeUso";
 import { getYesNo } from "../utils/utils";
 import { Productor } from "../../../models/productor.model";
+import { Compania } from "../../../interfaces/compania";
+import rawData from '../../../../assets/vigenciasRUS.json';
 
+type Vigencia = { id: number; descripcion: string; meses: number };
+type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
+
+
+const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
   export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor):CotizacionRioUruguay{
        //si id es 1 son 6 meses
@@ -46,49 +53,38 @@ import { Productor } from "../../../models/productor.model";
           medioCobro:medioCobro,
           vehiculos: vehiculo,
           vigenciaDesde: form.vigenciaDesde,
-          vigenciaHasta: calcularVigenciaHasta(form.vigenciaDesde, Number(configRus?.vigenciaPolizaId)),
           sumaAseguradaGnc:Number(form.gnc),
           sumaAseguradaAccesorios:0,
           controlSatelital: getYesNo(form.controlSatelital,yes,no),
           excluirVida: 'NO',
           aumentoRCPaisesLimitrofes: 'NO',
-         vigenciaPolizaId: Number(configRus?.vigenciaPolizaId)
+          vigenciaPolizaId: calcularVigencia(codigoTipoInteres,productor) ,
         };
+
 
           return cotizacionData;
 
   }
 
-  function calcularVigenciaHasta(desde: string, vigenciaId: number): string {
-    const fechaDesde = new Date(desde);
-    let meses = 0;
+  const ramoPorTipoInteres: Record<string, number> = {
+    VEHICULO: 4,
+    MOTOVEHICULO: 20,
+    CAMION: 7 // ejemplo
+  };
 
-    switch (vigenciaId) {
-      case 1:
-        meses = 6;
-        break;
-      case 3:
-      case 65:
-        meses = 3;
-        break;
-      case 71:
-        meses = 1;
-        break;
-      default:
-        meses = 6;
-        break;
-    }
+  export function calcularVigencia(codigoTipoInteres: string, productor: Productor): number  {
+    const ramo = ramoPorTipoInteres[codigoTipoInteres];
+    if (!ramo) return 0;
 
-    // Sumamos los meses
-    const nuevaFecha = new Date(fechaDesde);
-    nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
+    const companiaRUS = productor.companias?.find(c => c.compania === 'RIO URUGUAY');
+    if (!companiaRUS || !companiaRUS.cuotas) return 0;
 
-    // Formato YYYY-MM-DD
-    const yyyy = nuevaFecha.getFullYear();
-    const mm = String(nuevaFecha.getMonth() + 1).padStart(2, '0');
-    const dd = String(nuevaFecha.getDate()).padStart(2, '0');
+    const cuotas = Number(companiaRUS.cuotas);
+    const vigencias = vigenciasPorRamo[ramo.toString()];
+    if (!vigencias) return 0;
 
-    return `${yyyy}-${mm}-${dd}`;
+    const match = vigencias.find(v => v.meses === cuotas);
+    return match?.id || 0;
   }
 
 

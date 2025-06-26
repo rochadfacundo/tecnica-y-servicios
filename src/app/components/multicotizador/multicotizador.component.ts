@@ -95,7 +95,6 @@ export class MulticotizadorComponent implements OnInit {
     this.initForm();
     this.setupValueChanges();
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
-    console.log(this.productorLog);
   }
   public readonly opcionesSiNo = OPCIONES_SI_NO;
 
@@ -177,7 +176,6 @@ export class MulticotizadorComponent implements OnInit {
           this.grupos = response;
           this.cotizacionForm.get('modelo')?.enable();
 
-          // Forzar render async para asegurar que el ng-select detecte el cambio
           setTimeout(() => this.cdr.detectChanges(), 0);
 
           },
@@ -188,11 +186,12 @@ export class MulticotizadorComponent implements OnInit {
       }
 
   getModelosPorGrupoYMarca(brandId: number, groupId: number) {
+
   getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
     next: (response) => {
-    
-      this.modelosTodos = response;
 
+      this.modelosTodos = response;
+      console.log(this.modelosTodos);
       // Extraer años únicos desde los modelos (desde prices_from hasta prices_to)
       const añosUnicos = new Set<number>();
 
@@ -207,10 +206,10 @@ export class MulticotizadorComponent implements OnInit {
       this.anios = Array.from(añosUnicos)
         .sort((a, b) => b - a)
         .map(year => ({ year } as Year));
-
+      console.log(this.anios);
       this.cotizacionForm.get('anio')?.enable();
       this.cotizacionForm.get('version')?.disable();
-      this.modelos = []; 
+      this.modelos = [];
       this.cotizacionForm.get('version')?.setValue(null);
       this.cdr.detectChanges();
     },
@@ -228,7 +227,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
 
-   
+
       if (tipo) {
 
         this.getMarcasInfoAuto();
@@ -256,7 +255,7 @@ export class MulticotizadorComponent implements OnInit {
       this.cotizacionForm.get('anio')?.setValue(null);
       this.cotizacionForm.get('version')?.disable();
       this.anios = [];
-
+      console.log("traigo el id modelo");
       if (idModelo) {
         this.group_idSelected = idModelo;
         this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
@@ -275,7 +274,7 @@ export class MulticotizadorComponent implements OnInit {
 
     this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
 
-    
+
     this.cotizacionForm.get('version')?.enable();
   } else {
     this.modelos = [];
@@ -303,24 +302,26 @@ export class MulticotizadorComponent implements OnInit {
           console.log(err);
         }
       });
-
+       console.log('aca?');
       this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
         next: (res) => {
-
-         const tipoVehiculo= res.tipoVehiculo;
+          console.log(res);
+         const tipoVehiculoRiv= res.tipoVehiculo;
 
          this.sumaRivadavia= res.suma;
          const tipoUso= "1";
-          //llamarlo todo cuando se elija el tipo de uso mejor?
-         this.s_riv.getCodigoVehiculo(nroProductorRiv,tipoVehiculo,tipoUso).subscribe({
-          next: (res) => {
-            this.codigoRivadavia= res.tarifasDto[0].codigoVehiculo;
-          },
-          error: (err) => {
-            console.log(err);
-          }
-        });
-        },
+
+            //Se envia tipo para filtrar en el backend (las motos no reciben parametro de tipoUso)
+            this.s_riv.getCodigoVehiculo(nroProductorRiv,tipoVehiculoRiv,tipoUso,this.getTipoVehiculo()).subscribe({
+              next: (res) => {
+                this.codigoRivadavia= res.tarifasDto[0].codigoVehiculo;
+              },
+              error: (err) => {
+                console.log(err);
+              }
+            });
+
+      },
         error: (err) => {
           console.log(err);
         }
@@ -421,10 +422,7 @@ export class MulticotizadorComponent implements OnInit {
 
     const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
     console.log(cotizacionRUS);
-
     this.cotizacionGenerada.emit(cotizacionRUS);
-
-
 
       },
       error: (error) => {
@@ -449,22 +447,46 @@ export class MulticotizadorComponent implements OnInit {
       this.codigoInfoAuto,
       this.productorLog);
 
-    this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
+      try {
+        this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
 
-      console.log('✅ Cotización exitosa Mercantil Andina:', response);
-      const cotizacionMercantil = construirCotizacionMercantil(response.resultado);
-      console.log(cotizacionMercantil);
-      this.cotizacionGenerada.emit(cotizacionMercantil);
+          console.log('✅ Cotización exitosa Mercantil Andina:', response);
+          const cotizacionMercantil = construirCotizacionMercantil(response.resultado);
+          console.log(cotizacionMercantil);
+          this.cotizacionGenerada.emit(cotizacionMercantil);
 
-    },
-    error: (error) => {
+        },
+        error: (error) => {
+          let mensajePrincipal = 'Error inesperado';
+          let detalleTecnico = '';
+
+          try {
+            const errorPayload = error.error?.message;
+
+            let parsed: any;
+
+            if (typeof errorPayload === 'string') {
+              parsed = JSON.parse(errorPayload);
+            } else if (typeof errorPayload === 'object') {
+              parsed = errorPayload;
+            }
+
+            mensajePrincipal = parsed?.message || mensajePrincipal;
+            detalleTecnico = parsed?.errors?.[0]?.message || '';
+          } catch (e) {
+            console.error("❌ Error desconocido:", error);
+          }
+
+          console.error("❌ Error principal:", mensajePrincipal);
+          console.warn("🧾 Detalle técnico:", detalleTecnico);
+
+        }
+      });
+      }catch{
+
+      }
 
 
-      console.error("❌ Mercantil Andina Cotizacion Error:",
-      error?.error?.error || "Error desconocido");
-
-    }
-  });
 
   }
 

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CotizacionFederacion } from '../interfaces/cotizacionfederacion';
+import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { CotizacionFederacion } from '../interfaces/cotizacionfederacion';
 export class FederacionService {
 
   private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/federacion';
+  //private apiUrl = environment.URL_DEV+'/federacion';
 
   constructor(private http: HttpClient) {
   }

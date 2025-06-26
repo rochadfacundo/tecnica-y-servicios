@@ -14,7 +14,9 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
     //const formaPago= form.medioPago.codigo === 1 ? FormaPago.CBU : FormaPago.TARJETA_CREDITO;
     const formaPago=FormaPago.CBU;
     const configRiv = productor.companias?.find(c => c.compania === 'RIVADAVIA');
+    const ajuste=20; //20 a 50
 
+    console.log("riv",configRiv);
     let cotizacion:DatosCotizacionRivadavia={nroProductor:"",claveProductor:""};
     if(configRiv){
        cotizacion = {
@@ -36,7 +38,7 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
           codigoVehiculo: String(codigoRivadavia),
           modeloAnio: String(form.anio),
           sumaAsegurada: Number(sumaRivadavia),
-          porcentajeAjuste: Number(form.clausulaAjuste.codigo),
+          porcentajeAjuste: ajuste,
         },
         datoPoliza: {
           nroPoliza: "12322",
@@ -66,8 +68,6 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
         }
       };
     }
-
-    console.log("forma pago rivadavia",formaPago);
 
 
     return cotizacion;

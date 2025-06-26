@@ -5,6 +5,7 @@ import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { Productor } from '../models/productor.model';
 import { Compania } from '../interfaces/compania';
 import { Role } from '../enums/role';
+import { environment} from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import { Role } from '../enums/role';
 export class AuthService {
 
   private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/users';
+  //private apiUrl = environment.URL_DEV+'/users';
 
 
   private _auth = inject(Auth);

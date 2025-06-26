@@ -19,7 +19,7 @@ export function buildFederacionRequest(
       let comision= form.descuentoComision? Number(form.descuentoComision.codigo):0;
       const fechaOriginal = form.vigenciaDesde;
       const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
-
+      const AJUSTE=10;
       const todasLasCoberturas="null";
 
       const cotizacionFederacion: CotizacionFederacion = {
@@ -53,7 +53,7 @@ export function buildFederacionRequest(
           localidad_de_guarda: Number(codPostal)
         },
         coberturas: {
-          ajuste_automatico: 99, //en mensuales hasta 10,
+          ajuste_automatico: AJUSTE, //en mensuales hasta 10,
           rc_ampliada: 99, //diferencia entre ajuste automatico y esto
           interasegurado: true, //siempre true
           rc_conosur:1,

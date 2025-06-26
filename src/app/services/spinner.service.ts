@@ -53,7 +53,6 @@ export class SpinnerService {
   }
 
   hide(tipo?:ESpinner) {
-     console.log('🎯 Mostrando spinner tipo:', tipo);
     if (tipo) {
       this.estados[tipo].next(false);
     } else {
