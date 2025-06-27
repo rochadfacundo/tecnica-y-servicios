@@ -1,9 +1,9 @@
 import { XMLParser } from "fast-xml-parser";
-import { MedioPago, Plan } from "../../../enums/EnumAtm";
-import { Cotizacion, CotizacionATM } from "../../../interfaces/cotizacion";
-import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CodigosPersoneria, getYesNo } from "../utils/utils";
-import { Productor } from "../../../models/productor.model";
+import { MedioPago, Plan } from "../../../../enums/EnumAtm";
+import { Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
+import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
+import { CodigosPersoneria, getRandomNumber, getYesNo } from "../utils/utils";
+import { Productor } from "../../../../models/productor.model";
 
 export function buildATMRequest(form: CotizacionFormValue,infoAuto:string,productor:Productor):string{
   const today = form.vigenciaDesde;
@@ -99,6 +99,7 @@ export function construirCotizacionATM(coberturas: any[]): Cotizacion {
   };
 
   const cotizacion: Cotizacion = {
+    nroCotizacion: getRandomNumber(),
     compania: 'ATM',
     rc: buscarPremio('A0'),
     c: buscarPremio('C3'),

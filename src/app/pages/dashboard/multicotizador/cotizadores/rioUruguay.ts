@@ -1,11 +1,11 @@
-import { Cotizacion } from "../../../interfaces/cotizacion";
-import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../interfaces/cotizacionRioUruguay";
-import { TipoDeUso } from "../../../enums/tiposDeUso";
-import { getYesNo } from "../utils/utils";
-import { Productor } from "../../../models/productor.model";
-import { Compania } from "../../../interfaces/compania";
-import rawData from '../../../../assets/vigenciasRUS.json';
+import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
+import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
+import { TipoDeUso } from "../../../../enums/tiposDeUso";
+import { getRandomNumber, getYesNo } from "../utils/utils";
+import { Productor } from "../../../../models/productor.model";
+import { Compania } from "../../../../interfaces/compania";
+import rawData from '../../../../../assets/vigenciasRUS.json';
 
 type Vigencia = { id: number; descripcion: string; meses: number };
 type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
@@ -95,6 +95,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     };
 
     const cotizacion: Cotizacion = {
+      nroCotizacion: getRandomNumber(),
       compania: 'Río Uruguay',
       rc: buscarPremio('T34'),
       c: buscarPremio('B-80'),

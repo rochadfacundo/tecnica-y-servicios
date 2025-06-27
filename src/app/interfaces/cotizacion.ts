@@ -1,4 +1,5 @@
 export interface Cotizacion {
+  nroCotizacion?:number;
   compania: string;
   rc?: number;
   c?: number;

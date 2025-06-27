@@ -1,9 +1,9 @@
 import { formatDate } from "@angular/common";
-import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../../interfaces/cotizacionfederacion";
-import { Cotizacion } from "../../../interfaces/cotizacion";
-import { CodigosPersoneria } from "../utils/utils";
-import { Productor } from "../../../models/productor.model";
+import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
+import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../../../interfaces/cotizacionfederacion";
+import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { CodigosPersoneria, getRandomNumber } from "../utils/utils";
+import { Productor } from "../../../../models/productor.model";
 
 
 // Armar el request para cotizar federacion
@@ -81,6 +81,7 @@ export function construirCotizacionFederacion(coberturas: any[]): Cotizacion {
   };
 
   const cotizacion: Cotizacion = {
+    nroCotizacion: getRandomNumber(),
     compania: 'Federación Patronal',
     rc: buscarPremio('A4'),
     c: buscarPremio('LB1'),

@@ -1,17 +1,9 @@
 
 <div class="container-fluid p-4">
-  <div *ngIf="multicotizador">
-    <app-multicotizador (cotizacionGenerada)="actualizarCotizaciones($event)"></app-multicotizador>
-  </div>
 
 
-  <div *ngIf="this.misCotizaciones.length > 0 && multicotizador">
-    <app-tabla-cotizadora [cotizaciones]="this.misCotizaciones"></app-tabla-cotizadora>
-  </div>
-
-  <div *ngIf="!multicotizador">
     <h2>Bienvenido al portal</h2>
     <p>Selecciona una opción del menú.</p>
 
-  </div>
+
 </div>

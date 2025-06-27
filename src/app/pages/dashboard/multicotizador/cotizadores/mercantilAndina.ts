@@ -1,7 +1,8 @@
-import { Cotizacion } from "../../../interfaces/cotizacion";
-import { CotizacionFormValue } from "../../../interfaces/cotizacionFormValue";
-import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../interfaces/cotizacionMercantil";
-import { Productor } from "../../../models/productor.model";
+import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
+import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../../interfaces/cotizacionMercantil";
+import { Productor } from "../../../../models/productor.model";
+import { getRandomNumber } from "../utils/utils";
 
 export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor):CotizacionMercantil{
       const TIPO_VEHICULO = form.tipoVehiculo.nombre;
@@ -67,6 +68,7 @@ export function construirCotizacionMercantil(coberturas: any[]): Cotizacion {
   };
 
   const cotizacion: Cotizacion = {
+    nroCotizacion: getRandomNumber(),
     compania: 'Mercantil Andina',
     rc: buscarPremio('A'),
     c: buscarPremio('M BASICA'),

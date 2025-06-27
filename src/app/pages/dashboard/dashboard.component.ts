@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MulticotizadorComponent } from '../../components/multicotizador/multicotizador.component';
+import { MulticotizadorComponent } from './multicotizador/multicotizador.component';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TablaCotizadoraComponent } from '../../components/multicotizador/tabla-cotizadora/tabla-cotizadora.component';
+import { TablaCotizadoraComponent } from './multicotizador/tabla-cotizadora/tabla-cotizadora.component';
 import { Cotizacion } from '../../interfaces/cotizacion';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
@@ -14,15 +14,12 @@ import { Role } from '../../enums/role';
   standalone: true,
   imports: [
     CommonModule,
-    MulticotizadorComponent,
-    TablaCotizadoraComponent,
     FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
 
-  multicotizador:boolean=false;
   misCotizaciones:Cotizacion[];
 
   constructor(private router: Router,private route: ActivatedRoute,
@@ -34,11 +31,6 @@ export class DashboardComponent implements OnInit {
 
   async ngOnInit() {
 
-  this.route.queryParams.subscribe(params => {
-    if (params['openMulticotizador']) {
-      this.multicotizador = true;
-    }
-  });
 }
 
 
@@ -68,8 +60,5 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  open(){
-    this.multicotizador=!this.multicotizador;
-  }
 }
 

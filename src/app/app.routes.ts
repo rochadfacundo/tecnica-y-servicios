@@ -10,6 +10,8 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 import { GestionarUsuariosComponent } from './pages/dashboard/gestionar-usuarios/gestionar-usuarios.component';
 import { CambiarConfiguracionComponent } from './pages/dashboard/cambiar-configuracion/cambiar-configuracion.component';
+import { MulticotizadorComponent } from './pages/dashboard/multicotizador/multicotizador.component';
+import { TablaCotizadoraComponent } from './pages/dashboard/multicotizador/tabla-cotizadora/tabla-cotizadora.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +34,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: DashboardComponent },
       { path: 'gestionar-usuarios', component: GestionarUsuariosComponent },
+      { path: 'multicotizador', component: MulticotizadorComponent },
+      { path: 'tabla-cotizadora', component: TablaCotizadoraComponent },
       { path: 'cambiar-configuracion', component: CambiarConfiguracionComponent }
     ]
   },

@@ -1,5 +1,5 @@
-import { Cotizacion } from "../../../interfaces/cotizacion";
-import { Tipo } from "../../../interfaces/tipos";
+import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { Tipo } from "../../../../interfaces/tipos";
  // Función para devolver string dependiento el booleano
 export function getYesNo(value: boolean,yes: string,no: string): string {
   return value === true ? yes : no;
@@ -25,6 +25,11 @@ export const CodigosPersoneria = {
     PERSONA_JURIDICA: 'JURIDICA',
   },
 };
+
+// Genera numero random
+export function getRandomNumber(): number {
+  return Math.floor(Math.random() * 1_000_000_000) + 1;
+}
 
 //descarga como json
 export function downloadJSON(data: any[], name: string): void {

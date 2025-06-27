@@ -25,7 +25,7 @@
           </span>
 
           <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
-            routerLink="/dashboard" (click)="emitMulticotizador()">
+            routerLink="/dashboard/multicotizador" (click)="closeMenu()">
             <i class="fa fa-calculator"></i> Cotizar
           </a>
           <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
@@ -40,7 +40,7 @@
           <a *ngIf="productor.role === 'Productor'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
             routerLink="/dashboard/cambiar-configuracion"
             routerLinkActive="router-link-active"
-            (click)="closeMenu()">
+            (click)="closeMenu()"    >
             <i class="fa fa-user-cog"></i> Configuración
           </a>
         </div>

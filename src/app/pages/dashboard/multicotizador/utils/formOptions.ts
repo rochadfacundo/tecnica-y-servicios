@@ -1,7 +1,7 @@
 
-import { EProvincia, Provincia } from "../../../interfaces/provincia";
-import { Tipo, TipoVehiculo } from "../../../interfaces/tipos";
-import { Model } from '../../../classes/infoauto';
+import { EProvincia, Provincia } from "../../../../interfaces/provincia";
+import { Tipo, TipoVehiculo } from "../../../../interfaces/tipos";
+import { Model } from '../../../../classes/infoauto';
 
 /**
  * Filtra y ordena modelos por año y posición/descripcion.
@@ -17,7 +17,7 @@ export function filtrarModelosPorAnio(modelos: Model[], anio: number): Model[] {
       return anio >= desde && anio <= hasta;
     })
     .sort((a, b) => {
-      
+
       if (a.position !== b.position) {
         return (a.position ?? 9999) - (b.position ?? 9999);
       }

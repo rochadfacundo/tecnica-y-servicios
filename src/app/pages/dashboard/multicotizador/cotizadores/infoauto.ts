@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
-import { InfoautoService } from "../../../services/infoauto.service";
-import { Brand } from "../../../classes/infoauto";
-import { Year } from "../../../interfaces/year";
+import { InfoautoService } from "../../../../services/infoauto.service";
+import { Brand } from "../../../../classes/infoauto";
+import { Year } from "../../../../interfaces/year";
 
 export function getMarcas(s_infoauto: InfoautoService, tipoVehiculo: string): Observable<Brand[]> {
   return s_infoauto.getMarcas(tipoVehiculo);

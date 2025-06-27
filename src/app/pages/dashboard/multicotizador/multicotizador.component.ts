@@ -1,35 +1,39 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RioUruguayService } from '../../services/rio-uruguay.service';
-import { RusCotizado, TipoVehiculoRUS } from '../../interfaces/cotizacionRioUruguay';
-import { MercantilAndinaService } from '../../services/mercantil-andina.service';
-import { TipoDeUso } from '../../enums/tiposDeUso';
+import { RioUruguayService } from '../../../services/rio-uruguay.service';
+import { RusCotizado } from '../../../interfaces/cotizacionRioUruguay';
+import { MercantilAndinaService } from '../../../services/mercantil-andina.service';
+import { TipoDeUso } from '../../../enums/tiposDeUso';
 import { ChangeDetectorRef } from '@angular/core';
-import { InfoautoService } from '../../services/infoauto.service';
-import { Brand, Group, Model } from '../../classes/infoauto';
-import { RivadaviaService } from '../../services/rivadavia.service';
-import {  DatosCotizacionRivadavia} from '../../interfaces/cotizacionRivadavia';
-import { FederacionService } from '../../services/federacion.service';
-import {LocalidadesFederacion } from '../../interfaces/cotizacionfederacion';
-import { AtmService } from '../../services/atm.service';
-import { CotizacionFormValue } from '../../interfaces/cotizacionFormValue';
-import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../interfaces/tipos';
-import { Cobertura } from '../../interfaces/cobertura';
+import { InfoautoService } from '../../../services/infoauto.service';
+import { Brand, Group, Model } from '../../../classes/infoauto';
+import { RivadaviaService } from '../../../services/rivadavia.service';
+import {  DatosCotizacionRivadavia} from '../../../interfaces/cotizacionRivadavia';
+import { FederacionService } from '../../../services/federacion.service';
+import {LocalidadesFederacion } from '../../../interfaces/cotizacionfederacion';
+import { AtmService } from '../../../services/atm.service';
+import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
+import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../../interfaces/tipos';
+import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from './utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
-import { Cotizacion } from '../../interfaces/cotizacion';
+import { Cotizacion } from '../../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
-import { getAniosPorGrupo, getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO, TIPOS_VIGENCIA } from './utils/formOptions';
-import { Provincia } from '../../interfaces/provincia';
-import { Year } from '../../interfaces/year';
-import { AuthService } from '../../services/auth.service';
-import { Productor } from '../../models/productor.model';
+import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
+import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO } from './utils/formOptions';
+import { Provincia } from '../../../interfaces/provincia';
+import { Year } from '../../../interfaces/year';
+import { AuthService } from '../../../services/auth.service';
+import { Productor } from '../../../models/productor.model';
+import { Router } from '@angular/router';
+import { ESpinner } from '../../../enums/ESpinner';
+import { SpinnerService } from '../../../services/spinner.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-multicotizador',
@@ -43,7 +47,7 @@ export class MulticotizadorComponent implements OnInit {
 
   cotizacionForm!: FormGroup;
   form!: CotizacionFormValue;
-  federacionForm:boolean=false;
+
   marcas: Brand[] = [];
   brand_idSelected:number=0;
   group_idSelected:number=0;
@@ -85,6 +89,8 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(FederacionService) private s_fedPat: FederacionService,
     @Inject(AtmService) private s_ATM: AtmService,
     @Inject(AuthService) private s_auth: AuthService,
+    @Inject(Router) private router: Router,
+    @Inject(SpinnerService) private s_spinner: SpinnerService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -381,11 +387,9 @@ export class MulticotizadorComponent implements OnInit {
         },
         error: (err) => {
             console.log(err);
-            //this.federacionForm=false;
           }
         });
 
-        this.federacionForm=true;
       }
 
     });
@@ -406,98 +410,76 @@ export class MulticotizadorComponent implements OnInit {
   }
 
   //RIO URUGUAY
-  cotizarRUS(): void {
-    if (!this.productorLog) {
-      console.error('❌ No hay productor logueado');
-      return;
-    }
-    const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog);
-
-    this.s_rus.cotizar(cotizacionData).subscribe({
-      next: (response) => {
-        console.log('✅ Cotización exitosa en RUS:', response.dtoList);
-
-        const cotizacionesRus = response.dtoList;
-
-
-    const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
-    console.log(cotizacionRUS);
-    this.cotizacionGenerada.emit(cotizacionRUS);
-
-      },
-      error: (error) => {
-        this.cotizacion = false;
-
-        console.error("❌ Error en cotizacion RUS:",
-        error?.error?.error || "Error desconocido");
-
+    async cotizarRUS() {
+      if (!this.productorLog) {
+        console.error('❌ No hay productor logueado');
+        return;
       }
-    });
-  }
-
-  //MERCANTIL ANDINA
-  cotizarMercantil()
-  {
-    if (!this.productorLog) {
-      console.error('❌ No hay productor logueado');
-      return;
-    }
-    const cotizacionData= buildMercantilRequest(
-      this.form,
-      this.codigoInfoAuto,
-      this.productorLog);
+      const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog);
 
       try {
-        this.s_ma.cotizar(cotizacionData).subscribe({  next: (response) => {
+        const observable$ = this.s_rus.cotizar(cotizacionData);
+        const respuesta = await firstValueFrom(observable$);
+        console.log('✅ Cotización exitosa RUS:', respuesta.dtoList);
+        const cotizacionesRus = respuesta.dtoList;
+        const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
+        this.productorLog?.cotizaciones?.push(cotizacionRUS);
+      } catch (error:any) {
 
-          console.log('✅ Cotización exitosa Mercantil Andina:', response);
-          const cotizacionMercantil = construirCotizacionMercantil(response.resultado);
-          console.log(cotizacionMercantil);
-          this.cotizacionGenerada.emit(cotizacionMercantil);
-
-        },
-        error: (error) => {
-          let mensajePrincipal = 'Error inesperado';
-          let detalleTecnico = '';
-
-          try {
-            const errorPayload = error.error?.message;
-
-            let parsed: any;
-
-            if (typeof errorPayload === 'string') {
-              parsed = JSON.parse(errorPayload);
-            } else if (typeof errorPayload === 'object') {
-              parsed = errorPayload;
-            }
-
-            mensajePrincipal = parsed?.message || mensajePrincipal;
-            detalleTecnico = parsed?.errors?.[0]?.message || '';
-          } catch (e) {
-            console.error("❌ Error desconocido:", error);
-          }
-
-          console.error("❌ Error principal:", mensajePrincipal);
-          console.warn("🧾 Detalle técnico:", detalleTecnico);
-
-        }
-      });
-      }catch{
-
+        console.error("❌ Error en cotizacion RUS:",
+          error?.error?.error || "Error desconocido");
       }
 
+    }
 
 
+  //MERCANTIL ANDINA
+  async cotizarMercantil() {
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
+
+    const cotizacionData = buildMercantilRequest(
+      this.form,
+      this.codigoInfoAuto,
+      this.productorLog
+    );
+
+    try {
+      const observable$ = this.s_ma.cotizar(cotizacionData);
+      const respuesta = await firstValueFrom(observable$);
+
+      console.log('✅ Cotización exitosa Mercantil Andina:', respuesta);
+      const cotizacionMercantil = construirCotizacionMercantil(respuesta.resultado);
+      this.productorLog?.cotizaciones?.push(cotizacionMercantil);
+    } catch (error: any) {
+      const payload = error?.error?.message;
+      let mensaje = 'Error inesperado';
+      let detalle = '';
+
+      try {
+        const parsed = typeof payload === 'string' ? JSON.parse(payload) : payload;
+        mensaje = parsed?.message || mensaje;
+        detalle = parsed?.errors?.[0]?.message || '';
+      } catch (e) {
+        console.error('❌ Error desconocido al parsear:', error);
+      }
+
+      console.error('❌ Error principal:', mensaje);
+      console.warn('🧾 Detalle técnico:', detalle);
+    }
   }
 
   //Rivadavia
-  cotizarRivadavia()
-  {
+  async cotizarRivadavia() {
     if (!this.productorLog) {
       console.error('❌ No hay productor logueado');
       return;
     }
-    const cotizacion:DatosCotizacionRivadavia = buildRivadaviaRequest(
+
+
+    const cotizacion: DatosCotizacionRivadavia = buildRivadaviaRequest(
       this.form,
       this.codigoInfoAuto,
       this.codigoRivadavia,
@@ -505,52 +487,76 @@ export class MulticotizadorComponent implements OnInit {
       this.productorLog
     );
 
-    this.s_riv.cotizarRivadavia(cotizacion).subscribe({
-      next: (res) => {
-       console.log('✅ Cotización exitosa Rvadavia:',res);
+    try {
+      const observable$ = this.s_riv.cotizarRivadavia(cotizacion);
+      const respuesta = await firstValueFrom(observable$);
 
-       const cotizacionRivadavia:Cotizacion= construirCotizacionRivadavia(res.coberturas);
+      console.log('✅ Cotización exitosa Rivadavia:', respuesta);
+      const cotizacionRivadavia: Cotizacion = construirCotizacionRivadavia(respuesta.coberturas);
+      console.log(cotizacionRivadavia);
+      this.productorLog?.cotizaciones?.push(cotizacionRivadavia);
 
-       console.log(cotizacionRivadavia);
+    } catch (error) {
+      console.log(error);
+    }
 
-       this.cotizacionGenerada.emit(cotizacionRivadavia);
-
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
   }
 
   //Federacion patronal
-  cotizarFederacion()
-  {
+
+    async cotizarFederacion() {
+      if (!this.productorLog) {
+        console.error('❌ No hay productor logueado');
+        return;
+      }
+
+      const cotizacionFederacion = buildFederacionRequest(
+        this.form,
+        this.codigoInfoAuto,
+        this.tipoVehiculoFederacion,
+        this.codigoPostalFederacion,
+        this.productorLog
+      );
+
+      try {
+
+        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion));
+
+        console.log('✅ Cotización exitosa Federación:', respuesta);
+        const cotizacion = construirCotizacionFederacion(respuesta.coberturas.planes);
+        this.productorLog?.cotizaciones?.push(cotizacion);
+      } catch (error) {
+        console.error('❌ Error en cotización Federación:', error);
+      }
+    }
+
+
+  //ATM
+
+  async cotizarATM() {
     if (!this.productorLog) {
       console.error('❌ No hay productor logueado');
       return;
     }
-    const cotizacionFederacion= buildFederacionRequest(
-      this.form,this.codigoInfoAuto,
-      this.tipoVehiculoFederacion,
-      this.codigoPostalFederacion,
-      this.productorLog);
 
-    this.s_fedPat.cotizarFederacion(cotizacionFederacion).subscribe({
-      next: (res) => {
-       console.log('✅ Cotización exitosa Federacion:',res);
+    const xmlAtm = buildATMRequest(
+      this.form,
+      String(this.codigoInfoAuto),
+      this.productorLog
+    );
 
-       const cotizacionFederacion:Cotizacion= construirCotizacionFederacion(res.coberturas.planes);
+    try {
+      const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm));
 
-       console.log(cotizacionFederacion);
-
-       this.cotizacionGenerada.emit(cotizacionFederacion);
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
-
+      console.log('✅ Cotización exitosa ATM');
+      const resultado = parsearXML(respuesta);
+      const cotizacionATM = construirCotizacionATM(resultado);
+      this.productorLog?.cotizaciones?.push(cotizacionATM);
+    } catch (error) {
+      console.error('❌ Error en cotización ATM:', error);
+    }
   }
+
 
   getForm()
   {
@@ -563,51 +569,34 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
-  cotizar()
-  {
-
+  async cotizar() {
     this.form = this.getForm();
-  this.cotizarRivadavia();
+    this.productorLog!.cotizaciones = [];
 
-  this.cotizarATM();
+    const tareas = [
+      () => this.cotizarRivadavia(),
+      () => this.cotizarRUS(),
+      () => this.cotizarMercantil(),
+      //() => this.cotizarATM(),
+      //() => this.cotizarFederacion(),
+    ];
 
-  this.cotizarMercantil();
-  this.cotizarRUS();
+    // Mostramos spinner manualmente
+    this.s_spinner.show(ESpinner.Rebote);
 
-  //this.cotizarFederacion();
+    try {
+      const promesas = tareas.map(fn => fn());
+      await Promise.allSettled(promesas);
+    } finally {
+      // Lo ocultamos solo cuando todas realmente terminaron
+      this.s_spinner.hide(ESpinner.Rebote);
+    }
 
-
+    // Redirigir a la tabla
+    this.router.navigate(['/dashboard/tabla-cotizadora'], {
+      state: { cotizaciones: this.productorLog?.cotizaciones || [] }
+    });
   }
 
-
-
-
-  cotizarATM(){
-if (!this.productorLog) {
-  console.error('❌ No hay productor logueado');
-  return;
-}
-
-    const xmlAtm=buildATMRequest(
-      this.form,String(this.codigoInfoAuto),
-      this.productorLog);
-
-    this.s_ATM.cotizarATM(xmlAtm).subscribe({
-      next: (res) => {
-       console.log('✅ Cotización exitosa ATM:');
-
-    const resultado =parsearXML(res);
-
-    const cotizacionATM = construirCotizacionATM(resultado);
-    console.log(cotizacionATM);
-
-    this.cotizacionGenerada.emit(cotizacionATM);
-
-          },
-          error: (err) => {
-            console.log(err);
-          }
-        });
-      }
 
 }

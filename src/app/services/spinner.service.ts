@@ -32,8 +32,14 @@ export class SpinnerService {
     );
 
     try {
-      result = await Promise.race([promise, timeout]);
-      await minDuration;
+      result = await Promise.race([
+        (async () => {
+          const res = await promise;
+          await minDuration;
+          return res;
+        })(),
+        timeout
+      ]);
 
     }catch(e:any){
       console.log(e);

@@ -7,9 +7,9 @@ import { ESpinner } from '../enums/ESpinner';
 export const spinnerInterceptor: HttpInterceptorFn = (req, next) => {
   const spinner = inject(SpinnerService);
 
-  spinner.show(ESpinner.Rebote);
+  spinner.show(ESpinner.Vaiven);
 
   return next(req).pipe(
-    finalize(() => spinner.hide(ESpinner.Rebote))
+    finalize(() => spinner.hide(ESpinner.Vaiven))
   );
 };
