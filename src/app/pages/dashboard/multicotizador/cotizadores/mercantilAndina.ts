@@ -2,7 +2,7 @@ import { Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../../interfaces/cotizacionMercantil";
 import { Productor } from "../../../../models/productor.model";
-import { getRandomNumber } from "../utils/utils";
+import { getRandomNumber } from "../../../../utils/utils";
 
 export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor):CotizacionMercantil{
       const TIPO_VEHICULO = form.tipoVehiculo.nombre;
@@ -44,6 +44,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
           uso: codigoParticular,
           gnc: form.tieneGnc,
           rastreo: RASTREADOR };
+
          cotizacionData.vehiculo=MOTOVEHICULO;
          cotizacionData.canal=CANAL_MOTOS;
 
@@ -55,6 +56,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
           uso: codigoParticular,
           gnc: form.tieneGnc,
           rastreo: RASTREADOR };
+
           cotizacionData.vehiculo=VEHICULO;
       }
 

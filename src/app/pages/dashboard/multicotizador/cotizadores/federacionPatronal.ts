@@ -2,7 +2,7 @@ import { formatDate } from "@angular/common";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../../../interfaces/cotizacionfederacion";
 import { Cotizacion } from "../../../../interfaces/cotizacion";
-import { CodigosPersoneria, getRandomNumber } from "../utils/utils";
+import { CodigosPersoneria, getRandomNumber }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 
 

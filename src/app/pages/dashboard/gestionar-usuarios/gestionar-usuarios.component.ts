@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ECompania } from '../../../enums/Ecompania';
 import { AuthService } from '../../../services/auth.service';
 import { RioUruguayService } from '../../../services/rio-uruguay.service';
-import { configCompanias, getRoles } from '../../../components/utils/utils';
+import { configCompanias, getRoles } from '../../../utils/utils';
 import { firstValueFrom } from 'rxjs';
 import { Productor } from '../../../models/productor.model';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';

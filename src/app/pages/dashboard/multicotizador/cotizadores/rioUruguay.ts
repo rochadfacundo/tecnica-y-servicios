@@ -2,7 +2,7 @@ import { Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../../enums/tiposDeUso";
-import { getRandomNumber, getYesNo } from "../utils/utils";
+import { getRandomNumber, getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 import { Compania } from "../../../../interfaces/compania";
 import rawData from '../../../../../assets/vigenciasRUS.json';

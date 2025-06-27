@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { configCompanias } from '../../../components/utils/utils';
+import { configCompanias } from '../../../utils/utils';
 import { Productor } from '../../../models/productor.model';
 import { AuthService } from '../../../services/auth.service';
 import { getStorage, uploadBytesResumable, getDownloadURL, ref } from '@angular/fire/storage';

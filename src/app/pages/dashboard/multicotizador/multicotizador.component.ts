@@ -17,7 +17,7 @@ import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from './utils/utils';
+import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from '../../../utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../../interfaces/cotizacion';
@@ -25,7 +25,7 @@ import { buildFederacionRequest, construirCotizacionFederacion } from './cotizad
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO } from './utils/formOptions';
+import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO } from '../../../utils/formOptions';
 import { Provincia } from '../../../interfaces/provincia';
 import { Year } from '../../../interfaces/year';
 import { AuthService } from '../../../services/auth.service';
@@ -542,7 +542,8 @@ export class MulticotizadorComponent implements OnInit {
     const xmlAtm = buildATMRequest(
       this.form,
       String(this.codigoInfoAuto),
-      this.productorLog
+      this.productorLog,
+      this.getTipoVehiculo()
     );
 
     try {
