@@ -3,7 +3,7 @@ import { Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPago } from "../../../../interfaces/cotizacionRivadavia";
 import { Productor } from "../../../../models/productor.model";
-import { CodigosPersoneria, getRandomNumber } from "../utils/utils";
+import { CodigosPersoneria, getRandomNumber } from "../../../../utils/utils";
 
 export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,codigoRivadavia:string,sumaRivadavia:string,productor:Productor){
     //formatDateSinceYear

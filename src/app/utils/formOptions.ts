@@ -1,7 +1,6 @@
-
-import { EProvincia, Provincia } from "../../../../interfaces/provincia";
-import { Tipo, TipoVehiculo } from "../../../../interfaces/tipos";
-import { Model } from '../../../../classes/infoauto';
+import { Model } from "../classes/infoauto";
+import { EProvincia, Provincia } from "../interfaces/provincia";
+import { Tipo, TipoVehiculo } from "../interfaces/tipos";
 
 /**
  * Filtra y ordena modelos por año y posición/descripcion.
