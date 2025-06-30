@@ -17,7 +17,7 @@ import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, formatDateSinceDay, formatDateSinceYear } from '../../../utils/utils';
+import { downloadJSON, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../../interfaces/cotizacion';
@@ -80,6 +80,8 @@ export class MulticotizadorComponent implements OnInit {
   cotizacion:boolean=true;
   tiposDeUso: TipoDeUso[]= [];
   productorLog!: Productor|null;
+  cotizaciones: Cotizacion;
+  animar:boolean = false;
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -94,13 +96,17 @@ export class MulticotizadorComponent implements OnInit {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
-
+    this.cotizaciones={companiasCotizadas:[],nroCotizacion:0};
   }
 
   async ngOnInit() {
     this.initForm();
     this.setupValueChanges();
+    setTimeout(() => {
+      this.animar = true;
+    }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
+
   }
   public readonly opcionesSiNo = OPCIONES_SI_NO;
 
@@ -308,7 +314,7 @@ export class MulticotizadorComponent implements OnInit {
           console.log(err);
         }
       });
-       console.log('aca?');
+      console.log(nroProductorRiv,this.codigoInfoAuto,anio);
       this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
         next: (res) => {
           console.log(res);
@@ -423,7 +429,7 @@ export class MulticotizadorComponent implements OnInit {
         console.log('✅ Cotización exitosa RUS:', respuesta.dtoList);
         const cotizacionesRus = respuesta.dtoList;
         const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
-        this.productorLog?.cotizaciones?.push(cotizacionRUS);
+
       } catch (error:any) {
 
         console.error("❌ Error en cotizacion RUS:",
@@ -452,7 +458,7 @@ export class MulticotizadorComponent implements OnInit {
 
       console.log('✅ Cotización exitosa Mercantil Andina:', respuesta);
       const cotizacionMercantil = construirCotizacionMercantil(respuesta.resultado);
-      this.productorLog?.cotizaciones?.push(cotizacionMercantil);
+      this.cotizaciones.companiasCotizadas.push(cotizacionMercantil);
     } catch (error: any) {
       const payload = error?.error?.message;
       let mensaje = 'Error inesperado';
@@ -492,9 +498,9 @@ export class MulticotizadorComponent implements OnInit {
       const respuesta = await firstValueFrom(observable$);
 
       console.log('✅ Cotización exitosa Rivadavia:', respuesta);
-      const cotizacionRivadavia: Cotizacion = construirCotizacionRivadavia(respuesta.coberturas);
+      const cotizacionRivadavia = construirCotizacionRivadavia(respuesta.coberturas);
       console.log(cotizacionRivadavia);
-      this.productorLog?.cotizaciones?.push(cotizacionRivadavia);
+      this.cotizaciones.companiasCotizadas.push(cotizacionRivadavia);
 
     } catch (error) {
       console.log(error);
@@ -524,7 +530,7 @@ export class MulticotizadorComponent implements OnInit {
 
         console.log('✅ Cotización exitosa Federación:', respuesta);
         const cotizacion = construirCotizacionFederacion(respuesta.coberturas.planes);
-        this.productorLog?.cotizaciones?.push(cotizacion);
+        this.cotizaciones.companiasCotizadas.push(cotizacion);
       } catch (error) {
         console.error('❌ Error en cotización Federación:', error);
       }
@@ -552,7 +558,7 @@ export class MulticotizadorComponent implements OnInit {
       console.log('✅ Cotización exitosa ATM');
       const resultado = parsearXML(respuesta);
       const cotizacionATM = construirCotizacionATM(resultado);
-      this.productorLog?.cotizaciones?.push(cotizacionATM);
+      this.cotizaciones.companiasCotizadas.push(cotizacionATM);
     } catch (error) {
       console.error('❌ Error en cotización ATM:', error);
     }
@@ -572,13 +578,12 @@ export class MulticotizadorComponent implements OnInit {
 
   async cotizar() {
     this.form = this.getForm();
-    this.productorLog!.cotizaciones = [];
 
     const tareas = [
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      //() => this.cotizarATM(),
+      () => this.cotizarATM(),
       //() => this.cotizarFederacion(),
     ];
 
@@ -588,14 +593,18 @@ export class MulticotizadorComponent implements OnInit {
     try {
       const promesas = tareas.map(fn => fn());
       await Promise.allSettled(promesas);
+      this.cotizaciones.nroCotizacion=getRandomNumber();
     } finally {
       // Lo ocultamos solo cuando todas realmente terminaron
       this.s_spinner.hide(ESpinner.Rebote);
+
     }
 
     // Redirigir a la tabla
     this.router.navigate(['/dashboard/tabla-cotizadora'], {
-      state: { cotizaciones: this.productorLog?.cotizaciones || [] }
+      state: {
+        cotizaciones: this.cotizaciones
+      }
     });
   }
 

@@ -1,4 +1,4 @@
-import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { CompaniaCotizada, Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../../enums/tiposDeUso";
@@ -88,14 +88,13 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
   }
 
 
- export function construirCotizacionRus(coberturas: any[]): Cotizacion {
+ export function construirCotizacionRus(coberturas: any[]): CompaniaCotizada {
     const buscarPremio = (codigoCasco: string): number | undefined => {
       const cobertura = coberturas.find(c => c.codigoCasco === codigoCasco);
       return cobertura ? cobertura.premio : undefined;
     };
 
-    const cotizacion: Cotizacion = {
-      nroCotizacion: getRandomNumber(),
+    const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
       rc: buscarPremio('T34'),
       c: buscarPremio('B-80'),
@@ -106,5 +105,5 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
       //no definidos por ahora
     };
 
-    return cotizacion;
+    return companiaCotizada;
   }

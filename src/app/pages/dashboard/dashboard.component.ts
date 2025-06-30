@@ -20,44 +20,19 @@ import { Role } from '../../enums/role';
 })
 export class DashboardComponent implements OnInit {
 
-  misCotizaciones:Cotizacion[];
+  misCotizaciones: Cotizacion[] = [];
+  animar: boolean = false;
 
-  constructor(private router: Router,private route: ActivatedRoute,
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private auth_s: AuthService
-  )
-  {
-    this.misCotizaciones= [];
-  }
+  ) {}
 
-  async ngOnInit() {
-
-}
-
-
-
- crearProductor() {
-
-/*
-  this.auth_s.deleteUser(this.productor.uid).then(() => {
-
-  }).catch((err) => {
-    console.log(err);
-  });*/
-  /*
-  this.auth_s.register(this.productor)
-    .then(() => alert('✅ Productor creado correctamente'))
-    .catch(() => alert('❌ Error al crear productor'));*/
-}
-
-
-  actualizarCotizaciones(cot: Cotizacion) {
-    const index = this.misCotizaciones.findIndex(c => c.compania === cot.compania);
-
-    if (index !== -1) {
-      this.misCotizaciones[index] = cot;
-    } else {
-      this.misCotizaciones.push(cot);
-    }
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.animar = true;
+    }, 10);
   }
 
 }

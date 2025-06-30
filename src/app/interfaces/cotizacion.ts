@@ -1,5 +1,9 @@
 export interface Cotizacion {
   nroCotizacion?:number;
+  companiasCotizadas: CompaniaCotizada[];
+}
+
+export interface CompaniaCotizada{
   compania: string;
   rc?: number;
   c?: number;

@@ -1,10 +1,12 @@
 // header.component.ts
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Productor } from '../../models/productor.model';
+import { ESpinner } from '../../enums/ESpinner';
+import { SpinnerService } from '../../services/spinner.service';
 declare var bootstrap: any;
 
 @Component({
@@ -20,8 +22,9 @@ export class HeaderComponent implements OnInit {
   productorLogueado$: Observable<Productor | null>;
 
   constructor(
-    private s_auth: AuthService,
-    private router: Router
+    @Inject(AuthService) private s_auth: AuthService,
+    @Inject(Router) private router: Router,
+    @Inject(SpinnerService) private s_spinner: SpinnerService,
   ) {
     this.productorLogueado$ = this.s_auth.productor$;
   }
@@ -40,11 +43,20 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.s_auth.logout().then(() => {
+  async logout() {
+    const resultado = await this.s_spinner.runWithSpinner(
+      this.s_auth.logout(),
+      ESpinner.Rebote
+    );
+
+    if (resultado !== undefined) {
       this.router.navigateByUrl('/home');
-    });
+    } else {
+      // si el logout falló o timeout, podés mostrar un mensaje o hacer otra acción
+      console.error('❌ Logout fallido o timeout');
+    }
   }
+
 
   closeMenu() {
     const navbar = document.querySelector('.navbar-collapse') as HTMLElement;

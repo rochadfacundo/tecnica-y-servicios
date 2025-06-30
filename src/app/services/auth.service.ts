@@ -122,7 +122,9 @@ actualizarProductorLocal(productor: Productor) {
           email: productor.email,
           role: productor.role,
           path: productor.path,
-          companias: productor.companias ?? []
+          companias: productor.companias ?? [],
+          cotizaciones: productor.cotizaciones ?? [],
+
         }),
       });
 

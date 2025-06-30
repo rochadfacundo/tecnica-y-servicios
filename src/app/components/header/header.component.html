@@ -1,12 +1,14 @@
 <nav class="menu navbar navbar-expand-md">
   <div class="container-fluid">
-    <div class="logo pb-3">
+    <!-- Logo -->
+    <div class="logo pb-3 animate__animated animate__fadeIn">
       <a routerLink="/">
         <img class="borde-r" [src]="(productorLogueado$ | async)?.path" *ngIf="(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
         <img class="borde-r" src="../../../assets/logo.png" *ngIf="!(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
       </a>
     </div>
 
+    <!-- Botón hamburguesa -->
     <button class="navbar-toggler" style="background-color: #b9b4b4;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon">
@@ -19,34 +21,39 @@
       <!-- Menú logueado -->
       <ng-container *ngIf="productorLogueado$ | async as productor; else visitante">
         <div class="navbar-nav mx-auto">
-
-           <span class="badge m-2 p-3 d-md-inline fs-6">
+          <span class="badge m-2 p-3 d-md-inline fs-6 animate__animated animate__fadeInDown animate__delay-1s animate__faster fastest">
             👋 Hola, {{ productor.nombre }} {{ productor.apellido }}
           </span>
 
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus"
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="/dashboard/multicotizador" (click)="closeMenu()">
             <i class="fa fa-calculator"></i> Cotizar
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" href="#" (click)="closeMenu()">
+
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
+            href="#" (click)="closeMenu()">
             <i class="fa fa-file-signature"></i> Emitir pólizas
           </a>
-          <a *ngIf="productor.role === 'Administrador'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
-            routerLink="/dashboard/gestionar-usuarios"
-            routerLinkActive="router-link-active"
+
+          <a *ngIf="productor.role === 'Administrador'"
+            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+            routerLink="/dashboard/gestionar-usuarios" routerLinkActive="router-link-active"
             (click)="closeMenu()">
             <i class="fa fa-user-cog"></i> Administrar PAS
           </a>
-          <a *ngIf="productor.role === 'Productor'" class="borde m-2 p-3 text-decoration-none text-center no-focus"
-            routerLink="/dashboard/cambiar-configuracion"
-            routerLinkActive="router-link-active"
-            (click)="closeMenu()"    >
+
+          <a *ngIf="productor.role === 'Productor'"
+            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+            routerLink="/dashboard/cambiar-configuracion" routerLinkActive="router-link-active"
+            (click)="closeMenu()">
             <i class="fa fa-user-cog"></i> Configuración
           </a>
         </div>
 
+        <!-- Logout -->
         <div class="nav navbar-nav ms-auto align-items-center pe-3 text-white">
-          <a class="m-2 p-3 text-center no-focus text-danger" href="#" (click)="logout()">
+          <a class="m-2 p-3 text-center no-focus text-danger animate__animated animate__fadeInDown animate__delay-5s animate__faster fastest"
+             href="#" (click)="logout()">
             <i class="bi bi-box-arrow-right fs-1"></i>
           </a>
         </div>
@@ -55,21 +62,31 @@
       <!-- Menú visitante -->
       <ng-template #visitante>
         <div class="navbar-nav mx-auto">
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="home" routerLinkActive="router-link-active" (click)="closeMenu()">
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-1s animate__faster fastest"
+            routerLink="home" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-home"></i> Home
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="acerca-de" routerLinkActive="router-link-active" (click)="closeMenu()">
+
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
+            routerLink="acerca-de" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-user"></i> Acerca de
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="servicios" routerLinkActive="router-link-active" (click)="closeMenu()">
+
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
+            routerLink="servicios" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-file-text"></i> Servicios
           </a>
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus" routerLink="contacto" routerLinkActive="router-link-active" (click)="closeMenu()">
+
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+            routerLink="contacto" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-envelope"></i> Contacto
           </a>
         </div>
+
+        <!-- Botón login -->
         <div class="nav navbar-nav ms-auto">
-          <a class="m-2 p-3 text-center no-focus" routerLink="login" routerLinkActive="router-link-active" (click)="closeMenu()">
+          <a class="m-2 p-3 text-center no-focus animate__animated animate__fadeInDown animate__delay-5s animate__faster fastest"
+            routerLink="login" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="bi bi-person-circle fs-1"></i>
           </a>
         </div>

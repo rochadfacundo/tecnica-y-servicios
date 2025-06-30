@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4"   [ngClass]="{ 'animate__animated animate__fadeIn': animar }">
   <form [formGroup]="cotizacionForm">
 
  <!-- Código Tipo Interés  SACAR
@@ -13,7 +13,7 @@
 
 <!-- Tipo de Vehículo  SACAR TAMBIEN -->
 <div class="mb-3">
-  <label for="tipoVehiculo" class="form-label">Tipo de Vehículo</label>
+  <label for="tipoVehiculo" class="form-label animate__animated animate__fadeInUp animate__delay-1s">Tipo de Vehículo</label>
   <select id="tipoVehiculo" class="form-select" formControlName="tipoVehiculo">
     <option [ngValue]="null" disabled>Seleccione un tipo</option>
     <option *ngFor="let tipo of tiposVehiculo" [ngValue]="tipo">{{ tipo.descripcion }}</option>
@@ -23,7 +23,7 @@
 
 
     <!-- Fila: Nombre y Apellido -->
-    <div class="row">
+    <div class="row animate__animated animate__fadeInUp animate__delay-2s">
       <div class="mb-3 col-md-6">
         <label for="nombre" class="form-label">Nombre:</label>
         <input type="text" formControlName="nombre" class="form-control">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Fila: Tipo Doc y N° -->
-    <div class="row">
+    <div class="row animate__animated animate__fadeInUp animate__delay-3s">
       <div class="mb-3 col-md-6">
         <label for="tipoId" class="form-label">Tipo de documento</label>
         <select id="tipoId" class="form-select" formControlName="tipoId">
@@ -51,7 +51,7 @@
 
     <!-- SECCION VEHICULOS -->
 
-<div class="" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
+<div class="animate__animated animate__fadeInUp animate__delay-4s" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
     <div class="mb-3">
       <label for="marca" class="form-label">Marca</label>
       <ng-select

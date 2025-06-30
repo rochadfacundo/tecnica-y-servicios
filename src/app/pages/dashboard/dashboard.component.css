@@ -5,3 +5,12 @@
 .nav-link:hover {
   color: #ffc107 !important;
 }
+
+.fondo-dashboard {
+  min-height: 100%;
+  width: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+  url('../../..//assets/car.jpg') no-repeat center center;
+  background-size: cover;
+}
+

@@ -13,7 +13,7 @@ import { ESpinner } from '../../enums/ESpinner';
   styleUrl: './main-layout.component.css'
 })
 export class MainLayoutComponent {
-
+  rebote:ESpinner=ESpinner.Rebote;
   vaiven:ESpinner=ESpinner.Vaiven;
 
 }

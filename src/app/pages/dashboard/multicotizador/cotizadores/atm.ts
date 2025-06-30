@@ -1,6 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { MedioPago, Plan } from "../../../../enums/EnumAtm";
-import { Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
+import { CompaniaCotizada, Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CodigosPersoneria, getRandomNumber, getYesNo }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
@@ -109,14 +109,15 @@ export function parsearXML(res:string):CotizacionATM[]{
 }
 
 
-export function construirCotizacionATM(coberturas: any[]): Cotizacion {
+export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
   const buscarPremio = (codigo: string): number | undefined => {
     const cobertura = coberturas.find(c => c.codigo === codigo);
     return cobertura ? cobertura.premio : undefined;
   };
 
-  const cotizacion: Cotizacion = {
-    nroCotizacion: getRandomNumber(),
+
+
+  const companiaCotizada:CompaniaCotizada={
     compania: 'ATM',
     rc: buscarPremio('A0'),
     c: buscarPremio('C3'),
@@ -126,5 +127,5 @@ export function construirCotizacionATM(coberturas: any[]): Cotizacion {
     d3: buscarPremio('D3'),
   };
 
-  return cotizacion;
+  return companiaCotizada;
 }

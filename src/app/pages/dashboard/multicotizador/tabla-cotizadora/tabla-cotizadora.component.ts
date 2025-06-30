@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { Cotizacion } from '../../../../interfaces/cotizacion';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../services/auth.service';
+import { Productor } from '../../../../models/productor.model';
+import { getRandomNumber } from '../../../../utils/utils';
 
 @Component({
   selector: 'app-tabla-cotizadora',
@@ -11,16 +14,47 @@ import { Router } from '@angular/router';
   styleUrl: './tabla-cotizadora.component.css'
 })
 export class TablaCotizadoraComponent implements OnInit{
-  cotizaciones: Cotizacion[] = [];
+  cotizaciones!: Cotizacion;
+  user!:Productor |null;
 
   constructor(
   @Inject(Router) private router: Router,
+  @Inject(AuthService) private s_auth: AuthService,
   ){
 
   }
 
-  ngOnInit(): void {
-    const state = history.state as { cotizaciones: Cotizacion[] };
+  async guardarCotizaciones() {
+    if (!this.user || !this.cotizaciones)
+      return;
+
+    const yaExiste = this.user.cotizaciones?.some(c =>
+      c.nroCotizacion === this.cotizaciones.nroCotizacion
+    );
+
+    if (!yaExiste) {
+      this.user.cotizaciones = this.user.cotizaciones || [];
+      this.user.cotizaciones.push(this.cotizaciones);
+
+      try {
+        await this.s_auth.updateUser(this.user);
+        console.log('✅ Cotización guardada');
+      } catch (error) {
+        console.error('❌ Error al guardar cotización:', error);
+      }
+    } else {
+      console.log('⚠️ La cotización ya fue guardada');
+    }
+  }
+
+
+  async ngOnInit(): Promise<void> {
+    this.user = await this.s_auth.obtenerProductorLogueado();
+
+    if(!this.user)
+      return;
+
+    const state = history.state as { cotizaciones: Cotizacion };
       if (state?.cotizaciones) {
         this.cotizaciones = state.cotizaciones;
       } else {

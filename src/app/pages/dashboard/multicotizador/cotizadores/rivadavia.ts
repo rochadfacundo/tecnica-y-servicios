@@ -1,5 +1,5 @@
 
-import { Cotizacion } from "../../../../interfaces/cotizacion";
+import { CompaniaCotizada, Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPago } from "../../../../interfaces/cotizacionRivadavia";
 import { Productor } from "../../../../models/productor.model";
@@ -97,11 +97,8 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
 
 
 
-export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
-  if (!Array.isArray(planes)) {
-    console.error('❌ El parámetro "planes" no es un array:', planes);
-    return { compania: 'Rivadavia' };
-  }
+export function construirCotizacionRivadavia(planes: any[]): CompaniaCotizada {
+
 
   const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
     for (const plan of nombresPlanes) {
@@ -111,8 +108,7 @@ export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
     return undefined;
   };
 
-  return {
-    nroCotizacion: getRandomNumber(),
+  const companiaCotizada: CompaniaCotizada = {
     compania: 'Rivadavia',
     rc: buscarPremio('A'),
     c: buscarPremio('P'),
@@ -121,5 +117,9 @@ export function construirCotizacionRivadavia(planes: any[]): Cotizacion {
     d2: buscarPremio('D F3'),
     d3: buscarPremio('D F5'),
   };
+
+
+  return companiaCotizada;
+
 }
 

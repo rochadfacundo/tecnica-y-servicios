@@ -1,30 +1,33 @@
-<div class="acerca-de-container">
-  <div class="acerca-de-left">
+<div class="acerca-de-container d-flex flex-wrap">
+  <!-- Texto izquierda -->
+  <div class="acerca-de-left animate__animated animate__fadeInLeft animate__faster">
     <h2>Acerca de:</h2>
-    <p>
-      Somos una organización de Seguros especializada en brindar asesoramiento y apoyo al productor.
-    </p>
+    <p>Somos una organización de Seguros especializada en brindar asesoramiento y apoyo al productor.</p>
     <p>
       Creemos que el Asesor de Seguros es un eje fundamental del mercado asegurador, por ello nos enfocamos en brindar soluciones integrales y personalizadas.
       Junto al PAS desde el primer día, nos encontramos a disposición para acompañarte con las mejores herramientas, capacitaciones, desarrollo de tu cartera de clientes y relaciones comerciales con las compañías líderes en el mercado.
     </p>
     <p>Nuestra trayectoria de más de 30 años fue construida y se sostiene en nuestros valores de trabajo en equipo, conocimientos técnicos y servicio.</p>
     <p>Los tiempos cambian, pero nuestros valores no, hoy más que nunca estamos cerca.</p>
-
     <h3><strong>Somos Técnica y Servicios</strong></h3>
   </div>
-  <div class="acerca-de-right">
+
+  <!-- Imagen derecha -->
+  <div class="acerca-de-right animate__animated animate__fadeInRight animate__faster">
     <img src="../../../assets/acerca.png" alt="Imagen descriptiva" />
   </div>
 </div>
 
 <!-- Sección Conociendo al equipo -->
-<div class="conociendo-equipo">
-  <h2 class="text-center"> <strong>Conociendo al equipo</strong></h2>
+<div class="conociendo-equipo mt-5">
+  <h2 class="text-center animate__animated animate__fadeInDown animate__faster">
+    <strong>Conociendo al equipo</strong>
+  </h2>
+
   <div class="row">
     <div class="col-md-6" *ngFor="let employee of team">
-      <div class="card">
-        <div class="card-body">
+      <div class="card m-3" #animatedCard>
+        <div class="card-body text-center">
           <img [src]="employee.photo" alt="{{ employee.name }}" class="card-img-top rounded-circle mb-3" />
           <h5 class="card-title font-weight-bold">{{ employee.name }} {{ employee.surName }}</h5>
           <p class="card-text text-muted">{{ employee.role }}</p>
@@ -34,3 +37,4 @@
     </div>
   </div>
 </div>
+

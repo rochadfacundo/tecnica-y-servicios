@@ -15,7 +15,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let cot of cotizaciones">
+    <tr *ngFor="let cot of cotizaciones?.companiasCotizadas">
       <td>{{ cot.compania }}</td>
       <td>{{ cot.rc | currency:'ARS ' }}</td>
       <td>{{ cot.c | currency:'ARS ' }}</td>
@@ -26,3 +26,7 @@
     </tr>
   </tbody>
 </table>
+<div class="text-center mt-3">
+  <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>
+</div>
+

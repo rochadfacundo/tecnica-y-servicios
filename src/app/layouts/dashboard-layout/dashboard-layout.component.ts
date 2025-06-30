@@ -14,6 +14,7 @@ import { ESpinner } from '../../enums/ESpinner';
 })
 export class DashboardLayoutComponent {
   rebote:ESpinner=ESpinner.Rebote;
+  vaiven:ESpinner=ESpinner.Vaiven;
   constructor(private router:Router){
 
   }

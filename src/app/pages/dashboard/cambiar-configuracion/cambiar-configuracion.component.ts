@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { configCompanias } from '../../../utils/utils';
 import { Productor } from '../../../models/productor.model';
 import { AuthService } from '../../../services/auth.service';
@@ -22,113 +22,91 @@ export class CambiarConfiguracionComponent implements OnInit {
   productorLogueado: Productor | null = null;
   modoEdicion: boolean = false;
   datosOriginales!: Productor;
-  user: Productor|null=null;
+  user: Productor | null = null;
+  animar:boolean=false;
 
   private fb = inject(FormBuilder);
   private s_auth = inject(AuthService);
   private s_rus = inject(RioUruguayService);
 
   ngOnInit() {
+
     this.crearFormulario();
     this.cargarDatosUsuario();
+    setTimeout(() => {
+      this.animar = true;
+    }, 10);
   }
 
   crearFormulario() {
     this.form = this.fb.group({
-      nombre: [''],
-      apellido: [''],
-      email: [''],
+      nombre: new FormControl({ value: '', disabled: true }, Validators.required),
+      apellido: new FormControl({ value: '', disabled: true }, Validators.required),
+      email: new FormControl({ value: '', disabled: true }),
       path: [''],
       companias: this.fb.array([]),
     });
-
-    if (!this.modoEdicion) {
-      this.form.get('nombre')?.disable();
-      this.form.get('apellido')?.disable();
-      this.form.get('email')?.disable();
-    }
   }
 
   get companias(): FormArray {
     return this.form.get('companias') as FormArray;
   }
 
-  onFotoSeleccionada(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (input.files?.length) {
-    this.fotoSeleccionada = input.files[0];
+  alternarModoEdicion() {
+    this.modoEdicion = !this.modoEdicion;
 
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.fotoUrl = e.target.result;
-    };
-    reader.readAsDataURL(this.fotoSeleccionada);
+    const controlesPrincipales = ['nombre', 'apellido', 'email'];
+    controlesPrincipales.forEach(c => {
+      const control = this.form.get(c);
+      if (this.modoEdicion) control?.enable();
+      else control?.disable();
+    });
+
+    this.companias.controls.forEach(grupo => {
+      const grupoFG = grupo as FormGroup;
+      Object.keys(grupoFG.controls).forEach(nombreControl => {
+        const control = grupoFG.get(nombreControl);
+        if (this.modoEdicion) control?.enable();
+        else control?.disable();
+      });
+    });
   }
-}
 
+  onFotoSeleccionada(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      this.fotoSeleccionada = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.fotoUrl = e.target.result;
+      reader.readAsDataURL(this.fotoSeleccionada);
+    }
+  }
 
   actualizarCantidadCuotasRivadavia(index: number): void {
     const grupo = this.companias.at(index);
     const tipo = grupo.get('tipoFacturacion')?.value;
-
-    const mapa: Record<'CUATRIMESTRAL' | 'ANUAL' | 'SEMESTRAL' | 'TRIMESTRAL' | 'MENSUAL', string> = {
-      CUATRIMESTRAL: '4',
-      ANUAL: '12',
-      SEMESTRAL: '6',
-      TRIMESTRAL: '3',
-      MENSUAL: '1',
+    const mapa: Record<string, string> = {
+      CUATRIMESTRAL: '4', ANUAL: '12', SEMESTRAL: '6', TRIMESTRAL: '3', MENSUAL: '1',
     };
-
-    const cantidadCuotas = (tipo && tipo in mapa) ? mapa[tipo as keyof typeof mapa] : '';
-    grupo.get('cantidadCuotas')?.setValue(cantidadCuotas);
+    grupo.get('cantidadCuotas')?.setValue(mapa[tipo] || '');
   }
 
   actualizarCuotasMercantil(index: number): void {
     const grupo = this.companias.at(index);
-    const periodo = grupo.get('periodo')?.value;
-    grupo.get('cuotas')?.setValue(periodo);
+    grupo.get('cuotas')?.setValue(grupo.get('periodo')?.value);
   }
 
   actualizarCuotasRioUruguay(index: number): void {
     const grupo = this.companias.at(index);
     const vigenciaId = Number(grupo.get('vigenciaPolizaId')?.value);
-
-    const vigencias = this.configCompanias['RIO URUGUAY'].vigencias;
-    const seleccionada = vigencias.find((v: any) => v.id === vigenciaId);
-
-    if (seleccionada) {
-      grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
-    }
-  }
-
-  alternarModoEdicion() {
-    this.modoEdicion = !this.modoEdicion;
-
-    if (this.modoEdicion) {
-      this.form.get('nombre')?.enable();
-      this.form.get('apellido')?.enable();
-      this.form.get('email')?.enable()
-
-      this.companias.controls.forEach(grupo => {
-        grupo.get('nroProductor')?.enable();
-        grupo.get('claveProductor')?.enable();
-        grupo.get('tipoFacturacion')?.enable();
-        grupo.get('periodo')?.enable();
-        grupo.get('refacturaciones')?.enable();
-        grupo.get('vigenciaPolizaId')?.enable();
-        grupo.get('codigoVendedor')?.enable();
-        grupo.get('plan')?.enable();
-      });
-    } else {
-      this.companias.clear();
-      this.cargarDatosUsuario();
-    }
+    const seleccionada = this.configCompanias['RIO URUGUAY'].vigencias.find((v: any) => v.id === vigenciaId);
+    if (seleccionada) grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
   }
 
   async cargarDatosUsuario() {
     this.user = await this.s_auth.obtenerProductorLogueado();
     if (!this.user) return;
-;
+
     try {
       const vigencias = await this.s_rus.getVigencias().pipe().toPromise();
       this.configCompanias['RIO URUGUAY'].vigencias = vigencias;
@@ -151,61 +129,29 @@ export class CambiarConfiguracionComponent implements OnInit {
       this.user.companias.forEach(c => {
         const grupo = this.fb.group({
           compania: [c.compania],
-          nroProductor: [c.nroProductor],
-          claveProductor: [c.claveProductor],
-          refacturaciones: [c.refacturaciones ?? null],
-          periodo: [c.periodo],
-          cuotas: [{ value: c.cuotas, disabled: true }],
-          vigenciaPolizaId: [c.vigenciaPolizaId],
-          tipoFacturacion: [c.tipoFacturacion],
-          cantidadCuotas: [{ value: c.cantidadCuotas, disabled: true }],
-          plan: [c.plan],
-          codigoVendedor: [c.codigoVendedor],
+          nroProductor: new FormControl({ value: c.nroProductor, disabled: true }),
+          claveProductor: new FormControl({ value: c.claveProductor, disabled: true }),
+          refacturaciones: new FormControl({ value: c.refacturaciones ?? null, disabled: true }),
+          periodo: new FormControl({ value: c.periodo, disabled: true }),
+          cuotas: new FormControl({ value: c.cuotas, disabled: true }),
+          vigenciaPolizaId: new FormControl({ value: c.vigenciaPolizaId, disabled: true }),
+          tipoFacturacion: new FormControl({ value: c.tipoFacturacion, disabled: true }),
+          cantidadCuotas: new FormControl({ value: c.cantidadCuotas, disabled: true }),
+          plan: new FormControl({ value: c.plan, disabled: true }),
+          codigoVendedor: new FormControl({ value: c.codigoVendedor, disabled: true })
         });
 
         this.companias.push(grupo);
 
-        if (c.compania === 'RIVADAVIA') {
-          const tipo = c.tipoFacturacion;
-          const mapa: Record<'CUATRIMESTRAL' | 'ANUAL' | 'SEMESTRAL' | 'TRIMESTRAL' | 'MENSUAL', string> = {
-            CUATRIMESTRAL: '4',
-            ANUAL: '12',
-            SEMESTRAL: '6',
-            TRIMESTRAL: '3',
-            MENSUAL: '1'
-          };
-          const cantidadCuotas = (tipo && tipo in mapa) ? mapa[tipo as keyof typeof mapa] : '';
-          grupo.get('cantidadCuotas')?.setValue(cantidadCuotas);
-        }
-
-        if (c.compania === 'MERCANTIL ANDINA') {
-          grupo.get('cuotas')?.setValue(c.periodo);
-        }
-
-        if (c.compania === 'RIO URUGUAY') {
-          const vigencia = this.configCompanias['RIO URUGUAY'].vigencias.find((v: any) => v.id === Number(c.vigenciaPolizaId));
-          if (vigencia) {
-            grupo.get('cuotas')?.setValue(vigencia.cantidadMesesFacturacion);
-          }
-        }
-
-        if (!this.modoEdicion) {
-          grupo.get('nroProductor')?.disable();
-          grupo.get('claveProductor')?.disable();
-          grupo.get('tipoFacturacion')?.disable();
-          grupo.get('periodo')?.disable();
-          grupo.get('refacturaciones')?.disable();
-          grupo.get('vigenciaPolizaId')?.disable();
-          grupo.get('codigoVendedor')?.disable();
-          grupo.get('plan')?.disable();
-        }
+        if (c.compania === 'RIVADAVIA') this.actualizarCantidadCuotasRivadavia(this.companias.length - 1);
+        if (c.compania === 'MERCANTIL ANDINA') this.actualizarCuotasMercantil(this.companias.length - 1);
+        if (c.compania === 'RIO URUGUAY') this.actualizarCuotasRioUruguay(this.companias.length - 1);
       });
     }
   }
 
   async guardarCambios() {
     if (this.form.invalid) return;
-
     const productor: Productor = this.form.getRawValue();
     productor.uid = this.productorLogueado?.uid;
     productor.role = this.productorLogueado?.role;
@@ -228,7 +174,6 @@ export class CambiarConfiguracionComponent implements OnInit {
     try {
       await this.s_auth.updateUser(productor);
       this.s_auth.actualizarProductorLocal(productor);
-
       this.datosOriginales = JSON.parse(JSON.stringify(productor));
       this.modoEdicion = false;
       alert('✅ Cambios guardados correctamente');

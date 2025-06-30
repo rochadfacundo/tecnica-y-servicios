@@ -1,9 +1,30 @@
+<div class="fondo-dashboard d-flex justify-content-center align-items-center min-vh-100">
+  <div *ngIf="animar"
+       class="card bg-dark bg-opacity-75 text-white shadow-lg p-5 animate__animated animate__zoomIn"
+       style="max-width: 720px; border-radius: 1rem;">
 
-<div class="container-fluid p-4">
+    <h2 class="mb-4 fs-2 text-center">
+      <i class="bi bi-person-check-fill me-2"></i>¡Bienvenido al Portal de Productores!
+    </h2>
 
+    <p class="text-center fs-5 mb-4">
+      Desde aquí podés gestionar tus operaciones de forma rápida y eficiente:
+    </p>
 
-    <h2>Bienvenido al portal</h2>
-    <p>Selecciona una opción del menú.</p>
+    <ul class="list-group list-group-flush text-start fs-5">
+      <li class="list-group-item bg-transparent text-white border-0">
+        <i class="bi bi-card-checklist me-2"></i> Generar cotizaciones
+      </li>
+      <li class="list-group-item bg-transparent text-white border-0">
+        <i class="bi bi-gear-fill me-2"></i> Administrar tus datos y compañías
+      </li>
+      <li class="list-group-item bg-transparent text-white border-0">
+        <i class="bi bi-file-earmark-text-fill me-2"></i> Emitir pólizas y consultar historial
+      </li>
+    </ul>
 
-
+    <p class="text-muted text-center mt-5 fs-6">
+      Usá el menú lateral para comenzar
+    </p>
+  </div>
 </div>
