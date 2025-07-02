@@ -6,6 +6,7 @@ import { getRandomNumber, getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 import { Compania } from "../../../../interfaces/compania";
 import rawData from '../../../../../assets/vigenciasRUS.json';
+import { TipoVehiculo } from "../../../../enums/tipoVehiculos";
 
 type Vigencia = { id: number; descripcion: string; meses: number };
 type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
@@ -13,7 +14,7 @@ type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
 
 const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
-  export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor):CotizacionRioUruguay{
+  export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor,tipo:string):CotizacionRioUruguay{
        //si id es 1 son 6 meses
       // si id es 3 son 3
       // si id es 65 son 3
@@ -27,7 +28,15 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
         const AJUSTE_RUS=20;
         const configRus = productor.companias?.find(c => c.compania === 'RIO URUGUAY');
 
+        const esVehiculo=  tipo ==="VEHICULO";
 
+        const vigenciaPolizaId = esVehiculo
+        ? configRus?.vigenciaPolizaIdAuto
+        : configRus?.vigenciaPolizaIdMoto;
+
+      if (!vigenciaPolizaId) {
+        throw new Error(`⚠️ No se encontró vigenciaPolizaId para ${esVehiculo ? 'AUTO' : 'MOTO'} en el productor ${productor.email}`);
+      }
 
         const vehiculo: VehiculosRus[]=[{
             anio: String(form.anio),
@@ -58,7 +67,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
           controlSatelital: getYesNo(form.controlSatelital,yes,no),
           excluirVida: 'NO',
           aumentoRCPaisesLimitrofes: 'NO',
-          vigenciaPolizaId: calcularVigencia(codigoTipoInteres,productor) ,
+          vigenciaPolizaId: Number(vigenciaPolizaId),
         };
 
 
@@ -105,5 +114,6 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
       //no definidos por ahora
     };
 
+    console.log(companiaCotizada);
     return companiaCotizada;
   }

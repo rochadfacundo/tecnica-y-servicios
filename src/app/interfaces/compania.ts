@@ -12,7 +12,8 @@ export interface Compania{
    periodo?:number;
    cuotas?:number; //tambien rus
    //rus
-   vigenciaPolizaId?:string;
+   vigenciaPolizaIdAuto?:string;
+   vigenciaPolizaIdMoto?:string;
    //Riv
    cantidadCuotas?:string;
    tipoFacturacion?:string;

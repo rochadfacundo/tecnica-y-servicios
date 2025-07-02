@@ -89,18 +89,29 @@
 
           <ng-container *ngSwitchCase="'RIO URUGUAY'">
             <div class="mb-2">
-              <label>Vigencia</label>
-              <select class="form-select" formControlName="vigenciaPolizaId" (change)="actualizarCuotasRioUruguay(i)">
-                <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
-                  Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+              <label>Vigencia AUTO</label>
+              <select class="form-select" formControlName="vigenciaPolizaIdAuto" (change)="actualizarCuotasRioUruguay(i)">
+                <option *ngFor="let v of vigenciasRusAuto" [value]="v.id">
+                  VIGENCIA: {{ v.descripcion }} - FACTURACION {{ v.descripcionPeriodoFacturacion }}
                 </option>
               </select>
             </div>
+
+            <div class="mb-2">
+              <label>Vigencia MOTO</label>
+              <select class="form-select" formControlName="vigenciaPolizaIdMoto" (change)="actualizarCuotasRioUruguay(i)">
+                <option *ngFor="let v of vigenciasRusMoto" [value]="v.id">
+                  VIGENCIA: {{ v.descripcion }} - FACTURACION {{ v.descripcionPeriodoFacturacion }}
+                </option>
+              </select>
+            </div>
+
             <div class="mb-2">
               <label>Cuotas</label>
               <input type="number" class="form-control" formControlName="cuotas" />
             </div>
           </ng-container>
+
 
           <ng-container *ngSwitchCase="'ATM'">
             <div class="mb-2">

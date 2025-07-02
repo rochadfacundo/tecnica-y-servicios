@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CotizacionRioUruguay, VigenciaRus } from '../interfaces/cotizacionRioUruguay';
 import { environment } from '../../../environment';
+import { TipoVehiculo } from '../enums/tipoVehiculos';
 
 @Injectable({
   providedIn: 'root'
@@ -38,12 +39,15 @@ export class RioUruguayService {
     return this.http.get(`${this.apiBaseUrl}/versiones`, { params });
   }
 
-  getVigencias(): Observable<VigenciaRus[]> {
-    return this.http.get<VigenciaRus[]>(`${this.apiBaseUrl}/vigencias`);
+  getVigencias(tipo: TipoVehiculo): Observable<VigenciaRus[]> {
+    return this.http.get<VigenciaRus[]>(`${this.apiBaseUrl}/vigencias`, {
+      params: { tipo }
+    });
   }
 
   cotizar(data: CotizacionRioUruguay): Observable<any> {
     console.log("📩 Enviando a la API RUS: ", JSON.stringify(data, null, 2));
     return this.http.put(`${this.apiBaseUrl}/cotizaciones`, data);
   }
+
 }

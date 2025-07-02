@@ -6,6 +6,9 @@ import { Productor } from '../../../models/productor.model';
 import { AuthService } from '../../../services/auth.service';
 import { getStorage, uploadBytesResumable, getDownloadURL, ref } from '@angular/fire/storage';
 import { RioUruguayService } from '../../../services/rio-uruguay.service';
+import { TipoVehiculo } from '../../../enums/tipoVehiculos';
+import { firstValueFrom } from 'rxjs';
+import { VigenciaRus } from '../../../interfaces/cotizacionRioUruguay';
 
 @Component({
   selector: 'app-cambiar-configuracion',
@@ -24,6 +27,8 @@ export class CambiarConfiguracionComponent implements OnInit {
   datosOriginales!: Productor;
   user: Productor | null = null;
   animar:boolean=false;
+  vigenciasRusAuto: VigenciaRus[] = [];
+  vigenciasRusMoto: VigenciaRus[] = [];
 
   private fb = inject(FormBuilder);
   private s_auth = inject(AuthService);
@@ -98,21 +103,37 @@ export class CambiarConfiguracionComponent implements OnInit {
 
   actualizarCuotasRioUruguay(index: number): void {
     const grupo = this.companias.at(index);
-    const vigenciaId = Number(grupo.get('vigenciaPolizaId')?.value);
-    const seleccionada = this.configCompanias['RIO URUGUAY'].vigencias.find((v: any) => v.id === vigenciaId);
-    if (seleccionada) grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
+    const idAuto = Number(grupo.get('vigenciaPolizaIdAuto')?.value);
+    const idMoto = Number(grupo.get('vigenciaPolizaIdMoto')?.value);
+
+    const seleccionada =
+      this.vigenciasRusAuto.find(v => v.id === idAuto) ||
+      this.vigenciasRusMoto.find(v => v.id === idMoto);
+
+    if (seleccionada) {
+      grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
+    }
   }
 
   async cargarDatosUsuario() {
     this.user = await this.s_auth.obtenerProductorLogueado();
     if (!this.user) return;
 
+
+
     try {
-      const vigencias = await this.s_rus.getVigencias().pipe().toPromise();
-      this.configCompanias['RIO URUGUAY'].vigencias = vigencias;
+      const [auto, moto] = await Promise.all([
+        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.VEHICULO)),
+        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.MOTOVEHICULO)),
+      ]);
+      this.vigenciasRusAuto = auto;
+      this.vigenciasRusMoto = moto;
     } catch (error) {
-      console.error('❌ Error al obtener vigencias de Río Uruguay', error);
+      console.error('❌ Error al obtener vigencias de RUS:', error);
     }
+
+
+
 
     this.productorLogueado = this.user;
     this.datosOriginales = JSON.parse(JSON.stringify(this.user));
@@ -134,7 +155,8 @@ export class CambiarConfiguracionComponent implements OnInit {
           refacturaciones: new FormControl({ value: c.refacturaciones ?? null, disabled: true }),
           periodo: new FormControl({ value: c.periodo, disabled: true }),
           cuotas: new FormControl({ value: c.cuotas, disabled: true }),
-          vigenciaPolizaId: new FormControl({ value: c.vigenciaPolizaId, disabled: true }),
+          vigenciaPolizaIdAuto: new FormControl({ value: c.vigenciaPolizaIdAuto, disabled: true }),
+          vigenciaPolizaIdMoto: new FormControl({ value: c.vigenciaPolizaIdMoto, disabled: true }),
           tipoFacturacion: new FormControl({ value: c.tipoFacturacion, disabled: true }),
           cantidadCuotas: new FormControl({ value: c.cantidadCuotas, disabled: true }),
           plan: new FormControl({ value: c.plan, disabled: true }),

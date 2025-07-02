@@ -61,19 +61,26 @@
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'RIO URUGUAY'">
-                  <select class="form-select mb-2" formControlName="vigenciaPolizaId" (change)="actualizarCuotasRioUruguay(i)">
-                    <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
-                      Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
-                    </option>
-                  </select>
-                  <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
-                </ng-container>
-
-                <ng-container *ngSwitchCase="'ATM'">
-                  <input type="text" class="form-control mb-2" formControlName="codigoVendedor" placeholder="Código Vendedor" />
-                  <select class="form-select mb-2" formControlName="plan">
-                    <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
-                  </select>
+                  <!-- Vigencia para AUTO -->
+                  <div class="mb-2">
+                    <label for="vigenciaAuto">Vigencia/Facturacion para autos:</label>
+                    <select id="vigenciaAuto" class="form-select" formControlName="vigenciaPolizaIdAuto" (change)="actualizarCuotasRioUruguay(i)">
+                      <option [ngValue]="null" disabled selected>Seleccionar vigencia AUTO</option>
+                      <option *ngFor="let v of vigenciasRusAuto" [value]="v.id">
+                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN {{ v.descripcionPeriodoFacturacion }}
+                      </option>
+                    </select>
+                  </div>
+                  <!-- Vigencia para MOTO -->
+                  <div class="mb-2">
+                    <label for="vigenciaMoto">Vigencia/Facturacion para motos:</label>
+                    <select id="vigenciaMoto" class="form-select" formControlName="vigenciaPolizaIdMoto" (change)="actualizarCuotasRioUruguay(i)">
+                      <option [ngValue]="null" disabled selected>Seleccionar vigencia MOTO</option>
+                      <option *ngFor="let v of vigenciasRusMoto" [value]="v.id">
+                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN {{ v.descripcionPeriodoFacturacion }}
+                      </option>
+                    </select>
+                  </div>
                 </ng-container>
 
               </ng-container>
@@ -96,10 +103,22 @@
                 <ng-container [ngSwitch]="compania.get('compania')?.value">
 
                   <ng-container *ngSwitchCase="'RIVADAVIA'">
-                    <select class="form-select mb-2" formControlName="tipoFacturacion" (change)="actualizarCantidadCuotasRivadavia(i)">
-                      <option *ngFor="let tipo of configCompanias['RIVADAVIA'].tiposFacturacion" [value]="tipo">{{ tipo }}</option>
-                    </select>
-                    <input type="text" class="form-control mb-2" formControlName="cantidadCuotas" placeholder="Cantidad de Cuotas" />
+
+                    <div class="mb-2">
+                      <label for="tipoFacturacionRiva">Tipo de facturación</label>
+                      <select id="tipoFacturacionRiva" class="form-select" formControlName="tipoFacturacion" (change)="actualizarCantidadCuotasRivadavia(i)">
+                        <option [value]="null" disabled selected>Seleccionar tipo de facturación</option>
+                        <option *ngFor="let tipo of configCompanias['RIVADAVIA'].tiposFacturacion" [value]="tipo">
+                          {{ tipo }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="mb-2">
+                      <label for="cuotasRiva">Cantidad de cuotas</label>
+                      <input id="cuotasRiva" type="text" class="form-control" formControlName="cantidadCuotas" placeholder="Cantidad de Cuotas" />
+                    </div>
+
                   </ng-container>
 
                   <ng-container *ngSwitchCase="'MERCANTIL ANDINA'">

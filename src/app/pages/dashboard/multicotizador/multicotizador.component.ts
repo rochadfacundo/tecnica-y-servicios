@@ -421,7 +421,7 @@ export class MulticotizadorComponent implements OnInit {
         console.error('❌ No hay productor logueado');
         return;
       }
-      const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog);
+      const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog,this.getTipoVehiculo());
 
       try {
         const observable$ = this.s_rus.cotizar(cotizacionData);
@@ -429,7 +429,7 @@ export class MulticotizadorComponent implements OnInit {
         console.log('✅ Cotización exitosa RUS:', respuesta.dtoList);
         const cotizacionesRus = respuesta.dtoList;
         const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
-
+        this.cotizaciones.companiasCotizadas.push(cotizacionRUS);
       } catch (error:any) {
 
         console.error("❌ Error en cotizacion RUS:",
@@ -583,7 +583,7 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      () => this.cotizarATM(),
+      //() => this.cotizarATM(),
       //() => this.cotizarFederacion(),
     ];
 

@@ -30,20 +30,20 @@
             <i class="fa fa-calculator"></i> Cotizar
           </a>
 
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             href="#" (click)="closeMenu()">
             <i class="fa fa-file-signature"></i> Emitir pólizas
           </a>
 
           <a *ngIf="productor.role === 'Administrador'"
-            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="/dashboard/gestionar-usuarios" routerLinkActive="router-link-active"
             (click)="closeMenu()">
             <i class="fa fa-user-cog"></i> Administrar PAS
           </a>
 
           <a *ngIf="productor.role === 'Productor'"
-            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+            class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="/dashboard/cambiar-configuracion" routerLinkActive="router-link-active"
             (click)="closeMenu()">
             <i class="fa fa-user-cog"></i> Configuración
@@ -52,7 +52,7 @@
 
         <!-- Logout -->
         <div class="nav navbar-nav ms-auto align-items-center pe-3 text-white">
-          <a class="m-2 p-3 text-center no-focus text-danger animate__animated animate__fadeInDown animate__delay-5s animate__faster fastest"
+          <a class="m-2 p-3 text-center no-focus text-danger animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
              href="#" (click)="logout()">
             <i class="bi bi-box-arrow-right fs-1"></i>
           </a>
@@ -62,7 +62,7 @@
       <!-- Menú visitante -->
       <ng-template #visitante>
         <div class="navbar-nav mx-auto">
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-1s animate__faster fastest"
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="home" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-home"></i> Home
           </a>
@@ -72,12 +72,12 @@
             <i class="fa fa-user"></i> Acerca de
           </a>
 
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="servicios" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-file-text"></i> Servicios
           </a>
 
-          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-4s animate__faster fastest"
+          <a class="borde m-2 p-3 text-decoration-none text-center no-focus animate__animated animate__fadeInDown animate__delay-2s animate__faster fastest"
             routerLink="contacto" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="fa fa-envelope"></i> Contacto
           </a>
@@ -85,7 +85,7 @@
 
         <!-- Botón login -->
         <div class="nav navbar-nav ms-auto">
-          <a class="m-2 p-3 text-center no-focus animate__animated animate__fadeInDown animate__delay-5s animate__faster fastest"
+          <a class="m-2 p-3 text-center no-focus animate__animated animate__fadeInDown animate__delay-3s animate__faster fastest"
             routerLink="login" routerLinkActive="router-link-active" (click)="closeMenu()">
             <i class="bi bi-person-circle fs-1"></i>
           </a>

@@ -9,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { Productor } from '../../../models/productor.model';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
 import {Role} from '../../../enums/role';
+import { TipoVehiculo } from '../../../enums/tipoVehiculos';
 
 @Component({
   selector: 'app-gestionar-usuarios',
@@ -25,6 +26,8 @@ export class GestionarUsuariosComponent implements OnInit {
   fotoSeleccionada: File | null = null;
   public configCompanias = configCompanias;
   roles:string[]=[];
+  vigenciasRusAuto: any[] = [];
+  vigenciasRusMoto: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -70,7 +73,8 @@ export class GestionarUsuariosComponent implements OnInit {
       refacturaciones: [''], // Federación
       periodo: [''],         // Mercantil
       cuotas: [{ value: '', disabled: true }],   // Mercantil / Río Uruguay
-      vigenciaPolizaId: [''],// Río Uruguay
+      vigenciaPolizaIdAuto: [''], // Río Uruguay
+      vigenciaPolizaIdMoto: [''], // Río Uruguay
       tipoFacturacion: [''],// Rivadavia
       cantidadCuotas: [''], // Rivadavia
       plan: [''],            // ATM
@@ -81,14 +85,15 @@ export class GestionarUsuariosComponent implements OnInit {
 
   actualizarCuotasRioUruguay(index: number): void {
     const grupo = this.companias.at(index);
-    const vigenciaId = Number(grupo.get('vigenciaPolizaId')?.value); // ⚠️ importante
+    const idAuto = Number(grupo.get('vigenciaPolizaIdAuto')?.value);
+    const idMoto = Number(grupo.get('vigenciaPolizaIdMoto')?.value);
 
-    const vigencias = this.configCompanias['RIO URUGUAY'].vigencias;
-    const seleccionada = vigencias.find((v: any) => v.id === vigenciaId);
+    const seleccionada =
+      this.vigenciasRusAuto.find(v => v.id === idAuto) ||
+      this.vigenciasRusMoto.find(v => v.id === idMoto);
 
     if (seleccionada) {
-      const control = grupo.get('cuotas');
-      control?.setValue(seleccionada.cantidadMesesFacturacion);;
+      grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
     }
   }
 
@@ -99,9 +104,15 @@ export class GestionarUsuariosComponent implements OnInit {
 
     if (compania === 'RIO URUGUAY') {
       try {
-        const response = await firstValueFrom(this.s_rus.getVigencias());
-        console.log(response);
-        this.configCompanias['RIO URUGUAY'].vigencias = response;
+        const [autos, motos] = await Promise.all([
+          firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.VEHICULO)),
+          firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.MOTOVEHICULO)),
+        ]);
+        console.log(autos);
+        console.log(motos);
+        this.vigenciasRusAuto = autos;
+        this.vigenciasRusMoto = motos;
+        this.configCompanias['RIO URUGUAY'].vigencias = [...autos, ...motos]; // opcional
       } catch (error) {
         console.error('❌ Error al cargar vigencias de Río Uruguay', error);
       }
@@ -118,6 +129,7 @@ export class GestionarUsuariosComponent implements OnInit {
       codigoVendedor: ''
     });
   }
+
 
   guardar() {}
 
@@ -209,7 +221,8 @@ export class GestionarUsuariosComponent implements OnInit {
           refacturaciones: [c.refacturaciones ?? null],
           periodo: [c.periodo],
           cuotas: [c.cuotas],
-          vigenciaPolizaId: [c.vigenciaPolizaId],
+          vigenciaPolizaIdAuto: [c.vigenciaPolizaIdAuto],
+          vigenciaPolizaIdMoto: [c.vigenciaPolizaIdMoto],
           tipoFacturacion: [c.tipoFacturacion],
           cantidadCuotas: [c.cantidadCuotas],
           plan: [c.plan],
