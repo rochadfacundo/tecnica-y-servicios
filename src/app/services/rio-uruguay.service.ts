@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CotizacionRioUruguay, VigenciaRus } from '../interfaces/cotizacionRioUruguay';
-import { environment } from '../../../environment';
 import { TipoVehiculo } from '../enums/tipoVehiculos';
 
 @Injectable({
@@ -10,7 +9,6 @@ import { TipoVehiculo } from '../enums/tipoVehiculos';
 })
 export class RioUruguayService {
   private apiBaseUrl = 'https://api-5cekuonbbq-uc.a.run.app/RUS';
-  //private apiBaseUrl = environment.URL_DEV+'/RUS';
 
   constructor(private http: HttpClient) {}
 

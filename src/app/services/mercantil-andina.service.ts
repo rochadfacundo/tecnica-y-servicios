@@ -2,14 +2,12 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { CotizacionMercantil } from '../interfaces/cotizacionMercantil';
-import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MercantilAndinaService {
   private API_URL = "https://api-5cekuonbbq-uc.a.run.app/mercantil";
-  //private API_URL = environment.URL_DEV+'/mercantil';
 
   constructor(private http: HttpClient) {}
 

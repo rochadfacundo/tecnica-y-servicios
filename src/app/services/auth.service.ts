@@ -3,9 +3,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, User } from '@angular/fire/auth';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { Productor } from '../models/productor.model';
-import { Compania } from '../interfaces/compania';
-import { Role } from '../enums/role';
-import { environment} from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
