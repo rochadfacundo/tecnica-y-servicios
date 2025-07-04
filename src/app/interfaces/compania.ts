@@ -10,10 +10,12 @@ export interface Compania{
    refacturaciones?:number;
    //MA
    periodo?:number;
-   cuotas?:number; //tambien rus
+   cuotas?:number;
    //rus
    vigenciaPolizaIdAuto?:string;
    vigenciaPolizaIdMoto?:string;
+   cuotasAuto?:number;
+   cuotasMoto?:number;
    //Riv
    cantidadCuotas?:string;
    tipoFacturacion?:string;

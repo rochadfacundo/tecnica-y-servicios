@@ -34,8 +34,12 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
         ? configRus?.vigenciaPolizaIdAuto
         : configRus?.vigenciaPolizaIdMoto;
 
-      if (!vigenciaPolizaId) {
-        throw new Error(`⚠️ No se encontró vigenciaPolizaId para ${esVehiculo ? 'AUTO' : 'MOTO'} en el productor ${productor.email}`);
+        const cuotas=  esVehiculo
+        ? configRus?.cuotasAuto
+        : configRus?.cuotasMoto;
+
+      if (!vigenciaPolizaId || !cuotas) {
+        throw new Error(`⚠️ No se encontró vigenciaPolizaId o cuota para ${esVehiculo ? 'AUTO' : 'MOTO'} en el productor ${productor.email}`);
       }
 
         const vehiculo: VehiculosRus[]=[{
@@ -54,7 +58,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
           codigoProductor: Number(configRus?.nroProductor),
           codigoSolicitante: Number(configRus?.claveProductor),
           codigoTipoInteres: String(codigoTipoInteres),
-          cuotas: configRus?.cuotas,
+          cuotas: cuotas,
           ajusteAutomatico:AJUSTE_RUS,
           condicionFiscal: CondicionFiscalRus.CF,
           //tipoVigencia: form.tipoVigencia.opcion,

@@ -422,7 +422,7 @@ export class MulticotizadorComponent implements OnInit {
         return;
       }
       const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog,this.getTipoVehiculo());
-
+      console.log('entramo a rus?');
       try {
         const observable$ = this.s_rus.cotizar(cotizacionData);
         const respuesta = await firstValueFrom(observable$);
