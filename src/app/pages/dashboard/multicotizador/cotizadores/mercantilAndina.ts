@@ -31,6 +31,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
         periodo: configMA?.periodo,
         iva: iva.consumidorFinal,
         //   comision: nose,
+
         //   bonificacion: nose,
         ajuste_suma:AJUSTE, //10,25,50 clausula ajuste?
         desglose:true     //desglose de montos totales y cuotas

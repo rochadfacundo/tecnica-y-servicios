@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, User } from '@angular/fire/auth';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { Productor } from '../models/productor.model';
+import { updatePassword,getIdToken } from "@angular/fire/auth";
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ export class AuthService {
 
   private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/users';
   //private apiUrl = environment.URL_DEV+'/users';
-
+  private http = inject(HttpClient);
 
   private _auth = inject(Auth);
   private firestore = inject(Firestore);
@@ -30,6 +32,23 @@ export class AuthService {
       this.isAuthenticatedSubject.next(!!user);
     });
 
+  }
+
+  async getToken(): Promise<string | null> {
+    const user = this._auth.currentUser;
+
+    if (!user) {
+      console.warn('⚠️ No hay usuario logueado para obtener el token');
+      return null;
+    }
+
+    try {
+      const token = await getIdToken(user);
+      return token;
+    } catch (error) {
+      console.error('❌ Error al obtener token:', error);
+      return null;
+    }
   }
 
   async obtenerProductorLogueado(): Promise<Productor | null> {
@@ -58,6 +77,8 @@ actualizarProductorLocal(productor: Productor) {
   this.productorActual = productor;
   this.productorSubject.next(productor);
 }
+
+
 
 
   get authState$(): Observable<any> {
@@ -106,12 +127,18 @@ actualizarProductorLocal(productor: Productor) {
   }
 
 
+  updatePassword(uid: string, newPassword: string) {
+    return this.http.post(`${this.apiUrl}/reset-password`, { uid, newPassword });
+  }
+
   async updateUser(productor: Productor) {
     try {
+      const token = await this.getToken();
       const response = await fetch(`${this.apiUrl}/${productor.uid}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           nombre: productor.nombre,

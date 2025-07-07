@@ -3,14 +3,47 @@
   <div class="row">
     <!-- 📝 Formulario (Izquierda) -->
     <div class="col-md-6">
-      <form [formGroup]="form" (ngSubmit)="guardar()">
+      <form [formGroup]="form" (ngSubmit)="confirmarProductor()">
         <h3>Alta de Usuario Productor</h3>
+
+        <div *ngIf="form.get('path')?.value" class="card mb-4 p-3 shadow-sm bg-light text-center">
+          <div class="d-flex flex-column align-items-center">
+            <img
+              [src]="form.get('path')?.value"
+              alt="Foto de perfil"
+              class="rounded-circle border mb-2"
+              width="120"
+              height="120"
+              style="object-fit: cover;"
+            />
+            <div class="fw-bold">{{ form.get('nombre')?.value }} {{ form.get('apellido')?.value }}</div>
+            <small class="text-muted">{{ form.get('email')?.value }}</small>
+          </div>
+        </div>
+
 
         <ng-container *ngIf="!agregandoCompania">
           <div class="mb-3"><input formControlName="nombre" type="text" class="form-control" placeholder="Nombre" /></div>
           <div class="mb-3"><input formControlName="apellido" type="text" class="form-control" placeholder="Apellido" /></div>
           <div class="mb-3"><input formControlName="email" type="email" class="form-control" placeholder="Email" /></div>
-          <div class="mb-3"><input formControlName="password" type="password" class="form-control" placeholder="Contraseña" /></div>
+
+          <div class="mb-3">
+            <ng-container *ngIf="showPassword; else botonReset">
+              <input
+                formControlName="password"
+                type="password"
+                class="form-control"
+                placeholder="Nueva contraseña"
+              />
+            </ng-container>
+            <ng-template #botonReset>
+              <button type="button" class="btn btn-outline-danger" (click)="activarCampoPassword()">
+                🔐 Restablecer contraseña
+              </button>
+            </ng-template>
+          </div>
+
+
           <div class="mb-3">
             <select class="form-select" formControlName="role">
               <option [ngValue]="null" disabled selected>Seleccionar compañía</option>
@@ -61,27 +94,27 @@
                 </ng-container>
 
                 <ng-container *ngSwitchCase="'RIO URUGUAY'">
-                  <!-- Vigencia para AUTO -->
                   <div class="mb-2">
-                    <label for="vigenciaAuto">Vigencia/Facturacion para autos:</label>
-                    <select id="vigenciaAuto" class="form-select" formControlName="vigenciaPolizaIdAuto" (change)="actualizarCuotasRioUruguay(i)">
-                      <option [ngValue]="null" disabled selected>Seleccionar vigencia AUTO</option>
+                    <label for="vigenciaAuto">Vigencia/Facturación AUTO</label>
+                    <select class="form-select" formControlName="vigenciaPolizaIdAuto" (change)="actualizarCuotasRioUruguay(i)">
                       <option *ngFor="let v of vigenciasRusAuto" [value]="v.id">
-                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN {{ v.descripcionPeriodoFacturacion }}
+                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN: {{ v.descripcionPeriodoFacturacion }}
                       </option>
                     </select>
                   </div>
-                  <!-- Vigencia para MOTO -->
+                  <input type="number" class="form-control mb-2" formControlName="cuotasAuto" placeholder="Cuotas AUTO" />
+
                   <div class="mb-2">
-                    <label for="vigenciaMoto">Vigencia/Facturacion para motos:</label>
-                    <select id="vigenciaMoto" class="form-select" formControlName="vigenciaPolizaIdMoto" (change)="actualizarCuotasRioUruguay(i)">
-                      <option [ngValue]="null" disabled selected>Seleccionar vigencia MOTO</option>
+                    <label for="vigenciaMoto">Vigencia/Facturación MOTO</label>
+                    <select class="form-select" formControlName="vigenciaPolizaIdMoto" (change)="actualizarCuotasRioUruguay(i)">
                       <option *ngFor="let v of vigenciasRusMoto" [value]="v.id">
-                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN {{ v.descripcionPeriodoFacturacion }}
+                        VIGENCIA: {{ v.descripcion }} - FACTURACIÓN: {{ v.descripcionPeriodoFacturacion }}
                       </option>
                     </select>
                   </div>
+                  <input type="number" class="form-control mb-2" formControlName="cuotasMoto" placeholder="Cuotas MOTO" />
                 </ng-container>
+
 
               </ng-container>
 
@@ -135,28 +168,65 @@
                   </ng-container>
 
                   <ng-container *ngSwitchCase="'RIO URUGUAY'">
-                    <select class="form-select mb-2" formControlName="vigenciaPolizaId">
-                      <option *ngFor="let v of configCompanias['RIO URUGUAY'].vigencias" [value]="v.id">
-                        Vigencia: {{ v.descripcion }} - Facturación: {{ v.descripcionPeriodoFacturacion }}
+                    <ng-container *ngIf="vigenciasRusAuto.length && vigenciasRusMoto.length">
+                      <!-- vigencia y cuotas AUTO -->
+                      <div class="mb-2">
+                        <label>Vigencia/Facturación AUTO</label>
+                        <select class="form-select" formControlName="vigenciaPolizaIdAuto" (change)="actualizarCuotasRioUruguay(i)">
+                          <option *ngFor="let v of vigenciasRusAuto" [value]="v.id">
+                            VIGENCIA: {{ v.descripcion }} - FACTURACIÓN: {{ v.descripcionPeriodoFacturacion }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- vigencia y cuotas MOTO -->
+                      <div class="mb-2">
+                        <label>Vigencia/Facturación MOTO</label>
+                        <select class="form-select" formControlName="vigenciaPolizaIdMoto" (change)="actualizarCuotasRioUruguay(i)">
+                          <option *ngFor="let v of vigenciasRusMoto" [value]="v.id">
+                            VIGENCIA: {{ v.descripcion }} - FACTURACIÓN: {{ v.descripcionPeriodoFacturacion }}
+                          </option>
+                        </select>
+                      </div>
+                    </ng-container>
+
+                    <!-- Spinner o mensaje mientras se cargan -->
+                    <ng-container *ngIf="!vigenciasRusAuto.length || !vigenciasRusMoto.length">
+                      <p>Cargando vigencias de Río Uruguay...</p>
+                    </ng-container>
+
+
+                  </ng-container>
+
+
+
+
+                <!--ATM -->
+                <ng-container *ngSwitchCase="'ATM'">
+                  <div class="mb-2">
+                    <label for="planATM">Plan</label>
+                    <select id="planATM" class="form-select" formControlName="plan">
+                      <option [value]="null" disabled selected>Seleccionar plan</option>
+                      <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">
+                        {{ p.descripcion }} ({{ p.formaPago }})
                       </option>
                     </select>
-                    <input type="number" class="form-control mb-2" formControlName="cuotas" placeholder="Cuotas" />
-                  </ng-container>
+                  </div>
+                </ng-container>
 
-                  <ng-container *ngSwitchCase="'ATM'">
-                    <input type="text" class="form-control mb-2" formControlName="codigoVendedor" placeholder="Código Vendedor" />
-                    <select class="form-select mb-2" formControlName="plan">
-                      <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
-                    </select>
-                  </ng-container>
 
                 </ng-container>
+
+
+
 
                 <div class="d-flex gap-2">
                   <button type="button" class="btn btn-success mt-2" (click)="confirmarEdicionCompania()">Confirmar</button>
                   <button type="button" class="btn btn-secondary mt-2" (click)="cancelarEdicionCompania()">Cancelar</button>
                 </div>
               </ng-container>
+
+
 
               <!-- Vista solo lectura -->
               <ng-template #vistaResumen>
@@ -192,17 +262,21 @@
                   </li>
 
                   <!-- Río Uruguay -->
-                  <li *ngIf="compania.get('vigenciaPolizaId')?.value">
-                    <strong>Vigencia:</strong> {{ compania.get('vigenciaPolizaId')?.value }}
+                  <li *ngIf="vigenciasRusCargadas && compania.get('vigenciaPolizaIdAuto')?.value">
+                    <strong>Vigencia Auto:</strong> {{ getDescripcionVigenciaRusAuto(compania.get('vigenciaPolizaIdAuto')?.value) }}
+                  </li>
+                  <li *ngIf="vigenciasRusCargadas && compania.get('vigenciaPolizaIdMoto')?.value">
+                    <strong>Vigencia Moto:</strong> {{ getDescripcionVigenciaRusMoto(compania.get('vigenciaPolizaIdMoto')?.value) }}
                   </li>
 
                   <!-- ATM -->
                   <li *ngIf="compania.get('plan')?.value">
-                    <strong>Plan ATM:</strong> {{ getDescripcionPlanATM(compania.get('plan')?.value) }}
+                    <strong>Plan:</strong> {{ getDescripcionPlanATM(compania.get('plan')?.value) }}
                   </li>
-                  <li *ngIf="compania.get('codigoVendedor')?.value">
-                    <strong>Cod. Vendedor ATM:</strong> {{ compania.get('codigoVendedor')?.value }}
-                  </li>
+
+
+
+
                 </ul>
 
                 <div class="d-flex gap-2">
@@ -229,7 +303,7 @@
             </div>
 
             <button *ngIf="!agregandoCompania && editandoCompaniaIndex === null"
-              type="submit" class="btn btn-primary w-auto" (click)="confirmarProductor()">
+              type="submit" class="btn btn-primary w-auto">
               Confirmar productor
             </button>
           </div>

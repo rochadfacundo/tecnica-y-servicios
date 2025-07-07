@@ -9,6 +9,8 @@ import { RioUruguayService } from '../../../services/rio-uruguay.service';
 import { TipoVehiculo } from '../../../enums/tipoVehiculos';
 import { firstValueFrom } from 'rxjs';
 import { VigenciaRus } from '../../../interfaces/cotizacionRioUruguay';
+import { SpinnerService } from '../../../services/spinner.service';
+import { ESpinner } from '../../../enums/ESpinner';
 
 @Component({
   selector: 'app-cambiar-configuracion',
@@ -33,6 +35,7 @@ export class CambiarConfiguracionComponent implements OnInit {
   private fb = inject(FormBuilder);
   private s_auth = inject(AuthService);
   private s_rus = inject(RioUruguayService);
+  private s_spinner= inject(SpinnerService);
 
   ngOnInit() {
 
@@ -103,15 +106,19 @@ export class CambiarConfiguracionComponent implements OnInit {
 
   actualizarCuotasRioUruguay(index: number): void {
     const grupo = this.companias.at(index);
+
     const idAuto = Number(grupo.get('vigenciaPolizaIdAuto')?.value);
     const idMoto = Number(grupo.get('vigenciaPolizaIdMoto')?.value);
 
-    const seleccionada =
-      this.vigenciasRusAuto.find(v => v.id === idAuto) ||
-      this.vigenciasRusMoto.find(v => v.id === idMoto);
+    const vigenciaAuto = this.vigenciasRusAuto.find(v => v.id === idAuto);
+    const vigenciaMoto = this.vigenciasRusMoto.find(v => v.id === idMoto);
 
-    if (seleccionada) {
-      grupo.get('cuotas')?.setValue(seleccionada.cantidadMesesFacturacion);
+    if (vigenciaAuto) {
+      grupo.get('cuotasAuto')?.setValue(vigenciaAuto.cantidadMesesFacturacion);
+    }
+
+    if (vigenciaMoto) {
+      grupo.get('cuotasMoto')?.setValue(vigenciaMoto.cantidadMesesFacturacion);
     }
   }
 
@@ -155,6 +162,8 @@ export class CambiarConfiguracionComponent implements OnInit {
           refacturaciones: new FormControl({ value: c.refacturaciones ?? null, disabled: true }),
           periodo: new FormControl({ value: c.periodo, disabled: true }),
           cuotas: new FormControl({ value: c.cuotas, disabled: true }),
+          cuotasAuto: new FormControl({ value: c.cuotasMoto, disabled: true }),
+          cuotasMoto: new FormControl({ value: c.cuotasMoto, disabled: true }),
           vigenciaPolizaIdAuto: new FormControl({ value: c.vigenciaPolizaIdAuto, disabled: true }),
           vigenciaPolizaIdMoto: new FormControl({ value: c.vigenciaPolizaIdMoto, disabled: true }),
           tipoFacturacion: new FormControl({ value: c.tipoFacturacion, disabled: true }),
@@ -179,6 +188,7 @@ export class CambiarConfiguracionComponent implements OnInit {
     productor.role = this.productorLogueado?.role;
     productor.cotizaciones = this.productorLogueado?.cotizaciones;
 
+    this.s_spinner.show(ESpinner.Rebote);
     if (this.fotoSeleccionada && productor.email) {
       try {
         const storage = getStorage();
@@ -198,10 +208,12 @@ export class CambiarConfiguracionComponent implements OnInit {
       this.s_auth.actualizarProductorLocal(productor);
       this.datosOriginales = JSON.parse(JSON.stringify(productor));
       this.modoEdicion = false;
-      alert('✅ Cambios guardados correctamente');
+
     } catch (err) {
       console.error(err);
       alert('❌ Error al guardar cambios');
+    }finally{
+      this.s_spinner.hide(ESpinner.Rebote);
     }
   }
 }

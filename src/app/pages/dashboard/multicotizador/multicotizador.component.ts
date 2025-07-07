@@ -34,6 +34,7 @@ import { Router } from '@angular/router';
 import { ESpinner } from '../../../enums/ESpinner';
 import { SpinnerService } from '../../../services/spinner.service';
 import { firstValueFrom } from 'rxjs';
+import { DignaService } from '../../../services/digna.service';
 
 @Component({
   selector: 'app-multicotizador',
@@ -93,6 +94,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(AuthService) private s_auth: AuthService,
     @Inject(Router) private router: Router,
     @Inject(SpinnerService) private s_spinner: SpinnerService,
+    @Inject(DignaService) private s_digna: DignaService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -106,7 +108,6 @@ export class MulticotizadorComponent implements OnInit {
       this.animar = true;
     }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
-
   }
   public readonly opcionesSiNo = OPCIONES_SI_NO;
 
