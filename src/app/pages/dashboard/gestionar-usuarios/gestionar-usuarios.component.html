@@ -67,8 +67,8 @@
               </div>
 
               <!-- Campos comunes -->
-              <input type="text" class="form-control mb-2" formControlName="nroProductor" placeholder="Nº Productor" />
-              <input type="text" class="form-control mb-2" formControlName="claveProductor" placeholder="Clave Productor" />
+              <input type="text" class="form-control mb-2" formControlName="nroProductor" placeholder="Nº Productor/Usuario" />
+              <input type="text" class="form-control mb-2" formControlName="claveProductor" placeholder="Clave Productor/Password" />
 
               <!-- Campos específicos por compañía -->
               <ng-container [ngSwitch]="companias.at(i).get('compania')?.value">

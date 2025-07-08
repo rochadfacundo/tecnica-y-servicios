@@ -554,8 +554,8 @@ export class MulticotizadorComponent implements OnInit {
     );
 
     try {
-      const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm));
-
+      const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm,this.productorLog));
+      console.log(respuesta);
       console.log('✅ Cotización exitosa ATM');
       const resultado = parsearXML(respuesta);
       const cotizacionATM = construirCotizacionATM(resultado);
@@ -564,6 +564,13 @@ export class MulticotizadorComponent implements OnInit {
       console.error('❌ Error en cotización ATM:', error);
     }
   }
+
+
+  //Digna
+  async cotizarDigna(){
+    console.log("Cotizando DIgna");
+  }
+
 
 
   getForm()
@@ -584,8 +591,9 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      //() => this.cotizarATM(),
-      //() => this.cotizarFederacion(),
+      () => this.cotizarATM(),
+      () => this.cotizarFederacion(),
+      ()=> this.cotizarDigna(),
     ];
 
     // Mostramos spinner manualmente

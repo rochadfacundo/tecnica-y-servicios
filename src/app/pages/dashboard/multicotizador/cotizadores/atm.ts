@@ -42,8 +42,8 @@ export function buildATMRequest(
       <tem:doc_in>
         <auto>
           <usuario>
-            <usa>__USUARIO__</usa>
-            <pass>__CLAVE__</pass>
+            <usa>${configATM?.nroProductor}</usa>
+            <pass>${configATM?.claveProductor}</pass>
             <fecha>${atmFormatDay}</fecha>
             <vendedor>__VENDEDOR__</vendedor>
             <origen>WS</origen>
