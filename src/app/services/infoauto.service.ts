@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { TipoVehiculo } from '../enums/tipoVehiculos';
 import { Year } from '../interfaces/year';
 import { Brand } from '../classes/infoauto';
-import { saveAs } from 'file-saver';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,19 +17,6 @@ export class InfoautoService {
 
   constructor(private http: HttpClient) {
   }
-
-    guardarMarcasConId(marcas: Brand[], nombreArchivo: string = 'marcasFiltradasId.json'): void {
-    const marcasFiltradas = marcas.map(m => ({
-      id: m.id,
-      marca: m.name,
-    }));
-
-    const blob = new Blob([JSON.stringify(marcasFiltradas, null, 2)], {
-      type: 'application/json',
-    });
-
-      saveAs(blob, nombreArchivo);
-    }
 
     // Método para obtener el token de INFOAUTO
     getToken(): Observable<any> {
