@@ -75,18 +75,24 @@ export function buildFederacionRequest(
 }
 
 export function construirCotizacionFederacion(coberturas: any[]): CompaniaCotizada {
-  const buscarPremio = (codigo: string): number | undefined => {
-    const cobertura = coberturas.find(c => c.codigo === codigo);
-    return cobertura ? cobertura.premio_total : undefined;
+  const buscarPremio = (...codigos: string[]): number | undefined => {
+    for (const codigo of codigos) {
+      const cobertura = coberturas.find(c => c.codigo === codigo);
+      if (cobertura?.premio_total) {
+        return cobertura.premio_total;
+      }
+    }
+    return undefined;
   };
 
   const companiaCotizada: CompaniaCotizada = {
     compania: 'Federación Patronal',
     rc: buscarPremio('A4'),
-    c: buscarPremio('LB1'),
-    c1: buscarPremio('LB'),
+    c: buscarPremio('LB1', 'LB1-A'),
+    c1: buscarPremio('LB', 'LB-A'),
     d1: buscarPremio('TD3'),
     d2: buscarPremio('TD1'),
+    d3: buscarPremio('TD5'),
   };
 
   return companiaCotizada;

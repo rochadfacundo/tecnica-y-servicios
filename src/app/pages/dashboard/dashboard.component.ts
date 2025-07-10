@@ -30,6 +30,13 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    const img = new Image();
+    img.src = 'assets/car.jpg';
+    img.onload = () => {
+      document.querySelector('.fondo-dashboard')?.classList.add('loaded');
+    };
+
     setTimeout(() => {
       this.animar = true;
     }, 10);

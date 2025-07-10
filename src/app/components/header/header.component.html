@@ -3,8 +3,22 @@
     <!-- Logo -->
     <div class="logo pb-3 animate__animated animate__fadeIn">
       <a routerLink="/">
-        <img class="borde-r" [src]="(productorLogueado$ | async)?.path" *ngIf="(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
-        <img class="borde-r" src="../../../assets/logo.png" *ngIf="!(productorLogueado$ | async)" alt="Logo Técnica y Servicios">
+        <ng-container *ngIf="productorLogueado$ | async as productor; else visitanteLogo">
+          <img
+            class="borde-r"
+            [appImageLoader]="productor.path!"
+            placeholderSrc="assets/logo.png"
+            alt="Logo Técnica y Servicios"
+          />
+        </ng-container>
+
+        <ng-template #visitanteLogo>
+          <img
+            class="borde-r"
+            src="assets/logo.png"
+            alt="Logo Técnica y Servicios"
+          />
+        </ng-template>
       </a>
     </div>
 

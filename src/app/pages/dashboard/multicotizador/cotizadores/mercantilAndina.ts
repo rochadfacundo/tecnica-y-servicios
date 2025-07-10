@@ -65,21 +65,26 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
 }
 
 export function construirCotizacionMercantil(coberturas: any[]): CompaniaCotizada {
-  const buscarPremio = (producto: string): number | undefined => {
-    const cobertura = coberturas.find(c => c.producto === producto);
-    return cobertura?.desglose?.total?.premio;
+  const buscarPremio = (...productos: string[]): number | undefined => {
+    for (const producto of productos) {
+      const cobertura = coberturas.find(c => c.producto === producto);
+      if (cobertura?.desglose?.total?.premio) {
+        return cobertura.desglose.total.premio;
+      }
+    }
+    return undefined;
   };
 
   const companiaCotizada: CompaniaCotizada = {
     compania: 'Mercantil Andina',
     rc: buscarPremio('A'),
-    c: buscarPremio('M BASICA'),
-    c1: buscarPremio('M PLUS'),
-    d1: buscarPremio('D2 0020'),  //ACLARAR LOS PORCENTAJES EN EL CUADRO 20%
+    c: buscarPremio('M BASICA', 'M BÁSICA'),  // variantes posibles
+    c1: buscarPremio('M PLUS', 'M PLUS+'),
+    d1: buscarPremio('D2 0020', 'D2 0025'),   // distintas opciones del 20%
     d2: buscarPremio('D2 0030'),
     d3: buscarPremio('D2 0050'),
   };
 
-
   return companiaCotizada;
 }
+

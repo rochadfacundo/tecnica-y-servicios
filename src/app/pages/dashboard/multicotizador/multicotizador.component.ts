@@ -17,7 +17,7 @@ import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
+import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { Cotizacion } from '../../../interfaces/cotizacion';
@@ -35,6 +35,7 @@ import { ESpinner } from '../../../enums/ESpinner';
 import { SpinnerService } from '../../../services/spinner.service';
 import { firstValueFrom } from 'rxjs';
 import { DignaService } from '../../../services/digna.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-multicotizador',
@@ -95,6 +96,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(Router) private router: Router,
     @Inject(SpinnerService) private s_spinner: SpinnerService,
     @Inject(DignaService) private s_digna: DignaService,
+    @Inject(HttpClient) private s_http: HttpClient,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
   ){
@@ -108,7 +110,11 @@ export class MulticotizadorComponent implements OnInit {
       this.animar = true;
     }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
+
   }
+
+
+
   public readonly opcionesSiNo = OPCIONES_SI_NO;
 
   public tiposVehiculo:TipoVehiculo[] = [];
@@ -171,9 +177,9 @@ export class MulticotizadorComponent implements OnInit {
 
       getMarcasInfoAuto() {
         getMarcas(this.s_infoauto, this.getTipoVehiculo()).subscribe({
-          next: (response: Brand[]) => {
-            console.log(response);
-            this.marcas = response;
+          next: async (response: Brand[]) => {
+
+            this.marcas = await filterCars(this.s_http,response);
             this.cdr.detectChanges();
           },
           error: (error) => {

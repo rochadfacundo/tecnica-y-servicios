@@ -12,5 +12,11 @@
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
   url('../../..//assets/car.jpg') no-repeat center center;
   background-size: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.fondo-dashboard.loaded {
+  opacity: 1;
 }
 

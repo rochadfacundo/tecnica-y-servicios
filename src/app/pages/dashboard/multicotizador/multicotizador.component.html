@@ -23,7 +23,7 @@
 
 
     <!-- Fila: Nombre y Apellido -->
-    <div class="row animate__animated animate__fadeInUp animate__delay-2s">
+    <div class="row animate__animated animate__fadeInUp animate__delay-1s">
       <div class="mb-3 col-md-6">
         <label for="nombre" class="form-label">Nombre:</label>
         <input type="text" formControlName="nombre" class="form-control">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Fila: Tipo Doc y N° -->
-    <div class="row animate__animated animate__fadeInUp animate__delay-3s">
+    <div class="row animate__animated animate__fadeInUp animate__delay-1s">
       <div class="mb-3 col-md-6">
         <label for="tipoId" class="form-label">Tipo de documento</label>
         <select id="tipoId" class="form-select" formControlName="tipoId">
@@ -51,7 +51,7 @@
 
     <!-- SECCION VEHICULOS -->
 
-<div class="animate__animated animate__fadeInUp animate__delay-4s" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
+<div class="animate__animated animate__fadeInUp animate__delay-2s" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
     <div class="mb-3">
       <label for="marca" class="form-label">Marca</label>
       <ng-select

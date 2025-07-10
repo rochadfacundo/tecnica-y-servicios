@@ -1,5 +1,25 @@
 
+import { firstValueFrom } from 'rxjs';
+import { Brand } from '../classes/infoauto';
 import { Role } from '../enums/role';
+import { HttpClient } from '@angular/common/http';
+
+
+export async function filterCars(http: HttpClient, marcasOriginales: Brand[]): Promise<Brand[]> {
+  const [palabrasClave, marcasExcluidas] = await Promise.all([
+    firstValueFrom(http.get<string[]>('/assets/palabrasClaveCamiones.json')),
+    firstValueFrom(http.get<string[]>('/assets/marcasCamiones.json')),
+  ]);
+
+  return marcasOriginales.filter(marca => {
+    const nombreMayus = marca.name.toUpperCase();
+    const contieneClave = palabrasClave.some(p => nombreMayus.includes(p));
+    const estaExcluida = marcasExcluidas.includes(nombreMayus);
+    return !contieneClave && !estaExcluida;
+  });
+}
+
+
 
 export const configCompanias: Record<string, any> = {
   'RIVADAVIA': {

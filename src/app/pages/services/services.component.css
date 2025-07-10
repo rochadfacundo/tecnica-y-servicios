@@ -2,13 +2,14 @@
 
 .background-image-section {
   --opacidad-negro: 0.6;
-  background-image: linear-gradient(rgba(0, 0, 0, var(--opacidad-negro)), rgba(0, 0, 0, var(--opacidad-negro))),url('/assets/desktop3.png'); /* Ruta de tu imagen */
+  background-image: linear-gradient(rgba(0, 0, 0, var(--opacidad-negro)), rgba(0, 0, 0, var(--opacidad-negro))),url('/assets/desktop3.jpg'); /* Ruta de tu imagen */
   background-size: cover; /* La imagen cubre toda la sección */
   background-position: center; /* Centra la imagen */
   background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
   color: white; /* Asegura que el texto sea visible */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para mejorar la visibilidad del texto */
   filter:drop-shadow(8px 8px 12px black);
+  transition: opacity 0.5s ease-in;
 }
 
 /* Fondo fijo en dispositivos móviles */

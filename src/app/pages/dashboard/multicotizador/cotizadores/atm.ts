@@ -25,6 +25,7 @@ export function buildATMRequest(
   const condicionFiscal = "CF";
   const cerokm = "N";
   const micrograbado = "N";
+  const tipousoMoto="1";  //particular
 
   // Determinar si es auto o moto
   const esAuto = tipo === "VEHICULO";
@@ -33,7 +34,7 @@ export function buildATMRequest(
   // XML condicional para uso
   const usoXML = esAuto
     ? `<uso>0101</uso>`
-    : `<tipoUso>1</tipoUso>`;
+    : `<tipo_uso>1</tipo_uso>`;
 
   const xml = `
 <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -74,6 +75,8 @@ export function buildATMRequest(
   </soapenv:Body>
 </soapenv:Envelope>`.trim();
 
+console.log("xml a atm",xml);
+
   return xml;
 }
 
@@ -110,21 +113,24 @@ export function parsearXML(res:string):CotizacionATM[]{
 
 
 export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
-  const buscarPremio = (codigo: string): number | undefined => {
-    const cobertura = coberturas.find(c => c.codigo === codigo);
-    return cobertura ? cobertura.premio : undefined;
+  const buscarPremio = (...codigos: string[]): number | undefined => {
+    for (const codigo of codigos) {
+      const cobertura = coberturas.find(c => c.codigo === codigo);
+      if (cobertura?.premio) {
+        return cobertura.premio;
+      }
+    }
+    return undefined;
   };
 
-
-
-  const companiaCotizada:CompaniaCotizada={
+  const companiaCotizada: CompaniaCotizada = {
     compania: 'ATM',
     rc: buscarPremio('A0'),
-    c: buscarPremio('C3'),
-    c1: buscarPremio('C2'),
-    d1: buscarPremio(''),
-    d2: buscarPremio('D2'),
-    d3: buscarPremio('D3'),
+    c: buscarPremio('C3', 'C3-BÁSICA'),
+    c1: buscarPremio('C2', 'C2-MEDIA'),
+    d1: buscarPremio('D1', 'D1-20'),
+    d2: buscarPremio('D2', 'D2-30'),
+    d3: buscarPremio('D3', 'D3-50'),
   };
 
   return companiaCotizada;

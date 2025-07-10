@@ -1,0 +1,1322 @@
+[
+  {
+    "id": 1,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/811f1498-fe2f-4bf2-a414-55d2475ba68f.png",
+    "name": "ACURA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Marca de lujo del fabricante japonés de automóviles Honda en los Estados Unidos, Canadá y Hong Kong desde marzo de 1985, para posicionarse en el mercado de los vehículos de alta gama."
+  },
+  {
+    "id": 21,
+    "list_price": false,
+    "logo_url": null,
+    "name": "AEOLUS",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Es una marca de automóviles propiedad del fabricante de automóviles chino Dongfeng. La marca se lanzó en julio de 2009 con el nombre Fengshen y luego se renombró a Aeolus."
+  },
+  {
+    "id": 63,
+    "list_price": true,
+    "logo_url": null,
+    "name": "AGRALE",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante Brasilero de vehículos comerciales, militares. También produce motores diésel, tractores y otros equipos."
+  },
+  {
+    "id": 2,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ALEKO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Marca de automóviles Rusa, producida por AZLK entre los años 1946 y 1991, y por OAO MOSKVITCH desde 1991 a 2001."
+  },
+  {
+    "id": 3,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/85224e48-d7b9-4ad7-8ca1-b1fec5d7f963.png",
+    "name": "ALFA ROMEO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Marca Italiana de automóviles deportivos y de alta gama, fundada en 1910 en Milán, Italia. Actualmente es propiedad del conglomerado ítalo-francés Stellantis."
+  },
+  {
+    "id": 4,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ARO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Fue un fabricante de vehículos todoterreno rumano. El primer vehículo ARO fue producido en 1957, y el último en 2003."
+  },
+  {
+    "id": 5,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ASIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Era un fabricante de automóviles de Corea del Sur establecido en 1965 y cerrado en 1999. Desde 1976 en adelante, fue una subsidiaria de Kia Motors. "
+  },
+  {
+    "id": 71,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ASIA CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2001,
+    "summary": "Era un fabricante de automóviles de Corea del Sur establecido en 1965 y cerrado en 1999. Desde 1976 en adelante, fue una subsidiaria de Kia Motors. "
+  },
+  {
+    "id": 6,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/4d96f314-d9c0-42e7-8da6-e825698701ef.png",
+    "name": "AUDI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa alemana fabricante de automóviles de alta gama y deportivos. Fue fundada en 1899, renombrada a su denominación actual en 1909. Forma parte desde 1965 del Grupo Volkswagen."
+  },
+  {
+    "id": 60,
+    "list_price": false,
+    "logo_url": null,
+    "name": "AUSTIN",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fabricante británico automoviles, fundado en 1905. En 1952 se fusionó con Morris Motors Limited en el nuevo holding British Motor Corporation (BMC) La marca Austin se utilizó hasta 1987. Actualmente, la marca es propiedad de la empresa china SAIC Motor."
+  },
+  {
+    "id": 7,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/32f4375a-6a6f-493c-ba59-6f96b024c46e.png",
+    "name": "AUTOBIANCHI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Fabricante de automóviles italiano, creado conjuntamente por Bianchi, Pirelli y Fiat. Posteriormente fue comprado por el grupo Fiat y se integró en las operaciones de Lancia. La marca Autobianchi sobrevivió en Italia hasta 1995."
+  },
+  {
+    "id": 118,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BAIC",
+    "prices": true,
+    "prices_from": 2018,
+    "prices_to": 2025,
+    "summary": "Fabricante de automoviles Chinos, fue fundado en 1958 y es considerado el quinto mayor fabricante de automóviles de China. Adquirió la tecnología y los derechos de Saab."
+  },
+  {
+    "id": 78,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BELAVTOMAZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2001,
+    "summary": "Fue un fabricante de camiones de origen bielorruso que producia en Argentina vehículos pesados de la marca MAZ."
+  },
+  {
+    "id": 61,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/9478361e-e396-4834-bb96-a7f331e49a07.png",
+    "name": "BERTONE",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1999,
+    "summary": "Empresa italiana especializada en la fabricación de carrocerías y en el diseño de automóviles, que fue fundada por Giovanni Bertone en 1912. "
+  },
+  {
+    "id": 58,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BLAC",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1999,
+    "summary": "Fabricante de camiones de origen chino, fundado en la decada del 60. "
+  },
+  {
+    "id": 8,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c57948c1-0fa2-47c9-86fc-6ed514d596d0.png",
+    "name": "BMW",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa alemana fabricante de vehículos y motocicletas de lujo. Fue fundada en 1916 como fabricante de motores para aviones. Produciendo sus primeros automóviles en 1928. "
+  },
+  {
+    "id": 9,
+    "list_price": false,
+    "logo_url": null,
+    "name": "BUIK",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fundada en 1899, es una marca de automóviles premium y de alta gama de Estados Unidos, propiedad del grupo General Motors (GM."
+  },
+  {
+    "id": 10,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/467ae4ff-bb5f-4e9b-a18b-017a233e18a8.png",
+    "name": "CADILLAC",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fundada en 1902, en Estados Unidos. General Motors compró la compañía en 1909, Cadillac se estableció como un fabricante de automóviles de lujo. "
+  },
+  {
+    "id": 124,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/25f2ceab-7e02-4adf-8ef8-ee551a17f1ca.png",
+    "name": "CHANGAN",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles de propiedad estatal china, comenzó a producir autos en el año 1959. Su principal actividad es la producción de sedanes, mini-vans, furgonetas comerciales y camionetas."
+  },
+  {
+    "id": 108,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/4e585f76-420d-43dd-9502-ac51c74ceae6.png",
+    "name": "CHERY",
+    "prices": true,
+    "prices_from": 2008,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles de propiedad estatal china fundado en 1997. Sus productos principales son automóviles de pasajeros, minivans y SUV. Sus vehículos se ensamblan en alrededor de 15 países."
+  },
+  {
+    "id": 12,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/502b6142-4e05-4dd1-a766-70a8787efd7f.png",
+    "name": "CHEVROLET",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "División de automóviles estadounidense del fabricante General Motors fundada en 1911. Los vehículos de la marca Chevrolet se venden en la mayoría de los mercados automotrices en todo el mundo."
+  },
+  {
+    "id": 72,
+    "list_price": false,
+    "logo_url": null,
+    "name": "CHEVROLET CAM.",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "División de automóviles estadounidense del fabricante General Motors, fundada en 1911. Los vehículos de la marca Chevrolet se venden en la mayoría de los mercados automotrices en todo el mundo."
+  },
+  {
+    "id": 13,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/15a56a7b-b285-4742-8837-8a27c4700d07.png",
+    "name": "CHRYSLER",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Marca de automóviles fundada en 1925. Actualmente poseen las marcas Dodge, Jeep, y RAM. Chrysler se ha fusionado con el grupo Peugeot-Citroën para formar Stellantis en 2021."
+  },
+  {
+    "id": 11,
+    "list_price": true,
+    "logo_url": null,
+    "name": "CITROEN",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Marca francesa constructora de automóviles fundada en 1919 por André Citroën, propiedad de Stellantis. La marca creó entre otros modelos el utilitario Citroën H, el Citroën 2CV, el Citroën Mehari, el Citroën DS y también el Citroën CX"
+  },
+  {
+    "id": 129,
+    "list_price": true,
+    "logo_url": null,
+    "name": "CORADIR",
+    "prices": true,
+    "prices_from": 2021,
+    "prices_to": 2025,
+    "summary": "Empresa argentina fundada en 1995, dedicada al desarrollo de equipos electrónicos e informático. En 2020 comenzo a producir automóviles eléctricos. "
+  },
+  {
+    "id": 14,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/bb72a4af-f332-459b-a5f6-ea1fa17a9082.png",
+    "name": "DACIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "De origen rumano. se estableció en 1966. En 1999, después de 33 años, el gobierno rumano vendió Dacia al fabricante frances de automóviles Renault."
+  },
+  {
+    "id": 15,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/15d99a3c-35eb-410f-8031-0a1ef8dec8d1.png",
+    "name": "DAEWOO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2015,
+    "summary": "Empresa automotriz de Corea del Sur establecida en 1937. Vendió la mayor parte de sus activos en 2001 a General Motors, convirtiéndose en una subsidiaria de la compañía estadounidense. La compañía pasó a llamarse GM Corea en el año 2011."
+  },
+  {
+    "id": 16,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c1ffbc78-dd1a-43b7-9362-8f9257183f5f.png",
+    "name": "DAIHATSU",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2005,
+    "summary": "Fabricante de automóviles japonés fundado en 1951. Es mundialmente conocido por sus vehículos compactos. Fue comprado por Toyota en el año 2016. "
+  },
+  {
+    "id": 93,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DAIHATSU CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2004,
+    "summary": "Fabricante de automóviles japonés fundado en 1951. Es mundialmente conocido por sus vehículos compactos. Fue comprado por Toyota en el año 2016. "
+  },
+  {
+    "id": 112,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DFM",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2025,
+    "summary": "Dongfeng Motor Corporation es un fabricante de automóviles estatal chino fundado en 1969. Además de vehículos comerciales y de consumo, también fabrica piezas y coopera con empresas extranjeras."
+  },
+  {
+    "id": 119,
+    "list_price": true,
+    "logo_url": null,
+    "name": "DFSK",
+    "prices": true,
+    "prices_from": 2017,
+    "prices_to": 2025,
+    "summary": "Empresa conjunta entre los fabricantes chinos Dongfeng y Sokon, formada en el año de 2003. DFSK produce mini-vans, camiones comerciales y vehículos de pasajeros."
+  },
+  {
+    "id": 89,
+    "list_price": false,
+    "logo_url": null,
+    "name": "DIMEX",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2008,
+    "summary": "Fabricante mexicano de autobuses y camiones fundado en 1951. Hoy en día su producción primaria son los autobuses urbanos para uso doméstico y exterior."
+  },
+  {
+    "id": 117,
+    "list_price": true,
+    "logo_url": null,
+    "name": "DS AUTOMOBILES",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2025,
+    "summary": "Marca francesa de vehículos de lujo presentada en 2009. Fue subsidiaria de Citroën antes de convertirse en una marca independiente en 2015. "
+  },
+  {
+    "id": 54,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ENIAK",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fabricante argentino formado en 1948. En 1984 produjo su primer vehículo y en 1986 su primera camioneta. El fabricante ceso la producción en el año 1990. "
+  },
+  {
+    "id": 69,
+    "list_price": false,
+    "logo_url": null,
+    "name": "F.E.R.E.S.A.",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1999,
+    "summary": "Fabricante de origen argentino que comenzo a producir su único camión en el año 1986, y ceso su producción en 1994."
+  },
+  {
+    "id": 51,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/1f60e82a-5c61-4f58-8053-eed718e901fa.png",
+    "name": "FERRARI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante italiano de automóviles deportivos de lujo fundado en 1939. La compañía construyó su primer automóvil en 1940 y produjo su primer automóvil con la insignia de Ferrari en 1947."
+  },
+  {
+    "id": 17,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/28713607-9a7f-4db8-bf85-ebf3ec5b53f9.png",
+    "name": "FIAT",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "La sigla FIAT corresponden a: Fabbrica Italiana Automobili Torino (en español: Fábrica Italiana de Automóviles de Turín) es una histórica marca italiana de automóviles, bajo la que se comercializan vehículos desde 1899. Desde 2021 es una subsidiaria del grupo Stellantis."
+  },
+  {
+    "id": 18,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/380a7fc4-a9c3-4953-ad10-313ff288ff35.png",
+    "name": "FORD",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Ford Motor Company, más conocida como Ford, es una empresa multinacional de origen estadounidense, fundada por Henry Ford el 16 de junio de 1903. "
+  },
+  {
+    "id": 73,
+    "list_price": false,
+    "logo_url": null,
+    "name": "FORD CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2021,
+    "summary": "Ford Motor Company, más conocida como Ford, es una empresa multinacional de origen estadounidense, fundada por Henry Ford el 16 de junio de 1903. "
+  },
+  {
+    "id": 115,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/85ad6721-bafd-447c-a792-5903f24dc80a.png",
+    "name": "FOTON",
+    "prices": true,
+    "prices_from": 2016,
+    "prices_to": 2025,
+    "summary": "Empresa china que diseña y fabrica camiones, autobuses, tractores y SUV. Fue fundada en 1996 y es una subsidiaria del Grupo BAIC."
+  },
+  {
+    "id": 79,
+    "list_price": false,
+    "logo_url": null,
+    "name": "G.A.Z.",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Fabricante de automóviles ruso fundado en 1932, como una cooperación entre Ford y la Unión Soviética. Es el principal fabricante de vehículos comerciales en Rusia."
+  },
+  {
+    "id": 116,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/8fe7a564-7c77-44bf-b4e8-75629c57070e.png",
+    "name": "GEELY",
+    "prices": true,
+    "prices_from": 2017,
+    "prices_to": 2023,
+    "summary": "Empresa automotriz multinacional China fundada en 1986. Desde 1997 produce y vende vehículos con las marcas Geely Auto, Lotus, Lynk & Co, Proton y Volvo."
+  },
+  {
+    "id": 121,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/08612a56-545b-4956-9280-6c916fdf2544.png",
+    "name": "GREAT WALL",
+    "prices": true,
+    "prices_from": 2018,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles chino formado en 1984. comenzó produciendo camiones a baja escala. Actualmente vende automóviles, SUV y camiones."
+  },
+  {
+    "id": 64,
+    "list_price": false,
+    "logo_url": null,
+    "name": "GROSSPAL",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1999,
+    "summary": "Fabricante argentino fundado a principios de los años 60, como comercializadora de implementos agrícolas, en 1967 comienza a fabricar repuestos y accesorios para cosechadoras. En 1983 comienza a fabricar el camión Grosspal."
+  },
+  {
+    "id": 52,
+    "list_price": false,
+    "logo_url": null,
+    "name": "HAM-JIANG",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2000,
+    "summary": "Fabricante de camiones y buses de origen chino, fundado en 1968, comercializada en Argentina en la década del 90. "
+  },
+  {
+    "id": 122,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/bc33f284-21e2-47ff-89e4-6a782dabdd16.png",
+    "name": "HAVAL",
+    "prices": true,
+    "prices_from": 2018,
+    "prices_to": 2025,
+    "summary": "Marca automotriz propiedad del fabricante de automóviles chino Great Wall Motors que se especializa en crossovers y SUV. Empezó su comercialización en el año 2013."
+  },
+  {
+    "id": 99,
+    "list_price": false,
+    "logo_url": null,
+    "name": "HEIBAO",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Empresa china que fábrica automotores y vehículos agrícolas, fundada en 1990. "
+  },
+  {
+    "id": 80,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/86c7816b-e6dd-4a27-846a-67a361914df3.png",
+    "name": "HINO",
+    "prices": true,
+    "prices_from": 1997,
+    "prices_to": 2025,
+    "summary": "Fabricante japonés de vehículos comerciales y motores diésel fundada en 1942. Es parte del grupo Toyota."
+  },
+  {
+    "id": 19,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/8bbcc0be-b9ed-4204-81a3-03e730c603f4.png",
+    "name": "HONDA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante multinacional japonés de automóviles, motocicletas y equipos eléctricos, fue fundado en el año 1946."
+  },
+  {
+    "id": 49,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c1d4b869-6f65-4a6c-b745-ab9da9802a90.png",
+    "name": "HUMMER",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2009,
+    "summary": "Marca de camiones y SUV de origen estadounidense, que se comercializó por primera vez en el año 1992. Fue adquirida por GM en 1998."
+  },
+  {
+    "id": 20,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/5c83be8d-3f96-41c2-b16d-37163cdd0d3c.png",
+    "name": "HYUNDAI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles multinacional de Corea del Sur fundado en 1967. Propietaría de Genesis Motor, la submarca de vehículos eléctricos Ioniq y parte de Kia."
+  },
+  {
+    "id": 59,
+    "list_price": false,
+    "logo_url": null,
+    "name": "I.K.A. RENAULT",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fabricante argentino que produjo automóviles entre los años 1954 y 1975, cuando fue absorvida por Renault."
+  },
+  {
+    "id": 87,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/3b2ae99d-c275-40aa-9b94-ba4b92a2b93a.png",
+    "name": "INTERNATIONAL",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Navistar International Corporation es una empresa estadounidense creada en 1986, productora de camiones y motores diésel."
+  },
+  {
+    "id": 22,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/64f54c69-dfba-4718-a29e-d7f8643cec57.png",
+    "name": "ISUZU",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa de origen japones, fundada en 1916, fabricante de vehículos comerciales y motores diesel."
+  },
+  {
+    "id": 41,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/19233b8c-70b5-44bb-bfab-b222fd53202c.png",
+    "name": "IVECO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Grupo industrial italiano, fundado en 1975. Diseña, fábrica y comercializa vehículos comerciales, autobuses urbanos e interurbanos, militares y de defensa civil."
+  },
+  {
+    "id": 81,
+    "list_price": false,
+    "logo_url": null,
+    "name": "IZH",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Fabricante automotor de origen ruso, fundado en 1965. Actualmente forma parte del grupo VAZ."
+  },
+  {
+    "id": 98,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/33443829-5cb2-4cc4-bf57-0d72a39095f7.jpg",
+    "name": "JAC MOTORS",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles y vehículos comerciales de propiedad estatal china, fundado en 1964."
+  },
+  {
+    "id": 23,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/edb25b2f-0da5-497a-95b3-586ee4f4e4b9.png",
+    "name": "JAGUAR",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2023,
+    "summary": "Fabricante de automóviles de alta gama británico, fundado en 1935. Desde el 2008 pertenece al grupo Tata, y en el 2013 se fusionó con Land Rover formando Jaguar Land Rover Limited."
+  },
+  {
+    "id": 68,
+    "list_price": false,
+    "logo_url": null,
+    "name": "JINBEI",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Fabricante de vehículos comerciales de origen chino, que ingreso al mercado en 1991. En 2017 fue comprado por Renault."
+  },
+  {
+    "id": 113,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c6c9c6af-e735-4ed4-9ac3-1322dc133d20.png",
+    "name": "JMC",
+    "prices": true,
+    "prices_from": 2014,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles y vehículos comerciales chino, fundado en 1993. "
+  },
+  {
+    "id": 131,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/1ac02ab9-b3f0-44a5-8685-9ed48b04dae3.jpg",
+    "name": "KAMA",
+    "prices": true,
+    "prices_from": 2023,
+    "prices_to": 2025,
+    "summary": ""
+  },
+  {
+    "id": 82,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/679bacf8-2438-4e08-9562-abe3319dd88f.png",
+    "name": "KAMAZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Fabricante de camiones y motores de origen ruso. fundado en 1969.\n"
+  },
+  {
+    "id": 83,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/b5229310-c293-4f32-98d2-5eb43f01e303.png",
+    "name": "KENWORTH",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Fabricante de camiones de origen estadounidense, fundado en 1923. "
+  },
+  {
+    "id": 24,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c2f4cc35-5302-4c05-b43f-a99fce8f6aa3.png",
+    "name": "KIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa de Corea del Sur, fundado en 1994. Es el segundo fabricante más grande de automóviles del país asiatico."
+  },
+  {
+    "id": 74,
+    "list_price": true,
+    "logo_url": null,
+    "name": "KIA CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa de Corea del Sur, fundado en 1994. Es el segundo fabricante más grande de automóviles del país asiatico."
+  },
+  {
+    "id": 25,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/19b48815-965e-4393-a426-b06f41c9c447.png",
+    "name": "LADA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2004,
+    "summary": "Fabrica de automóviles de origen ruso, fundado en el año 1973. Las primeras unidades fueron producidas con la asistencia técnica de Fiat. En el 2016 fue adquirida por Renault."
+  },
+  {
+    "id": 53,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/e6a98363-b0c5-456a-9759-1be0255f24ad.png",
+    "name": "LANCIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Fabricante de automóviles de origen italiano, fundado en 1906 por pilotos de carrera de Fiat. En 1969 forma parte del grupo Fiat."
+  },
+  {
+    "id": 84,
+    "list_price": false,
+    "logo_url": null,
+    "name": "LIAZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1999,
+    "summary": "Fabricante de camiones de origen checoslovaco, fue fundado en 1951 por el gobierno como una división de Skoda. En el año 2003 ceso su producción."
+  },
+  {
+    "id": 114,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/8417b877-b1e0-4382-8b64-e05c69a6236d.png",
+    "name": "LIFAN",
+    "prices": true,
+    "prices_from": 2016,
+    "prices_to": 2025,
+    "summary": "Fabricante chino de motocicletas y automóviles, fundado en el año 1992. Sus origenes fueron la reparación de motovehículos, y la producción de automóviles comenzo en el año 2005."
+  },
+  {
+    "id": 109,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/63983a09-dbc1-4087-8672-709626e5eaa6.png",
+    "name": "LINCOLN",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "División de vehículos de lujo del fabricante estadounidense Ford, fundado en 1917. En la actualidad produce crossovers y SUV."
+  },
+  {
+    "id": 111,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/14bac248-26c7-4de0-9d49-7d8248a91e5b.png",
+    "name": "MACK",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2020,
+    "summary": "Fabricante de camiones estadounidense, fundado en 1900. En sus origenes producía autobuses y trolebuses.. En el año 2000 fue adquirida por Volvo."
+  },
+  {
+    "id": 67,
+    "list_price": false,
+    "logo_url": null,
+    "name": "MAESTRO",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Es una empresa de automoviles fundada en 1994 por Rover. En el año 1996 ceso su producción."
+  },
+  {
+    "id": 55,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/7436ddc4-0176-4dbe-ab2d-4452527c3d43.png",
+    "name": "MAHINDRA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2000,
+    "summary": "Es una corporación multinacional de fabricación de vehículos de India, fundada en 1945. "
+  },
+  {
+    "id": 102,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/c04247ad-a270-4956-9f1e-4f37942f4d98.png",
+    "name": "MASERATI",
+    "prices": true,
+    "prices_from": 1999,
+    "prices_to": 2023,
+    "summary": "Fabricante de vehículos de lujo de origen italiano, fundado en el año 1914. Actualmente es propiedad de Fiat y forma parte del grupo Stellantis."
+  },
+  {
+    "id": 26,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/b23d7973-2cee-48e3-9dd1-de79b71b45d2.png",
+    "name": "MAZDA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2004,
+    "summary": "Fabricante de automóviles de origen japonés. fundado en el año 1920. De 1974 a 2015 se asoció con Ford Motor Company. En el 2018 vende un 5% al grupo Toyota."
+  },
+  {
+    "id": 90,
+    "list_price": false,
+    "logo_url": null,
+    "name": "MAZDA CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2000,
+    "summary": "Fabricante de automóviles de origen japonés. fundado en el año 1920. De 1974 a 2015 se asoció con Ford Motor Company. En el 2018 vende un 5% al grupo Toyota."
+  },
+  {
+    "id": 128,
+    "list_price": false,
+    "logo_url": null,
+    "name": "MCLAREN",
+    "prices": true,
+    "prices_from": 2020,
+    "prices_to": 2023,
+    "summary": "Fabricante de automóviles deportivos de origen ingles, fundado en 1989. "
+  },
+  {
+    "id": 28,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MERCEDES BENZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles de lujos, deportivos, SUV, utilitarios, camiones y autobuses, de origen alemán, fundado en 1886. Su denominación no se utilizaría hasta 1926 al unirse dos empresas y formar Daimler-Benz. "
+  },
+  {
+    "id": 75,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MERCEDES BENZ C",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles de lujos, deportivos, SUV, utilitarios, camiones y autobuses, de origen alemán, fundado en 1886. Su denominación no se utilizaría hasta 1926 al unirse dos empresas y formar Daimler-Benz. "
+  },
+  {
+    "id": 27,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/16b9d118-73ae-43c1-8fcb-3dadc756031d.png",
+    "name": "MERCURY",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "División de automóviles del fabricante estadounidense Ford, fundado en 1938, cuya producción ceso a finales del año 2010."
+  },
+  {
+    "id": 62,
+    "list_price": false,
+    "logo_url": null,
+    "name": "METRO",
+    "prices": true,
+    "prices_from": 1997,
+    "prices_to": 2002,
+    "summary": "Fabricante de autobuses de origen chino. Fundado en el año 1998 como parte de Jiangsu Mudan Automobile Group Co Ltd. "
+  },
+  {
+    "id": 106,
+    "list_price": true,
+    "logo_url": null,
+    "name": "MINI COOPER",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Marca automotriz de vehículos del segmento A de origen británico, fundada en el año 1959. Es el auto más popular fabricado en Inglaterra. Fue adquirida por BMW en el año 2000.  "
+  },
+  {
+    "id": 29,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/d3bb82b8-c78b-44ad-b195-ff3149a18a50.png",
+    "name": "MITSUBISHI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Es parte de un grupo de empresa multinacionales de origen japonés, fundada en el año 1870. La producción de vehículos fue limitada hasta 1950. Desde el año 2016 conforma una alianza con Renault-Nissan."
+  },
+  {
+    "id": 91,
+    "list_price": false,
+    "logo_url": null,
+    "name": "MITSUBISHI CAM.",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Es parte de un grupo de empresa multinacionales de origen japonés, fundada en el año 1870. La producción de vehículos fue limitada hasta 1950. Desde el año 2016 conforma una alianza con Renault-Nissan."
+  },
+  {
+    "id": 77,
+    "list_price": false,
+    "logo_url": null,
+    "name": "NAKAI (CHANGAN)",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Fabricante de camiones livianos de origen chino, fundado en el año 1997, forma parte del grupo Changan."
+  },
+  {
+    "id": 30,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/08563cf9-e105-42d8-8ea1-3b6440e66733.png",
+    "name": "NISSAN",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles y camiones de origen japonés, fundado en el año 1928, también conocida como Datsun en algunos mercados. Desde el año 1999 forma una alianza con Renault."
+  },
+  {
+    "id": 92,
+    "list_price": false,
+    "logo_url": null,
+    "name": "NISSAN CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Fabricante de automóviles y camiones de origen japonés, fundado en el año 1928, también conocida como Datsun en algunos mercados. Desde el año 1999 forma una alianza con Renault."
+  },
+  {
+    "id": 31,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/e3666422-3354-4098-93f8-6dea7de4a2e6.png",
+    "name": "OPEL",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1998,
+    "summary": "Fabricante de automóviles de origen alemán, fundado en el año 1862. Su primer automóvil fue producido en 1899. Fue propiedad de General Motors desde 1929 hasta 2017. "
+  },
+  {
+    "id": 32,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/d67c7aad-0728-4e0a-b52b-cfae259338ca.png",
+    "name": "PEUGEOT",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles, vehículos comerciales, motovehículos y bicicletas de origen francés, fue fundado en 1810 y produjo su primer vehículo en 1890. Actualmente es el principal miembro del grupo Stellantis"
+  },
+  {
+    "id": 94,
+    "list_price": false,
+    "logo_url": null,
+    "name": "PIAGGIO",
+    "prices": true,
+    "prices_from": 1997,
+    "prices_to": 1999,
+    "summary": "Fabricante de vehículos comerciales y motovehículos de origen italiano, fundada en 1884. Inicialmente producia locomotoras y vagones de ferrocarril."
+  },
+  {
+    "id": 105,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/9df5da9a-9679-4512-b976-74f28587e9e7.png",
+    "name": "PLYMOUTH",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Marca de automóviles de origen estadounidense y propiedad de Chrysler, se lanzo en el año 1928, y dejo de comercializarse en el 2001."
+  },
+  {
+    "id": 33,
+    "list_price": false,
+    "logo_url": null,
+    "name": "POLONEZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Fabricante de automóviles y repuestos de origen polaco. Fundado en el año 1948. Su producción ceso en el año 2011"
+  },
+  {
+    "id": 34,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/b085b17f-2a0e-4460-8e46-7b2f30bb8265.png",
+    "name": "PONTIAC",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Marca de automóviles de origen estadounidense y propiedad de General Motors, fundada en 1925. Su comercialización ceso a finales del año 2010."
+  },
+  {
+    "id": 35,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/0ddc6f1f-9a37-4618-9d0e-193be07a9132.png",
+    "name": "PORSCHE",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles deportivos de origen alemán, fundado en el año 1931. Su primer vehículo fue producido en 1948. Actualmente es parte del grupo Volkswagen."
+  },
+  {
+    "id": 48,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/4a749b60-e424-478a-b848-e31a1b23539f.png",
+    "name": "PROTON",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Empresa de automóviles de Malasia, fundada en 1983. Sus vehículos se ofrecen en más de 15 años, preferentemente en Asia."
+  },
+  {
+    "id": 65,
+    "list_price": false,
+    "logo_url": null,
+    "name": "RANQUEL",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1997,
+    "summary": "Empresa de origen argentino formada en 1989 por Imetal S.A., para continuar la producción de Rastrojero. Su comercialización ceso en el año 1997."
+  },
+  {
+    "id": 56,
+    "list_price": false,
+    "logo_url": null,
+    "name": "RASTROJERO",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Fabrica de vehículos y utilitarios de origen argentino. Producidos desde 1952 hasta 1979 por empresas estatales, y de forma privada hasta 1989."
+  },
+  {
+    "id": 36,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/7921fa7c-a469-44ce-af68-8334a2abeb63.png",
+    "name": "RENAULT",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante multinacional de automóviles, furgones, pick-ups y wagon de origen francés, fue fundado en el año 1899. Ha producido tambien a lo largo de su historia camiones, tractores y autobuses. "
+  },
+  {
+    "id": 70,
+    "list_price": false,
+    "logo_url": null,
+    "name": "RENAULT CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2018,
+    "summary": "Fabricante multinacional de automóviles, furgones, pick-ups y wagon de origen francés, fue fundado en el año 1899. Ha producido tambien a lo largo de su historia camiones, tractores y autobuses."
+  },
+  {
+    "id": 107,
+    "list_price": false,
+    "logo_url": null,
+    "name": "ROLLS ROYCE",
+    "prices": true,
+    "prices_from": 2007,
+    "prices_to": 2010,
+    "summary": "Fabricante de automóviles de lujo de origen británico, fundada en 1904. Produce turbinas para aviones. Actualmente es propiedad de BMW."
+  },
+  {
+    "id": 37,
+    "list_price": true,
+    "logo_url": null,
+    "name": "ROVER-LAND ROV.",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa de vehículos de origen británico, fundado en 1948. Rover productora de automóviles y Land Rover de todo terreno a partir de 1970. Actualmente forma parte del grupo Jaguar-Land Rover. "
+  },
+  {
+    "id": 38,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/7d48db00-3d4c-4668-8141-10d11718f8e8.png",
+    "name": "SAAB",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2006,
+    "summary": "Empresa Sueca fundada en el año 1937. La producción de automóviles comenzo en 1947 y ceso en el 2010. Fue propiedad de General Motors entre el año 2000 y el 2010."
+  },
+  {
+    "id": 103,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SANTANA",
+    "prices": true,
+    "prices_from": 1999,
+    "prices_to": 2002,
+    "summary": "Fabricante de vehículos todo terreno de origen español. Fundado en el año 1956. Produjo unidades basadas en el Land Rover Santana y la Suzuki Vitara. Se disolvio en el año 2011."
+  },
+  {
+    "id": 95,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SANXING",
+    "prices": true,
+    "prices_from": 1997,
+    "prices_to": 2002,
+    "summary": "Fabricante de automoviles y camiones de origen chino, fundado en el año 1988. "
+  },
+  {
+    "id": 50,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/8fece632-1f50-4925-a414-7e44d2f64178.png",
+    "name": "SCANIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de camiones, autobuses y motores diesel de origen sueco, fundado en el año 1911. Actualmente es propiedad del grupo Volkswagen."
+  },
+  {
+    "id": 39,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/f80d6781-153e-49db-a012-2b862d305972.png",
+    "name": "SEAT",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2011,
+    "summary": "Fabricante de automóviles de origen español, fundado por el estado en el año 1950. Hasta 1983 fabricaba bajo licencia modelos de Fiat, cuando fue adquirida por Volkswagen."
+  },
+  {
+    "id": 126,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SERO ELECTRIC",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2025,
+    "summary": "Fabricante de vehículos eléctricos de origen argentino. Su producción comenzo en el año 2015."
+  },
+  {
+    "id": 133,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SHACMAN",
+    "prices": true,
+    "prices_from": 2025,
+    "prices_to": 2025,
+    "summary": ""
+  },
+  {
+    "id": 120,
+    "list_price": true,
+    "logo_url": null,
+    "name": "SHINERAY",
+    "prices": true,
+    "prices_from": 2018,
+    "prices_to": 2025,
+    "summary": "Empresa multinacional de producción automotriz  de origen chino. Fundada en el año 2012. Se especializa en vehículos comerciales."
+  },
+  {
+    "id": 104,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SIAM DI TELLA",
+    "prices": false,
+    "prices_from": null,
+    "prices_to": null,
+    "summary": "Empresa de origen argentino fundada en el año 1911. En sus comienzos producía electrodomésticos, y en 1959 empieza la fabricación de automóviles con modelos bajo licencia de la marca inglesa BMC. Finaliza en 1967 su producción."
+  },
+  {
+    "id": 40,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SKODA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1998,
+    "summary": "Fabricante de automóviles de origen Checoslovaco, fundado en 1895. Fue adquirida en el año 1994 por Volkswagen."
+  },
+  {
+    "id": 132,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/feb2bdc4-ef8a-4dd8-9767-f92abb1bbc53.jpg",
+    "name": "SKYWELL",
+    "prices": true,
+    "prices_from": 2024,
+    "prices_to": 2025,
+    "summary": "Fabricante de automoviles Chinos"
+  },
+  {
+    "id": 110,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/ae664b3c-bf5b-43a3-aba5-0f00f31d7eb4.png",
+    "name": "SMART",
+    "prices": true,
+    "prices_from": 2010,
+    "prices_to": 2019,
+    "summary": "Empresa automotriz de vehículos compactos de origen alemán, fundada en el año 1994, pertenece a Mercedes Benz."
+  },
+  {
+    "id": 127,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SOUEAST",
+    "prices": true,
+    "prices_from": 2020,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles y minibuses de origen chino, fundado en el año 1995."
+  },
+  {
+    "id": 101,
+    "list_price": false,
+    "logo_url": null,
+    "name": "SPACE",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Fabricante de vehículos comerciales de origen chino, comercializados en la decada del 90."
+  },
+  {
+    "id": 96,
+    "list_price": false,
+    "logo_url": null,
+    "name": "STAR (3-STAR)",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Fabricante de vehículos comerciales de origen chino, comercializados en la decada del 90."
+  },
+  {
+    "id": 42,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/723d04c0-5a66-42a2-ad19-0a258b591324.png",
+    "name": "SUBARU",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles de origen japonés, fundado en el año 1953. Conocido por sus vehículos con tracción integral. Actualmente una parte es propiedad de Toyota."
+  },
+  {
+    "id": 43,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/5988e2fd-5a52-4fa1-8e30-e59a67e0d272.png",
+    "name": "SUZUKI",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Empresa multinacional de origen japonés, fundada en el año 1909. Fabrica automóviles, wagon, motocicletas, cuatriciclos y motores marinos. "
+  },
+  {
+    "id": 57,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/ec3e6a7b-dcbf-49f3-b425-ab646875ed70.png",
+    "name": "TATA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Fabricante de automóviles de origen indio, fundado en el año 1945. "
+  },
+  {
+    "id": 76,
+    "list_price": false,
+    "logo_url": null,
+    "name": "TATA CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2003,
+    "summary": "Fabricante de automóviles de origen indio, fundado en el año 1945. "
+  },
+  {
+    "id": 44,
+    "list_price": false,
+    "logo_url": null,
+    "name": "TAVRIA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 1996,
+    "summary": "Fabricante de automóviles de origen ruso, fundado en el año 1987. Ceso su producción el el año 2011."
+  },
+  {
+    "id": 45,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/92817e3a-7292-4755-815f-be9f4a686fbb.png",
+    "name": "TOYOTA",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles, pick-up, wagon, furgones, minibuses y camiones de origen japonés, fundado en el año 1933. Su marca de lujo es Lexus."
+  },
+  {
+    "id": 85,
+    "list_price": false,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/338c448e-74f5-4a7b-91e5-067f5e9e99e1.png",
+    "name": "UAZ",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2002,
+    "summary": "Fabricante de vehículos todo terreno, autobuses y camiones de origen ruso, fundado en el año 1941."
+  },
+  {
+    "id": 46,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/7e5357e3-0d09-41ad-b26d-63e3f4be6c13.png",
+    "name": "VOLKSWAGEN",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles, wagon, furgones, pick-up, todo terreno y camiones de origen alemán, fundado en el año 1937. Propietaria de Audi, Bentley, Bugatti, Lamborghini, Porsche, Seat, Skoda, entre otras marcas."
+  },
+  {
+    "id": 66,
+    "list_price": true,
+    "logo_url": null,
+    "name": "VOLKSWAGEN CAM.",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2025,
+    "summary": "Fabricante de automóviles, wagon, furgones, pick-up, todo terreno y camiones de origen alemán, fundado en el año 1937. Propietaria de Audi, Bentley, Bugatti, Lamborghini, Porsche, Seat, Skoda, entre otras marcas."
+  },
+  {
+    "id": 130,
+    "list_price": false,
+    "logo_url": null,
+    "name": "VOLT",
+    "prices": true,
+    "prices_from": 2021,
+    "prices_to": 2025,
+    "summary": "Fabricante de vehículos eléctricos de origen argentino, formado en el año 2017."
+  },
+  {
+    "id": 47,
+    "list_price": true,
+    "logo_url": "https://storage.googleapis.com/preciosa-cars-images/35f71f23-9999-4f84-9eb1-9adbafbeacfe.png",
+    "name": "VOLVO",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Multinacional de origen sueco, fundada en el año 1927. Produce automóviles y camiones."
+  },
+  {
+    "id": 88,
+    "list_price": true,
+    "logo_url": null,
+    "name": "VOLVO CAMION",
+    "prices": true,
+    "prices_from": 1996,
+    "prices_to": 2025,
+    "summary": "Multinacional de origen sueco, fundada en el año 1927. Produce automóviles y camiones."
+  },
+  {
+    "id": 100,
+    "list_price": false,
+    "logo_url": null,
+    "name": "WULING MOTORS",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Fabricante de automóviles, camiones y autobuses de origen chino. Fundado en el año 1982."
+  },
+  {
+    "id": 97,
+    "list_price": false,
+    "logo_url": null,
+    "name": "YANTAI",
+    "prices": true,
+    "prices_from": 1998,
+    "prices_to": 2002,
+    "summary": "Fabricante de vehículos comerciales de origen chino, comercializados en la decada del 90."
+  },
+  {
+    "id": 86,
+    "list_price": false,
+    "logo_url": null,
+    "name": "YUEJIN",
+    "prices": true,
+    "prices_from": 1997,
+    "prices_to": 2003,
+    "summary": "Fabricante de vehículos comerciales de origen chino, comercializados en la decada del 90."
+  },
+  {
+    "id": 125,
+    "list_price": true,
+    "logo_url": null,
+    "name": "ZANELLA",
+    "prices": true,
+    "prices_from": 2019,
+    "prices_to": 2025,
+    "summary": "Fábrica de utilitarios, motocicletas y cuatriciclos de origen argentino, fundada en el año 1948. "
+  }
+]

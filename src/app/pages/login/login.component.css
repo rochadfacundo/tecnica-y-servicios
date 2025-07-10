@@ -6,7 +6,7 @@ html, body {
 }
 
 .image{
-  background-image: url('/assets/desktop2.png'); /* Ruta absoluta desde la raíz */
+  background-image: url('/assets/desktop2.jpg'); /* Ruta absoluta desde la raíz */
   background-size: cover; /* Hace que la imagen cubra toda la pantalla */
   background-position: center; /* Centra la imagen */
   background-attachment: fixed; /* Mantiene la imagen fija mientras se hace scroll */
@@ -14,6 +14,7 @@ html, body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  transition: opacity 0.5s ease-in;
 }
 
 .container {

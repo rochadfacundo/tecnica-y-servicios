@@ -101,23 +101,33 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
   }
 
 
- export function construirCotizacionRus(coberturas: any[]): CompaniaCotizada {
-    const buscarPremio = (codigoCasco: string): number | undefined => {
-      const cobertura = coberturas.find(c => c.codigoCasco === codigoCasco);
-      return cobertura ? cobertura.premio : undefined;
+  export function construirCotizacionRus(coberturas: any[]): CompaniaCotizada {
+
+    const buscarPremio = (...codigos: string[]): number | undefined => {
+      for (const codigo of codigos) {
+        // Buscar por codigoCasco
+        const porCasco = coberturas.find(c => c.codigoCasco === codigo);
+        if (porCasco) return porCasco.premio;
+
+        // Buscar por codigoRC si no se encontró por codigoCasco
+        const porRC = coberturas.find(c => c.codigoRC === codigo);
+        if (porRC) return porRC.premio;
+      }
+      return undefined;
     };
 
     const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
-      rc: buscarPremio('T34'),
+      rc: buscarPremio('T34', 'RCM', 'RCM C/ GRUA'),
       c: buscarPremio('B-80'),
       c1: buscarPremio('S0'),
-      d1:buscarPremio(''),
-      d2:buscarPremio(''),
-      d3:buscarPremio(''),
-      //no definidos por ahora
+      d1: buscarPremio(''),
+      d2: buscarPremio(''),
+      d3: buscarPremio(''),
+      // Otros campos aún no definidos
     };
 
     console.log(companiaCotizada);
     return companiaCotizada;
   }
+

@@ -7,12 +7,13 @@ import { Observable } from 'rxjs';
 import { Productor } from '../../models/productor.model';
 import { ESpinner } from '../../enums/ESpinner';
 import { SpinnerService } from '../../services/spinner.service';
+import { ImageLoaderDirective } from '../../directives/image-loader.directive';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,ImageLoaderDirective],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
