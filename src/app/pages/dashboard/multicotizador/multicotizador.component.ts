@@ -597,8 +597,8 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      () => this.cotizarATM(),
-      () => this.cotizarFederacion(),
+      //() => this.cotizarATM(),
+      //() => this.cotizarFederacion(),
       ()=> this.cotizarDigna(),
     ];
 
@@ -610,9 +610,9 @@ export class MulticotizadorComponent implements OnInit {
       await Promise.allSettled(promesas);
       this.cotizaciones.nroCotizacion=getRandomNumber();
     } finally {
+
       // Lo ocultamos solo cuando todas realmente terminaron
       this.s_spinner.hide(ESpinner.Rebote);
-
     }
 
     // Redirigir a la tabla
@@ -622,6 +622,4 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
-
 }
