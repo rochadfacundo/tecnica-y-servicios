@@ -14,7 +14,7 @@ import { FederacionService } from '../../../services/federacion.service';
 import {LocalidadesFederacion } from '../../../interfaces/cotizacionfederacion';
 import { AtmService } from '../../../services/atm.service';
 import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
-import { Tipo, TipoId, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from '../../../interfaces/tipos';
+import { Tipo, TipoId, TipoPersoneria, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
@@ -25,7 +25,7 @@ import { buildFederacionRequest, construirCotizacionFederacion } from './cotizad
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { DESCUENTOS_COMISION, filtrarModelosPorAnio, MEDIOS_PAGO, OPCIONES_SI_NO, PROVINCIAS, TIPOS_ID, TIPOS_REFACTURACION, TIPOS_VEHICULO } from '../../../utils/formOptions';
+import { filtrarModelosPorAnio, OPCIONES_SI_NO } from '../../../utils/formOptions';
 import { Provincia } from '../../../interfaces/provincia';
 import { Year } from '../../../interfaces/year';
 import { AuthService } from '../../../services/auth.service';
@@ -58,8 +58,7 @@ export class MulticotizadorComponent implements OnInit {
   tipoPersona!: TipoPersoneria;
   tiposId:TipoId[]=[];
   tiposDeRastreadores:Tipo[]=[];
-  tiposDeRefacturacion:TipoRefacturacion[]=[];
-  descuentoComision:Tipo[]=[];
+
   mediosPago:Tipo[]=[];
   coberturas:Cobertura[]=[];
   franquicias:Tipo[]=[];
@@ -78,12 +77,17 @@ export class MulticotizadorComponent implements OnInit {
   codigoPostalFederacion:string="";
   tipoVehiculoFederacion:number=0;
 
+  public readonly opcionesSiNo = OPCIONES_SI_NO;
+
+  public tiposVehiculo:TipoVehiculo[] = [];
+
   cotizacionesRus: RusCotizado[] = [];
   cotizacion:boolean=true;
   tiposDeUso: TipoDeUso[]= [];
   productorLog!: Productor|null;
   cotizaciones: Cotizacion;
   animar:boolean = false;
+
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -111,13 +115,9 @@ export class MulticotizadorComponent implements OnInit {
     }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
 
+
   }
 
-
-
-  public readonly opcionesSiNo = OPCIONES_SI_NO;
-
-  public tiposVehiculo:TipoVehiculo[] = [];
 
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
@@ -152,18 +152,22 @@ export class MulticotizadorComponent implements OnInit {
       vigenciaHasta: [{ value: null }],
     });
 
-    this.tiposId=TIPOS_ID;
+    this.s_http.get<Tipo[]>('assets/mediosPago.json').subscribe(data => {
+      this.mediosPago = data;
+    });
 
-    this.tiposDeRefacturacion=TIPOS_REFACTURACION;
+    this.s_http.get<any[]>('assets/tipoId.json').subscribe(data => {
+      this.tiposId = data;
+    });
 
-   //ver con el planchon
-    this.descuentoComision =DESCUENTOS_COMISION;
 
-    this.mediosPago=MEDIOS_PAGO;
+    this.s_http.get<Provincia[]>('assets/provincias.json').subscribe(data => {
+      this.provincias = data;
+    });
 
-    this.provincias=PROVINCIAS;
-
-    this.tiposVehiculo=TIPOS_VEHICULO;
+    this.s_http.get<TipoVehiculo[]>('assets/tiposVehiculo.json').subscribe(data => {
+      this.tiposVehiculo = data;
+    });
 
   }
 
@@ -594,11 +598,11 @@ export class MulticotizadorComponent implements OnInit {
     this.form = this.getForm();
 
     const tareas = [
-      () => this.cotizarRivadavia(),
+      //() => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
       //() => this.cotizarATM(),
-      //() => this.cotizarFederacion(),
+      () => this.cotizarFederacion(),
       ()=> this.cotizarDigna(),
     ];
 

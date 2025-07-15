@@ -1,0 +1,14 @@
+[
+  {
+    "tipo_id": "DNI"
+  },
+  {
+    "tipo_id": "PA (pasaporte)"
+  },
+  {
+    "tipo_id": "Libreta Civica"
+  },
+  {
+    "tipo_id": "Libreta de enrolamiento"
+  }
+]

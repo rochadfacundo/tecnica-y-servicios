@@ -1,0 +1,10 @@
+[
+  {
+    "codigo": 1,
+    "descripcion": "Efectivo"
+  },
+  {
+    "codigo": 2,
+    "descripcion": "Debito/Credito"
+  }
+]

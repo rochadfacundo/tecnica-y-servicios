@@ -1,0 +1,12 @@
+[
+  {
+    "idRus": 8,
+    "nombre": "MOTOVEHICULO",
+    "descripcion": "MOTO"
+  },
+  {
+    "idRus": 1,
+    "nombre": "VEHICULO",
+    "descripcion": "AUTO"
+  }
+]

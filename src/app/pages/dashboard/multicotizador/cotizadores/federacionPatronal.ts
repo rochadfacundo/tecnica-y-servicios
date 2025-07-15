@@ -1,12 +1,16 @@
 import { formatDate } from "@angular/common";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../../../interfaces/cotizacionfederacion";
-import { CompaniaCotizada, Cotizacion } from "../../../../interfaces/cotizacion";
-import { CodigosPersoneria, getRandomNumber }from "../../../../utils/utils";
+import { CompaniaCotizada } from "../../../../interfaces/cotizacion";
+import { CodigosPersoneria }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 
 
-// Armar el request para cotizar federacion
+const AJUSTE=10;
+const SIN_FRANQUICIA=99;
+const TODAS_LAS_COBERTURAS="null";
+const SIN_RC=99;
+
 export function buildFederacionRequest(
   form: CotizacionFormValue,
   infoauto:number,
@@ -19,8 +23,7 @@ export function buildFederacionRequest(
       let comision= form.descuentoComision? Number(form.descuentoComision.codigo):0;
       const fechaOriginal = form.vigenciaDesde;
       const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
-      const AJUSTE=10;
-      const todasLasCoberturas="null";
+
 
       const cotizacionFederacion: CotizacionFederacion = {
         //numero_cotizacion: 129445013,
@@ -30,7 +33,7 @@ export function buildFederacionRequest(
         pago_contado: false,
         razon_social: CodigosPersoneria.Federacion.personaFisica,
         //cliente_nuevo: false,
-        refacturaciones: configFedPat?.refacturaciones,
+        refacturaciones: Number(configFedPat?.refacturaciones),
         contratante: {
           id: Number(form.nroId),
           tipo_id: form.tipoId,
@@ -53,15 +56,15 @@ export function buildFederacionRequest(
           localidad_de_guarda: Number(codPostal)
         },
         coberturas: {
-          ajuste_automatico: AJUSTE, //en mensuales hasta 10,
-          rc_ampliada: 99, //diferencia entre ajuste automatico y esto
-          interasegurado: true, //siempre true
+          ajuste_automatico: AJUSTE,
+          rc_ampliada: SIN_RC, //diferencia entre ajuste automatico y esto
+          interasegurado: true,
           rc_conosur:1,
           grua:Boolean(form.grua),
           taller_exclusivo:Boolean(form.tallerExclusivo),
           casco_conosur:true,
-          plan: todasLasCoberturas,
-          franquicia: 1, //cambiar dsp
+          plan: TODAS_LAS_COBERTURAS,
+          franquicia: SIN_FRANQUICIA,
         },/*
         producto_modular: {
           cant_modulos: 0,

@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "descripcion": "Buenos Aires",
+    "provinciaRiv": "BUENOS_AIRES"
+  },
+  {
+    "id": 2,
+    "descripcion": "Capital Federal",
+    "provinciaRiv": "CAPITAL_FEDERAL"
+  },
+  {
+    "id": 3,
+    "descripcion": "Catamarca",
+    "provinciaRiv": "CATAMARCA"
+  },
+  {
+    "id": 4,
+    "descripcion": "Chaco",
+    "provinciaRiv": "CHACO"
+  },
+  {
+    "id": 5,
+    "descripcion": "Chubut",
+    "provinciaRiv": "CHUBUT"
+  },
+  {
+    "id": 6,
+    "descripcion": "Cordoba",
+    "provinciaRiv": "CORDOBA"
+  },
+  {
+    "id": 7,
+    "descripcion": "Corrientes",
+    "provinciaRiv": "CORRIENTES"
+  },
+  {
+    "id": 8,
+    "descripcion": "Entre Rios",
+    "provinciaRiv": "ENTRE_RIOS"
+  },
+  {
+    "id": 9,
+    "descripcion": "Formosa",
+    "provinciaRiv": "FORMOSA"
+  },
+  {
+    "id": 10,
+    "descripcion": "Jujuy",
+    "provinciaRiv": "JUJUY"
+  },
+  {
+    "id": 11,
+    "descripcion": "La Pampa",
+    "provinciaRiv": "LA_PAMPA"
+  },
+  {
+    "id": 12,
+    "descripcion": "La Rioja",
+    "provinciaRiv": "LA_RIOJA"
+  },
+  {
+    "id": 13,
+    "descripcion": "Mendoza",
+    "provinciaRiv": "MENDOZA"
+  },
+  {
+    "id": 14,
+    "descripcion": "Misiones",
+    "provinciaRiv": "MISIONES"
+  },
+  {
+    "id": 15,
+    "descripcion": "Neuquen",
+    "provinciaRiv": "NEUQUEN"
+  },
+  {
+    "id": 16,
+    "descripcion": "Rio Negro",
+    "provinciaRiv": "RIO_NEGRO"
+  },
+  {
+    "id": 17,
+    "descripcion": "Salta",
+    "provinciaRiv": "SALTA"
+  },
+  {
+    "id": 18,
+    "descripcion": "San Juan",
+    "provinciaRiv": "SAN_JUAN"
+  },
+  {
+    "id": 19,
+    "descripcion": "San Luis",
+    "provinciaRiv": "SAN_LUIS"
+  },
+  {
+    "id": 20,
+    "descripcion": "Santa Cruz",
+    "provinciaRiv": "SANTA_CRUZ"
+  },
+  {
+    "id": 21,
+    "descripcion": "Santa Fe",
+    "provinciaRiv": "SANTA_FE"
+  },
+  {
+    "id": 22,
+    "descripcion": "Santiago Del Estero",
+    "provinciaRiv": "SANTIAGO_DEL_ESTERO"
+  },
+  {
+    "id": 23,
+    "descripcion": "Tierra Del Fuego",
+    "provinciaRiv": "TIERRA_DEL_FUEGO"
+  },
+  {
+    "id": 24,
+    "descripcion": "Tucuman",
+    "provinciaRiv": "TUCUMAN"
+  }
+]
