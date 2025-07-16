@@ -17,10 +17,11 @@ export class FederacionService {
       return this.http.get<any>(`${this.apiUrl}/token`);
     }
 
-    getLocalidades(): Observable<any> {
-      return this.http.get<any>(`${this.apiUrl}/localidades`);
+    getLocalidades(zipCode:number): Observable<any> {
+      return this.http.get<any[]>(`${this.apiUrl}/localidades`, {
+        params: { zipCode: zipCode }
+      });
     }
-
     getFranquicia(codInfoAuto: string, fecha: string): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/franquicia/${codInfoAuto}/${fecha}`);
     }
@@ -37,9 +38,9 @@ export class FederacionService {
       return this.http.get<any[]>(`${this.apiUrl}/tiposVehiculo/${codInfoAuto}`);
     }
 
-    cotizarFederacion(data: CotizacionFederacion): Observable<any> {
-        console.log("📩 Enviando a la API fedPat: ", JSON.stringify(data, null, 2));
-        return this.http.post(`${this.apiUrl}/cotizar`, data);
-      }
+    cotizarFederacion(data: CotizacionFederacion, zipCode: number): Observable<any> {
+      const params = { zipCode: zipCode };
+      return this.http.post(`${this.apiUrl}/cotizar`, data, { params });
+    }
 
 }

@@ -4,18 +4,17 @@ import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../..
 import { CompaniaCotizada } from "../../../../interfaces/cotizacion";
 import { CodigosPersoneria }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
+import { Tipo } from "../../../../interfaces/tipos";
 
 
 const AJUSTE=10;
-const SIN_FRANQUICIA=99;
 const TODAS_LAS_COBERTURAS="null";
-const SIN_RC=99;
+const SIN_VALOR=99;
 
 export function buildFederacionRequest(
   form: CotizacionFormValue,
   infoauto:number,
   tipoVehiculo:any,
-  codPostal:any,
   productor:Productor)
 : CotizacionFederacion{
   const configFedPat = productor.companias?.find(c => c.compania === 'FEDERACION PATRONAL');
@@ -53,18 +52,18 @@ export function buildFederacionRequest(
           gnc: Boolean(form.tieneGnc),
           //volcador: false,
           //suma_asegurada: 1200000,
-          localidad_de_guarda: Number(codPostal)
+          localidad_de_guarda: SIN_VALOR,
         },
         coberturas: {
           ajuste_automatico: AJUSTE,
-          rc_ampliada: SIN_RC, //diferencia entre ajuste automatico y esto
+          rc_ampliada: SIN_VALOR, //diferencia entre ajuste automatico y esto
           interasegurado: true,
           rc_conosur:1,
           grua:Boolean(form.grua),
           taller_exclusivo:Boolean(form.tallerExclusivo),
           casco_conosur:true,
           plan: TODAS_LAS_COBERTURAS,
-          franquicia: SIN_FRANQUICIA,
+          franquicia: SIN_VALOR,
         },/*
         producto_modular: {
           cant_modulos: 0,

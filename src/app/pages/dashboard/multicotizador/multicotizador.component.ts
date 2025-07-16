@@ -74,7 +74,7 @@ export class MulticotizadorComponent implements OnInit {
   codigoRivadavia:string="";
   sumaRivadavia:string="";
 
-  codigoPostalFederacion:string="";
+  codigoPostalFederacion:number=0;
   tipoVehiculoFederacion:number=0;
 
   public readonly opcionesSiNo = OPCIONES_SI_NO;
@@ -114,8 +114,6 @@ export class MulticotizadorComponent implements OnInit {
       this.animar = true;
     }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
-
-
   }
 
 
@@ -354,61 +352,11 @@ export class MulticotizadorComponent implements OnInit {
 
     this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe((zipCode) => {
       if (zipCode) {
-
         const zipCodeString=String(zipCode);
-
         if(zipCodeString.length>=4)
-        {
-
-          this.s_fedPat.getLocalidades().subscribe( { next:(resp) => {
-
-          const array: LocalidadesFederacion[] = resp.respuesta;
-
-          const localidadEncontrada = array.find(loc => loc.codigoPostal === zipCode);
-
-          if (localidadEncontrada) {
-            this.codigoPostalFederacion=localidadEncontrada.codigo;
-          } else {
-            console.log('❌ No se encontró localidad con ese código postal');
-          }
-
-          },
-          error: (error) => {
-            console.error("❌ ERROR:",
-            error?.error?.error || "Error desconocido");
-          }  });
-        }
-      }
-    });
-
-
-
-    this.cotizacionForm.get('uso')?.valueChanges.subscribe((uso) => {
-      if (uso) {
-        console.log(uso);
-        //tipos de federacion
-        this.s_fedPat.getTiposVehiculo(this.codigoInfoAuto).subscribe({
-          next: (res:any[]) => {
-
-          const tipoMatch = res.find(t =>
-          uso.uso === 'PARTICULAR' ? t.descripcion.toUpperCase().includes('PARTICULAR') :
-          uso.uso === 'COMERCIAL'  ? t.descripcion.toUpperCase().includes('COMERCIAL') :
-          false
-        );
-          if (tipoMatch) {
-            this.tipoVehiculoFederacion = tipoMatch.codigo;
-          } else {
-            console.warn("⚠️ No se encontró tipo de vehículo que coincida con el uso");
-          }
-
-        },
-        error: (err) => {
-            console.log(err);
-          }
-        });
+        this.codigoPostalFederacion=zipCode;
 
       }
-
     });
 
     this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe((rastreador) => {
@@ -433,7 +381,6 @@ export class MulticotizadorComponent implements OnInit {
         return;
       }
       const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog,this.getTipoVehiculo());
-      console.log('entramo a rus?');
       try {
         const observable$ = this.s_rus.cotizar(cotizacionData);
         const respuesta = await firstValueFrom(observable$);
@@ -531,13 +478,12 @@ export class MulticotizadorComponent implements OnInit {
         this.form,
         this.codigoInfoAuto,
         this.tipoVehiculoFederacion,
-        this.codigoPostalFederacion,
         this.productorLog
       );
 
       try {
 
-        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion));
+        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion,this.codigoPostalFederacion));
 
         console.log('✅ Cotización exitosa Federación:', respuesta);
         const cotizacion = construirCotizacionFederacion(respuesta.coberturas.planes);
@@ -585,6 +531,7 @@ export class MulticotizadorComponent implements OnInit {
 
   getForm()
   {
+
     return this.cotizacionForm.getRawValue();
   }
 
