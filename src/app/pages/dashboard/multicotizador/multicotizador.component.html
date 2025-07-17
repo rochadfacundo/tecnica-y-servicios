@@ -1,4 +1,4 @@
-<div class="container mt-4"   [ngClass]="{ 'animate__animated animate__fadeIn': animar }">
+<div class="container mt-4 mb-4"   [ngClass]="{ 'animate__animated animate__fadeIn': animar }">
   <form [formGroup]="cotizacionForm">
 
  <!-- Código Tipo Interés  SACAR
@@ -51,7 +51,7 @@
 
     <!-- SECCION VEHICULOS -->
 
-<div class="animate__animated animate__fadeInUp animate__delay-2s" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
+<div class="animate__animated animate__fadeInUp animate__delay-1s" *ngIf="this.cotizacionForm.get('tipoVehiculo')?.enabled">
     <div class="mb-3">
       <label for="marca" class="form-label">Marca</label>
       <ng-select
@@ -211,8 +211,10 @@
     </div>
 
     <!-- Botón Cotizar -->
-    <div class="d-grid gap-2">
-      <button type="button" class="btn btn-primary" (click)="cotizar()" [disabled]="this.cotizacionForm.invalid">Cotizar</button>
+    <div class="d-grid gap-2 mb-4">
+      <button type="button" class="btn btn-primary" (click)="cotizar()" [disabled]="this.cotizacionForm.invalid">
+       <span style="font-size:larger"> Cotizar</span>
+      </button>
     </div>
 
   </div>

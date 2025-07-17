@@ -38,8 +38,8 @@ export class FederacionService {
       return this.http.get<any[]>(`${this.apiUrl}/tiposVehiculo/${codInfoAuto}`);
     }
 
-    cotizarFederacion(data: CotizacionFederacion, zipCode: number): Observable<any> {
-      const params = { zipCode: zipCode };
+    cotizarFederacion(data: CotizacionFederacion, zipCode: number,tipoVehiculo: string): Observable<any> {
+      const params = { zipCode: zipCode, tipoVehiculo: tipoVehiculo  };
       return this.http.post(`${this.apiUrl}/cotizar`, data, { params });
     }
 

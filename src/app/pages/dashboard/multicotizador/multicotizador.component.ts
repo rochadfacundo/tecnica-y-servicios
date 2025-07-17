@@ -75,7 +75,6 @@ export class MulticotizadorComponent implements OnInit {
   sumaRivadavia:string="";
 
   codigoPostalFederacion:number=0;
-  tipoVehiculoFederacion:number=0;
 
   public readonly opcionesSiNo = OPCIONES_SI_NO;
 
@@ -477,13 +476,13 @@ export class MulticotizadorComponent implements OnInit {
       const cotizacionFederacion = buildFederacionRequest(
         this.form,
         this.codigoInfoAuto,
-        this.tipoVehiculoFederacion,
-        this.productorLog
+        this.productorLog,
+        this.getTipoVehiculo()
       );
 
       try {
 
-        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion,this.codigoPostalFederacion));
+        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion,this.codigoPostalFederacion,this.getTipoVehiculo()));
 
         console.log('✅ Cotización exitosa Federación:', respuesta);
         const cotizacion = construirCotizacionFederacion(respuesta.coberturas.planes);
@@ -545,10 +544,10 @@ export class MulticotizadorComponent implements OnInit {
     this.form = this.getForm();
 
     const tareas = [
-      //() => this.cotizarRivadavia(),
+      () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      //() => this.cotizarATM(),
+      () => this.cotizarATM(),
       () => this.cotizarFederacion(),
       ()=> this.cotizarDigna(),
     ];

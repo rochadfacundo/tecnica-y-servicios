@@ -5,6 +5,7 @@ import { CompaniaCotizada } from "../../../../interfaces/cotizacion";
 import { CodigosPersoneria }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 import { Tipo } from "../../../../interfaces/tipos";
+import { TipoVehiculo } from "../../../../enums/tipoVehiculos";
 
 
 const AJUSTE=10;
@@ -14,20 +15,20 @@ const SIN_VALOR=99;
 export function buildFederacionRequest(
   form: CotizacionFormValue,
   infoauto:number,
-  tipoVehiculo:any,
-  productor:Productor)
+  productor:Productor,
+  tipoVehiculo:string
+)
 : CotizacionFederacion{
   const configFedPat = productor.companias?.find(c => c.compania === 'FEDERACION PATRONAL');
       let rastreador= form.rastreador? Number(form.rastreador?.codigo): 99;
-      let comision= form.descuentoComision? Number(form.descuentoComision.codigo):0;
+
       const fechaOriginal = form.vigenciaDesde;
       const fechaFormateada = formatDate(fechaOriginal, 'dd/MM/yyyy', 'en-AR');
 
 
-      const cotizacionFederacion: CotizacionFederacion = {
+      let cotizacionFederacion: CotizacionFederacion = {
         //numero_cotizacion: 129445013,
         fecha_desde: fechaFormateada,
-        descuento_comision: comision,
         medio_pago: Number(form.medioPago.codigo),
         pago_contado: false,
         razon_social: CodigosPersoneria.Federacion.personaFisica,
@@ -46,8 +47,7 @@ export function buildFederacionRequest(
         vehiculo: {
           infoauto: String(infoauto),
           anio: String(form.anio),
-          tipo_vehiculo: tipoVehiculo,
-          alarma: Boolean(form.alarma),
+          tipo_vehiculo: SIN_VALOR,
           rastreador:rastreador,
           gnc: Boolean(form.tieneGnc),
           //volcador: false,
@@ -58,10 +58,10 @@ export function buildFederacionRequest(
           ajuste_automatico: AJUSTE,
           rc_ampliada: SIN_VALOR, //diferencia entre ajuste automatico y esto
           interasegurado: true,
-          rc_conosur:1,
+        //  rc_conosur:1,
           grua:Boolean(form.grua),
           taller_exclusivo:Boolean(form.tallerExclusivo),
-          casco_conosur:true,
+        //  casco_conosur:true,
           plan: TODAS_LAS_COBERTURAS,
           franquicia: SIN_VALOR,
         },/*
@@ -71,6 +71,13 @@ export function buildFederacionRequest(
           fecha_nacimiento: '13/07/1998'
         },*/
       };
+
+      if(tipoVehiculo==TipoVehiculo.VEHICULO)
+      {
+        cotizacionFederacion.descuento_comision= SIN_VALOR;
+        cotizacionFederacion.vehiculo.alarma= Boolean(form.alarma);
+      }
+
 
       return cotizacionFederacion;
 
