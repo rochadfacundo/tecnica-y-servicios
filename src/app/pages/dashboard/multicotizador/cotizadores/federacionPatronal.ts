@@ -4,7 +4,6 @@ import { CondicionesIvaFederacionPatronal, CotizacionFederacion } from "../../..
 import { CompaniaCotizada } from "../../../../interfaces/cotizacion";
 import { CodigosPersoneria }from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
-import { Tipo } from "../../../../interfaces/tipos";
 import { TipoVehiculo } from "../../../../enums/tipoVehiculos";
 
 
