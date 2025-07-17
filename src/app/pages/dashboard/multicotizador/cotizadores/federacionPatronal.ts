@@ -57,10 +57,8 @@ export function buildFederacionRequest(
           ajuste_automatico: AJUSTE,
           rc_ampliada: SIN_VALOR, //diferencia entre ajuste automatico y esto
           interasegurado: true,
-        //  rc_conosur:1,
           grua:Boolean(form.grua),
           taller_exclusivo:Boolean(form.tallerExclusivo),
-        //  casco_conosur:true,
           plan: TODAS_LAS_COBERTURAS,
           franquicia: SIN_VALOR,
         },/*
@@ -71,13 +69,16 @@ export function buildFederacionRequest(
         },*/
       };
 
-      if(tipoVehiculo==TipoVehiculo.VEHICULO)
+      if(tipoVehiculo==TipoVehiculo.VEHICULO && cotizacionFederacion.coberturas)
       {
         cotizacionFederacion.descuento_comision= SIN_VALOR;
         cotizacionFederacion.vehiculo.alarma= Boolean(form.alarma);
+        cotizacionFederacion.coberturas.casco_conosur= true;
+        cotizacionFederacion.coberturas.rc_conosur=1;
       }
 
 
+      console.log("Enviar a federacion:",cotizacionFederacion);
       return cotizacionFederacion;
 
 }
