@@ -12,7 +12,6 @@
     "name": "Juan Pablo",
     "surName": "Rodríguez",
     "photo": "../assets/asesoramiento.png"
-
   },
   {
     "email": "acollia@tecnicayseguros.com.ar",
@@ -50,13 +49,6 @@
     "photo": "../assets/asesoramiento.png"
   },
   {
-    "email": "fescalante@tecnicayseguros.com.ar",
-    "role": "Ejecutivo Comercial",
-    "name": "Federico",
-    "surName": "Escalante",
-    "photo": "../assets/asesoramiento.png"
-  },
-  {
     "email": "sojeda@tecnicayseguros.com.ar",
     "role": "Ejecutiva Comercial",
     "name": "Sofía",
@@ -78,10 +70,10 @@
     "photo": "../assets/asesoramiento.png"
   },
   {
-    "email": "abarber@tecnicayseguros.com.ar",
-    "role": "Desarrollo comercial",
-    "name": "Adriana",
-    "surName": "Barber",
+    "email": "sponce@tecnicayseguros.com.ar",
+    "role": "Administración Siniestros",
+    "name": "Silvia",
+    "surName": "Ponce",
     "photo": "../assets/asesoramiento.png"
   },
   {
@@ -91,13 +83,4 @@
     "surName": "Rocha",
     "photo": "../assets/asesoramiento.png"
   }
-  ,
-  {
-    "email": "facundodrocha@gmail.com",
-    "role": "Sistemas",
-    "name": "Facundo",
-    "surName": "Rocha",
-    "photo": "../assets/asesoramiento.png"
-  }
-
 ]
