@@ -10,6 +10,7 @@ import { TipoVehiculo } from "../../../../enums/tipoVehiculos";
 const AJUSTE=10;
 const TODAS_LAS_COBERTURAS="null";
 const SIN_VALOR=99;
+const SIN_DESCUENTO=0;
 
 export function buildFederacionRequest(
   form: CotizacionFormValue,
@@ -29,6 +30,7 @@ export function buildFederacionRequest(
         //numero_cotizacion: 129445013,
         fecha_desde: fechaFormateada,
         medio_pago: Number(form.medioPago.codigo),
+        descuento_comision: SIN_DESCUENTO,
         pago_contado: false,
         razon_social: CodigosPersoneria.Federacion.personaFisica,
         //cliente_nuevo: false,
@@ -50,11 +52,11 @@ export function buildFederacionRequest(
           rastreador:rastreador,
           gnc: Boolean(form.tieneGnc),
           //volcador: false,
-          //suma_asegurada: 1200000,
+         // suma_asegurada: 8800000,
           localidad_de_guarda: SIN_VALOR,
         },
         coberturas: {
-          ajuste_automatico: AJUSTE,
+          ajuste_automatico: AJUSTE,//AJUSTE,
           rc_ampliada: SIN_VALOR, //diferencia entre ajuste automatico y esto
           interasegurado: true,
           grua:Boolean(form.grua),
@@ -71,7 +73,7 @@ export function buildFederacionRequest(
 
       if(tipoVehiculo==TipoVehiculo.VEHICULO && cotizacionFederacion.coberturas)
       {
-        cotizacionFederacion.descuento_comision= SIN_VALOR;
+        cotizacionFederacion.descuento_comision= SIN_DESCUENTO;
         cotizacionFederacion.vehiculo.alarma= Boolean(form.alarma);
         cotizacionFederacion.coberturas.casco_conosur= true;
         cotizacionFederacion.coberturas.rc_conosur=1;
@@ -97,11 +99,11 @@ export function construirCotizacionFederacion(coberturas: any[]): CompaniaCotiza
   const companiaCotizada: CompaniaCotizada = {
     compania: 'Federación Patronal',
     rc: buscarPremio('A4'),
-    c: buscarPremio('LB1', 'LB1-A'),
-    c1: buscarPremio('LB', 'LB-A'),
-    d1: buscarPremio('TD3'),
-    d2: buscarPremio('TD1'),
-    d3: buscarPremio('TD5'),
+    c: buscarPremio('C'),
+    c1: buscarPremio('CF'),
+    d1: buscarPremio('TD3'), // aca un porcentaje 2%
+    d2: buscarPremio('TD3'), // aca otro 4%
+    d3: buscarPremio('TD3'), // 6%
   };
 
   return companiaCotizada;

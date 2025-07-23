@@ -307,45 +307,13 @@ export class MulticotizadorComponent implements OnInit {
 
 
     //Para traer codigo de Rivadavia y franquicia federacion.
-    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia:number) => {
+    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia:number) =>
+    {
+
       if (codia) {
+
       console.log(codia);
       this.codigoInfoAuto=codia;
-      const nroProductorRiv= String(18922);
-      const anio= String(this.anio);
-
-      this.s_fedPat.getFranquicia(String(this.codigoInfoAuto),formatDateSinceDay(new Date())).subscribe({
-        next: (res) => {
-          this.franquicias=res;
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      });
-      console.log(nroProductorRiv,this.codigoInfoAuto,anio);
-      this.s_riv.getSumaAsegurada(nroProductorRiv,this.codigoInfoAuto,anio).subscribe({
-        next: (res) => {
-          console.log(res);
-         const tipoVehiculoRiv= res.tipoVehiculo;
-
-         this.sumaRivadavia= res.suma;
-         const tipoUso= "1";
-
-            //Se envia tipo para filtrar en el backend (las motos no reciben parametro de tipoUso)
-            this.s_riv.getCodigoVehiculo(nroProductorRiv,tipoVehiculoRiv,tipoUso,this.getTipoVehiculo()).subscribe({
-              next: (res) => {
-                this.codigoRivadavia= res.tarifasDto[0].codigoVehiculo;
-              },
-              error: (err) => {
-                console.log(err);
-              }
-            });
-
-      },
-        error: (err) => {
-          console.log(err);
-        }
-      });
       }
     });
 
@@ -445,13 +413,11 @@ export class MulticotizadorComponent implements OnInit {
     const cotizacion: DatosCotizacionRivadavia = buildRivadaviaRequest(
       this.form,
       this.codigoInfoAuto,
-      this.codigoRivadavia,
-      this.sumaRivadavia,
       this.productorLog
     );
 
     try {
-      const observable$ = this.s_riv.cotizarRivadavia(cotizacion);
+      const observable$ = this.s_riv.cotizarRivadavia(cotizacion,this.getTipoVehiculo());
       const respuesta = await firstValueFrom(observable$);
 
       console.log('✅ Cotización exitosa Rivadavia:', respuesta);
@@ -547,7 +513,7 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      () => this.cotizarATM(),
+     // () => this.cotizarATM(),
       () => this.cotizarFederacion(),
       ()=> this.cotizarDigna(),
     ];

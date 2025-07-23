@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DatosCotizacionRivadavia } from '../interfaces/cotizacionRivadavia';
+import { TipoVehiculo } from '../interfaces/tipos';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +27,10 @@ export class RivadaviaService {
     return this.http.get(`${this.API_URL}/codigo_vehiculo`, { params });
   }
 
-  cotizarRivadavia(data: DatosCotizacionRivadavia): Observable<any> {
+  cotizarRivadavia(data: DatosCotizacionRivadavia,tipo:TipoVehiculo | string): Observable<any> {
+    const params = { tipoVehiculo: String(tipo) };
+
     console.log("📩 Enviando a la API Riv: ", JSON.stringify(data, null, 2));
-    return this.http.post(`${this.API_URL}/cotizar`, data);
+    return this.http.post(`${this.API_URL}/cotizar`, data, { params });
   }
 }

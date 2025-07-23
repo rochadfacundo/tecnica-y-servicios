@@ -14,7 +14,8 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
         provincia: form.provincia.descripcion
       };
       const RASTREADOR=form.rastreador ? 1 : 0;
-      const AJUSTE=10;
+      const AJUSTE=0;
+      const COMISION=20;
 
       const prod: ProductorMercantil={id:Number(configMA?.nroProductor)};
       const iva ={consumidorFinal:5};
@@ -30,7 +31,7 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
         tipo: TIPO_VEHICULO,//este lo agregue yo para validar en el backend el endpoint
         periodo: configMA?.periodo,
         iva: iva.consumidorFinal,
-        //   comision: nose,
+        comision: COMISION,
 
         //   bonificacion: nose,
         ajuste_suma:AJUSTE, //10,25,50 clausula ajuste?

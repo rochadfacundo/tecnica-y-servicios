@@ -33,7 +33,8 @@ export class DashboardComponent implements OnInit {
 
     const img = new Image();
     img.src = 'assets/car.jpg';
-    img.onload = () => {
+    img.onload = () =>
+    {
       document.querySelector('.fondo-dashboard')?.classList.add('loaded');
     };
 

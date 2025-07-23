@@ -5,7 +5,7 @@ import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPa
 import { Productor } from "../../../../models/productor.model";
 import { CodigosPersoneria, getRandomNumber } from "../../../../utils/utils";
 
-export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,codigoRivadavia:string,sumaRivadavia:string,productor:Productor){
+export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,productor:Productor){
     //formatDateSinceYear
     const gnc= form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
 
@@ -35,9 +35,9 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
         },
         datoVehiculo: {
           codigoInfoAuto: String(codigoInfoAuto),
-          codigoVehiculo: String(codigoRivadavia),
+          codigoVehiculo: "",
           modeloAnio: String(form.anio),
-          sumaAsegurada: Number(sumaRivadavia),
+          sumaAsegurada: 0,
           porcentajeAjuste: ajuste,
         },
         datoPoliza: {
@@ -70,6 +70,7 @@ export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:nu
     }
 
 
+    console.log("enviar a rivadavia",cotizacion);
     return cotizacion;
 
 }
@@ -113,8 +114,8 @@ export function construirCotizacionRivadavia(planes: any[]): CompaniaCotizada {
     rc: buscarPremio('A'),
     c: buscarPremio('P'),
     c1: buscarPremio('MX'),
-    d1: buscarPremio('D F1', 'D F2'),  // intenta con D F1, si no está usa D F2
-    d2: buscarPremio('D F3'),
+    d1: buscarPremio('D F1', 'D F2','D F3'),  // intenta con D F1, si no está usa D F2
+    d2: buscarPremio('D F4'),
     d3: buscarPremio('D F5'),
   };
 

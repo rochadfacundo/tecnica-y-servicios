@@ -128,9 +128,9 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
     rc: buscarPremio('A0'),
     c: buscarPremio('C3', 'C3-BÁSICA'),
     c1: buscarPremio('C2', 'C2-MEDIA'),
-    d1: buscarPremio('D1', 'D1-20'),
-    d2: buscarPremio('D2', 'D2-30'),
-    d3: buscarPremio('D3', 'D3-50'),
+    d1: buscarPremio('D1', 'D2'),
+    d2: buscarPremio('D3'),
+    d3: buscarPremio('D4'),
   };
 
   return companiaCotizada;
