@@ -118,7 +118,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
     const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
-      rc: buscarPremio('RCA', 'RCA C/ GRUA'),
+      rc: buscarPremio('RCA', 'RCA C/ GRUA','RCM'),
       c: buscarPremio('C-80'),
       c1: buscarPremio('S','S0'),
       d1: buscarPremio('T34'),
