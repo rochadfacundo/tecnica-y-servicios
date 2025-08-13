@@ -17,4 +17,8 @@ private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/digna';
       password: password
     });
   }
+
+  cotizar(){
+
+  }
 }

@@ -188,7 +188,7 @@ export class CambiarConfiguracionComponent implements OnInit {
     productor.role = this.productorLogueado?.role;
     productor.cotizaciones = this.productorLogueado?.cotizaciones;
 
-    this.s_spinner.show(ESpinner.Rebote);
+    this.s_spinner.show(ESpinner.Vaiven);
     if (this.fotoSeleccionada && productor.email) {
       try {
         const storage = getStorage();
@@ -213,7 +213,7 @@ export class CambiarConfiguracionComponent implements OnInit {
       console.error(err);
       alert('❌ Error al guardar cambios');
     }finally{
-      this.s_spinner.hide(ESpinner.Rebote);
+      this.s_spinner.hide(ESpinner.Vaiven);
     }
   }
 }

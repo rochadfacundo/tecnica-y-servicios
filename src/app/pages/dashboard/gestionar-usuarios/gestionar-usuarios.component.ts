@@ -359,7 +359,7 @@ reestablecerPassword(usuario: Productor) {
 
 
     try {
-      this.s_spinner.show(ESpinner.Rebote);
+      this.s_spinner.show(ESpinner.Vaiven);
       // Detectar si se está editando un usuario
       const yaExiste = this.usuarios.find(u => u.email === productor.email);
 
@@ -392,7 +392,7 @@ reestablecerPassword(usuario: Productor) {
       console.error('❌ Error al registrar productor:', error);
       alert('❌ No se pudo guardar el productor. Intentá nuevamente.');
     }finally{
-      this.s_spinner.hide(ESpinner.Rebote);
+      this.s_spinner.hide(ESpinner.Vaiven);
       this.form.reset();
       this.companias.clear();
       this.fotoSeleccionada = null;

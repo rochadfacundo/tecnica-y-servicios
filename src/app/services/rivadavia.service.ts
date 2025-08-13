@@ -11,7 +11,9 @@ export class RivadaviaService {
 
   private API_URL: string = "https://api-5cekuonbbq-uc.a.run.app/rivadavia";
 
+
   //private API_URL = environment.URL_DEV+'/rivadavia';
+
 
   constructor(private http: HttpClient) {}
 

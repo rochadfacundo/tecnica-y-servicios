@@ -513,7 +513,7 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-     // () => this.cotizarATM(),
+      () => this.cotizarATM(),
       () => this.cotizarFederacion(),
       ()=> this.cotizarDigna(),
     ];
