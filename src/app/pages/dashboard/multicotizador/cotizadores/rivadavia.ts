@@ -112,9 +112,9 @@ export function construirCotizacionRivadavia(planes: any[]): CompaniaCotizada {
   const companiaCotizada: CompaniaCotizada = {
     compania: 'Rivadavia',
     rc: buscarPremio('A'),
-    c: buscarPremio('P'),
-    c1: buscarPremio('MX'),
-    d1: buscarPremio('D F1', 'D F2','D F3'),  // intenta con D F1, si no está usa D F2
+    c: buscarPremio('P','F'),
+    c1: buscarPremio('MX','B'),
+    d1: buscarPremio('D F1', 'D F2','D F3','C'),  // intenta con D F1, si no está usa D F2    C para moto
     d2: buscarPremio('D F4'),
     d3: buscarPremio('D F5'),
   };

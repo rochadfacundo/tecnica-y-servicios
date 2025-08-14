@@ -126,9 +126,9 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
   const companiaCotizada: CompaniaCotizada = {
     compania: 'ATM',
     rc: buscarPremio('A0'),
-    c: buscarPremio('C3', 'C3-BÁSICA'),
+    c: buscarPremio('C3', 'C3-BÁSICA','B2'), //B2 PARA MOTO
     c1: buscarPremio('C2', 'C2-MEDIA'),
-    d1: buscarPremio('D1', 'D2'),
+    d1: buscarPremio('D1', 'D2','C'), //C PARA MOTO
     d2: buscarPremio('D3'),
     d3: buscarPremio('D4'),
   };
