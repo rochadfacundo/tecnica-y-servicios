@@ -102,32 +102,53 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
 
   export function construirCotizacionRus(coberturas: any[]): CompaniaCotizada {
+    const norm = (s?: string) => (s ?? "").toUpperCase().trim();
 
-    const buscarPremio = (...codigos: string[]): number | undefined => {
-      for (const codigo of codigos) {
-        // Buscar por codigoCasco
-        const porCasco = coberturas.find(c => c.codigoCasco === codigo);
-        if (porCasco) return porCasco.premio;
-
-        // Buscar por codigoRC si no se encontró por codigoCasco
-        const porRC = coberturas.find(c => c.codigoRC === codigo);
-        if (porRC) return porRC.premio;
-      }
-      return undefined;
+    const getPremioPorCodigoCasco = (...codigos: string[]): number | undefined => {
+      const set = new Set(codigos.map(norm));
+      const found = coberturas.find(c => set.has(norm(c.codigoCasco)));
+      return found?.premio;
     };
+
+    const getPremioPorCodigoRC = (...codigos: string[]): number | undefined => {
+      const set = new Set(codigos.map(norm));
+      const found = coberturas.find(
+        c => !c.codigoCasco && set.has(norm(c.codigoRC)) // solo si codigoCasco es null
+      );
+      return found?.premio;
+    };
+
+    // 1) Tomamos todas las Txx, extraemos el número y ordenamos desc.
+    const tOptions = coberturas
+      .map(c => {
+        const code = norm(c.codigoCasco);
+        const m = /^T(\d+)$/.exec(code);
+        return m ? { numero: parseInt(m[1], 10), premio: c.premio, code } : null;
+      })
+      .filter((x): x is { numero: number; premio: number; code: string } => !!x)
+      .sort((a, b) => b.numero - a.numero); // desc: más grande primero
+
+    // 2) Elegimos d1, d2, d3 según disponibilidad
+    const d1 = tOptions[0]?.premio; // mayor
+    const d2 = tOptions[1]?.premio; // segunda mayor
+    const d3 = tOptions.length ? tOptions[tOptions.length - 1]?.premio : undefined; // menor
+
+    // 3) Otras coberturas
+    const rc = getPremioPorCodigoRC('RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM');
+    const c  = getPremioPorCodigoCasco('C-80');
+    const c1 = getPremioPorCodigoCasco('S', 'S0');
 
     const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
-      rc: buscarPremio('RCA', 'RCA C/ GRUA','RCM'),
-      c: buscarPremio('C-80'),
-      c1: buscarPremio('S','S0'),
-      d1: buscarPremio('T34'),
-      d2: buscarPremio('T32'),
-      d3: buscarPremio('T31'),
-      // Otros campos aún no definidos
+      rc,
+      c,
+      c1,
+      d1,
+      d2,
+      d3,
     };
 
-    console.log(companiaCotizada);
     return companiaCotizada;
   }
+
 

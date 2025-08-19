@@ -98,29 +98,61 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
 
 
 
-export function construirCotizacionRivadavia(planes: any[]): CompaniaCotizada {
+export function construirCotizacionRivadavia(planes: any[], vehiculo: string): CompaniaCotizada {
+  const norm = (s?: string) => (s ?? "").toUpperCase().trim();
 
+  // ✅ No removemos "." (decimal). Solo sacamos $ y espacios.
+  // Si hay coma y no hay punto, asumimos coma decimal y la cambiamos por punto.
+  const toNumber = (v: any): number | undefined => {
+    if (v == null) return undefined;
+    let s = String(v).trim().replace(/\$/g, "");
+    if (s.includes(",") && !s.includes(".")) s = s.replace(",", ".");
+    const n = parseFloat(s.replace(/\s/g, ""));
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  const byPlan = new Map<string, any>();
+  for (const p of planes) byPlan.set(norm(p.plan), p);
 
   const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
     for (const plan of nombresPlanes) {
-      const item = planes.find(p => p.plan === plan);
-      if (item) return parseFloat(item.premioTotal);
+      const hit = byPlan.get(norm(plan));
+      if (hit) return toNumber(hit.premioTotal);
     }
     return undefined;
   };
 
-  const companiaCotizada: CompaniaCotizada = {
-    compania: 'Rivadavia',
-    rc: buscarPremio('A'),
-    c: buscarPremio('P','F'),
-    c1: buscarPremio('MX','B'),
-    d1: buscarPremio('D F1', 'D F2','D F3','C'),  // intenta con D F1, si no está usa D F2    C para moto
-    d2: buscarPremio('D F4'),
-    d3: buscarPremio('D F5'),
+  // Detección dinámica de DF (D F1, DF2, etc.)
+  const dfPlanes = planes
+    .map(p => {
+      const name = norm(p.plan);
+      const m = /^D\s*F\s*(\d+)\b/.exec(name) || /^DF\s*(\d+)\b/.exec(name);
+      return m ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal) } : null;
+    })
+    .filter((x): x is { num: number; premio: number | undefined } => !!x && x.premio !== undefined)
+    .sort((a, b) => a.num - b.num); // menor → mayor
+
+  const menor   = dfPlanes[0]?.premio;
+  const mediana = dfPlanes.length ? dfPlanes[Math.floor(dfPlanes.length / 2)]?.premio : undefined;
+  const mayor   = dfPlanes.length ? dfPlanes[dfPlanes.length - 1]?.premio : undefined;
+
+  const esMoto = norm(vehiculo) === "MOTOVEHICULO";
+  const d1 = esMoto ? (buscarPremio("C") ?? menor) : menor;
+  const d2 = mediana;
+  const d3 = mayor;
+
+  const rc = buscarPremio("A");
+  const c  = buscarPremio("P", "F");
+  const c1 = buscarPremio("MX", "B");
+
+  return {
+    compania: "Rivadavia",
+    rc,
+    c,
+    c1,
+    d1,
+    d2,
+    d3,
   };
-
-
-  return companiaCotizada;
-
 }
 
