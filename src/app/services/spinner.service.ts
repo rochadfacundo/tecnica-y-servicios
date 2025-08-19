@@ -23,7 +23,7 @@ export class SpinnerService {
 
     this.show(type);
     let result;
-    const minDurationMs = 4000;
+    const minDurationMs = 5000;
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Timeout de seguridad alcanzado')), this.timeoutMs)
     );

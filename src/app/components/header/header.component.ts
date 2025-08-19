@@ -47,13 +47,13 @@ export class HeaderComponent implements OnInit {
   async logout() {
     const resultado = await this.s_spinner.runWithSpinner(
       this.s_auth.logout(),
-      ESpinner.Rebote
+      ESpinner.Vaiven
     );
 
     if (resultado !== undefined) {
+
       this.router.navigateByUrl('/home');
     } else {
-      // si el logout falló o timeout, podés mostrar un mensaje o hacer otra acción
       console.error('❌ Logout fallido o timeout');
     }
   }

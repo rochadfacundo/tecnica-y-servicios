@@ -195,6 +195,7 @@ actualizarProductorLocal(productor: Productor) {
 
 
  async logout() {
+
   this.productorSubject.next(null);
   await this._auth.signOut();
 }

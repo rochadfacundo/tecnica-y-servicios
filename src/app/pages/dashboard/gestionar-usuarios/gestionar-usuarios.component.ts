@@ -12,6 +12,7 @@ import { Role } from '../../../enums/role';
 import { TipoVehiculo } from '../../../enums/tipoVehiculos';
 import { SpinnerService } from '../../../services/spinner.service';
 import { ESpinner } from '../../../enums/ESpinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-gestionar-usuarios',
@@ -41,6 +42,7 @@ export class GestionarUsuariosComponent implements OnInit {
     @Inject(AuthService) private s_auth: AuthService,
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
     @Inject(SpinnerService) private s_spinner: SpinnerService,
+    @Inject(ToastrService) private s_toast: ToastrService,
   ){}
 
   async ngOnInit() {
@@ -380,17 +382,19 @@ reestablecerPassword(usuario: Productor) {
             }
 
           await this.s_auth.updateUser(productor);
-          alert('✅ Productor actualizado correctamente');
+          this.s_toast.success("Productor actualizado correctamente","Productor actualizado");
+
         }
 
       } else {
         await this.s_auth.register(productor);
-        alert('✅ Productor registrado correctamente');
+        this.s_toast.success("Productor registrado correctamente","Productor registrado");
       }
       this.obtenerUsuarios();
     } catch (error) {
       console.error('❌ Error al registrar productor:', error);
-      alert('❌ No se pudo guardar el productor. Intentá nuevamente.');
+      this.s_toast.error("No se pudo guardar el productor. Intentá nuevamente.","Error al guardar productor");
+
     }finally{
       this.s_spinner.hide(ESpinner.Vaiven);
       this.form.reset();

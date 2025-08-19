@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { Productor } from '../../../../models/productor.model';
 import { getRandomNumber } from '../../../../utils/utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-tabla-cotizadora',
@@ -20,6 +21,7 @@ export class TablaCotizadoraComponent implements OnInit{
   constructor(
   @Inject(Router) private router: Router,
   @Inject(AuthService) private s_auth: AuthService,
+  @Inject(ToastrService) private s_toast: ToastrService
   ){
 
   }
@@ -38,8 +40,10 @@ export class TablaCotizadoraComponent implements OnInit{
 
       try {
         await this.s_auth.updateUser(this.user);
+        this.s_toast.success("Cotizacion guardada exitosamente","Cotizacion guardada");
         console.log('✅ Cotización guardada');
       } catch (error) {
+        this.s_toast.error("Error al guardar la cotizacion","No se guardo la cotizacion");
         console.error('❌ Error al guardar cotización:', error);
       }
     } else {
@@ -49,6 +53,7 @@ export class TablaCotizadoraComponent implements OnInit{
 
 
   async ngOnInit(): Promise<void> {
+
     this.user = await this.s_auth.obtenerProductorLogueado();
 
     if(!this.user)

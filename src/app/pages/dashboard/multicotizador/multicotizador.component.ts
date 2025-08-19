@@ -36,6 +36,7 @@ import { SpinnerService } from '../../../services/spinner.service';
 import { firstValueFrom } from 'rxjs';
 import { DignaService } from '../../../services/digna.service';
 import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-multicotizador',
@@ -99,6 +100,7 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(Router) private router: Router,
     @Inject(SpinnerService) private s_spinner: SpinnerService,
     @Inject(DignaService) private s_digna: DignaService,
+    @Inject(ToastrService) private s_toast: ToastrService,
     @Inject(HttpClient) private s_http: HttpClient,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef

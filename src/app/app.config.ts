@@ -8,6 +8,8 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { spinnerInterceptor } from './interceptors/spinner.interceptor';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +28,16 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideAuth(() => getAuth()),
+    provideAnimations(),
+    provideToastr(
+      {
+        timeOut:1000,
+        easeTime: 500, // tiempo de transición entrada/salida
+        positionClass: 'toast-top-center',
+        preventDuplicates:true,
+        progressBar: false,          // muestra barra de progreso
+        progressAnimation: 'increasing',  // animación de la barra
+      }),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
     provideHttpClient(withInterceptors([authInterceptor])),

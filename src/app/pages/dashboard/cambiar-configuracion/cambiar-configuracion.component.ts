@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { VigenciaRus } from '../../../interfaces/cotizacionRioUruguay';
 import { SpinnerService } from '../../../services/spinner.service';
 import { ESpinner } from '../../../enums/ESpinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cambiar-configuracion',
@@ -36,6 +37,7 @@ export class CambiarConfiguracionComponent implements OnInit {
   private s_auth = inject(AuthService);
   private s_rus = inject(RioUruguayService);
   private s_spinner= inject(SpinnerService);
+  private s_toast= inject(ToastrService);
 
   ngOnInit() {
 
@@ -208,10 +210,12 @@ export class CambiarConfiguracionComponent implements OnInit {
       this.s_auth.actualizarProductorLocal(productor);
       this.datosOriginales = JSON.parse(JSON.stringify(productor));
       this.modoEdicion = false;
+      this.s_toast.success("Sus datos se modificaron exitosamente","Modificacion exitosa");
 
     } catch (err) {
       console.error(err);
-      alert('❌ Error al guardar cambios');
+      this.s_toast.success("Error al modificar sus datos, intente nuevamente","No se pudo modificar");
+      alert('❌ ');
     }finally{
       this.s_spinner.hide(ESpinner.Vaiven);
     }

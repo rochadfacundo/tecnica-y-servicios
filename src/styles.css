@@ -1,5 +1,5 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
-
+@import 'ngx-toastr/toastr';
 /* 🎨 Variables globales */
 :root {
   --menu-bg-color: #4c5c4c;
@@ -27,6 +27,8 @@ body {
   font-family: var(--font-serif);
   font-size: 15px;
 }
+
+
 
 .title,
 .header,
