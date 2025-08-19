@@ -228,7 +228,19 @@ export class MulticotizadorComponent implements OnInit {
       this.anios = Array.from(añosUnicos)
         .sort((a, b) => b - a)
         .map(year => ({ year } as Year));
-      console.log(this.anios);
+
+      if(this.anios.length>2000){
+        var anios=this.anios.length;
+
+        this.anios=[];
+        //Si no tiene rangos validos le pongo 34 ultimos anios
+        for (let index = 1; index < 34; index++) {
+          var anio :Year = {year:anios};
+          anios--;
+          this.anios.push(anio);
+
+        }
+      }
       this.cotizacionForm.get('anio')?.enable();
       this.cotizacionForm.get('version')?.disable();
       this.modelos = [];
@@ -277,7 +289,6 @@ export class MulticotizadorComponent implements OnInit {
       this.cotizacionForm.get('anio')?.setValue(null);
       this.cotizacionForm.get('version')?.disable();
       this.anios = [];
-      console.log("traigo el id modelo");
       if (idModelo) {
         this.group_idSelected = idModelo;
         this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
