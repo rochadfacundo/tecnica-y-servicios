@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    provideHttpClient(withInterceptors([spinnerInterceptor,authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor])),
   ]
 };
 
