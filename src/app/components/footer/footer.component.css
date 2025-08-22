@@ -9,7 +9,36 @@
   color: #73a773;
 }
 
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .4rem .6rem;       /* hitbox un poco más grande */
+  cursor: pointer;
+  position: relative;
+  z-index: 10;                /* aseguramos que quede arriba de todo */
+  text-decoration: none;      /* quita el subrayado */
+  pointer-events: auto;       /* fuerza que reciba el click */
+  transition: transform .3s ease, color .3s ease;
+}
 
+.social-icon i {
+  pointer-events: none;       /* el icono no bloquea el click */
+}
+
+/* Hover general */
+.social-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Hover específico por red */
+.social-icon:hover i.fa-whatsapp {
+  color: #25d366; /* verde WhatsApp */
+}
+
+.social-icon:hover i.fa-instagram {
+  color: #e1306c; /* rosa Instagram */
+}
 
 .footer span {
   color: #fff;

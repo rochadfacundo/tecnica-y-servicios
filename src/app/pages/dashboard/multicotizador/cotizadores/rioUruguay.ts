@@ -6,10 +6,16 @@ import { getRandomNumber, getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
 import { Compania } from "../../../../interfaces/compania";
 import rawData from '../../../../../assets/vigenciasRUS.json';
-import { TipoVehiculo } from "../../../../enums/tipoVehiculos";
+
 
 type Vigencia = { id: number; descripcion: string; meses: number };
 type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
+
+const grupos = {
+  d3: ['T32','T34'],
+  d2: ['T31'],
+  d1: ['T37','T44'],
+} as const;
 
 
 const vigenciasPorRamo: VigenciasPorRamo = rawData;
@@ -100,8 +106,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     return match?.id || 0;
   }
 
-
-  export function construirCotizacionRus(coberturas: any[]): CompaniaCotizada {
+  export function construirCotizacionRus(coberturas: any[],tipoVehiculo:string): CompaniaCotizada {
     const norm = (s?: string) => (s ?? "").toUpperCase().trim();
 
     const getPremioPorCodigoCasco = (...codigos: string[]): number | undefined => {
@@ -113,30 +118,37 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     const getPremioPorCodigoRC = (...codigos: string[]): number | undefined => {
       const set = new Set(codigos.map(norm));
       const found = coberturas.find(
-        c => !c.codigoCasco && set.has(norm(c.codigoRC)) // solo si codigoCasco es null
+        c => !c.codigoCasco && set.has(norm(c.codigoRC))
       );
       return found?.premio;
     };
 
-    // 1) Tomamos todas las Txx, extraemos el número y ordenamos desc.
-    const tOptions = coberturas
-      .map(c => {
-        const code = norm(c.codigoCasco);
-        const m = /^T(\d+)$/.exec(code);
-        return m ? { numero: parseInt(m[1], 10), premio: c.premio, code } : null;
-      })
-      .filter((x): x is { numero: number; premio: number; code: string } => !!x)
-      .sort((a, b) => b.numero - a.numero); // desc: más grande primero
+    const d1 = getPremioPorCodigoCasco('T32', 'T34','T24');
+    const d2 = getPremioPorCodigoCasco('T31','T25');
+    const d3 = getPremioPorCodigoCasco('T37', 'T44','T39');
 
-    // 2) Elegimos d1, d2, d3 según disponibilidad
-    const d1 = tOptions[0]?.premio; // mayor
-    const d2 = tOptions[1]?.premio; // segunda mayor
-    const d3 = tOptions.length ? tOptions[tOptions.length - 1]?.premio : undefined; // menor
+    /*
+    const d3 = getPremioPorCodigoCasco(...grupos.d3);
+    const d2 = getPremioPorCodigoCasco(...grupos.d2);
+    const d1 = getPremioPorCodigoCasco(...grupos.d1);*/
 
-    // 3) Otras coberturas
+    // Otras coberturas
     const rc = getPremioPorCodigoRC('RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM');
-    const c  = getPremioPorCodigoCasco('C-80');
-    const c1 = getPremioPorCodigoCasco('S', 'S0');
+
+
+    var c  = getPremioPorCodigoCasco('C-80');// B1 80 en C
+    var c1 = getPremioPorCodigoCasco('S', 'S0','Sigma Importados'); // B80 en C1
+
+    console.log(tipoVehiculo);
+
+    if(tipoVehiculo=="MOTOVEHICULO"){
+       c  = getPremioPorCodigoCasco('B1-80 - MOTO');// B1 80 en C
+       c1 = getPremioPorCodigoCasco('B-80 - MOTO'); // B80 en C1
+
+       console.log(c);
+    }
+
+
 
     const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
@@ -150,5 +162,6 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
     return companiaCotizada;
   }
+
 
 

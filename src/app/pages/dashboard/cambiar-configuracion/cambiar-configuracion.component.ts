@@ -6,7 +6,7 @@ import { Productor } from '../../../models/productor.model';
 import { AuthService } from '../../../services/auth.service';
 import { getStorage, uploadBytesResumable, getDownloadURL, ref } from '@angular/fire/storage';
 import { RioUruguayService } from '../../../services/rio-uruguay.service';
-import { TipoVehiculo } from '../../../enums/tipoVehiculos';
+import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
 import { firstValueFrom } from 'rxjs';
 import { VigenciaRus } from '../../../interfaces/cotizacionRioUruguay';
 import { SpinnerService } from '../../../services/spinner.service';
@@ -132,8 +132,8 @@ export class CambiarConfiguracionComponent implements OnInit {
 
     try {
       const [auto, moto] = await Promise.all([
-        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.VEHICULO)),
-        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.MOTOVEHICULO)),
+        firstValueFrom(this.s_rus.getVigencias(ETipoVehiculo.VEHICULO)),
+        firstValueFrom(this.s_rus.getVigencias(ETipoVehiculo.MOTOVEHICULO)),
       ]);
       this.vigenciasRusAuto = auto;
       this.vigenciasRusMoto = moto;

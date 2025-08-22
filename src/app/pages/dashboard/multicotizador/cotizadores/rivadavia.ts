@@ -132,14 +132,27 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     .filter((x): x is { num: number; premio: number | undefined } => !!x && x.premio !== undefined)
     .sort((a, b) => a.num - b.num); // menor → mayor
 
-  const menor   = dfPlanes[0]?.premio;
-  const mediana = dfPlanes.length ? dfPlanes[Math.floor(dfPlanes.length / 2)]?.premio : undefined;
-  const mayor   = dfPlanes.length ? dfPlanes[dfPlanes.length - 1]?.premio : undefined;
+  // --- Mapeo a D1/D2/D3 sin duplicar cuando hay 2 elementos ---
+  let d1: number | undefined;
+  let d2: number | undefined;
+  let d3: number | undefined;
 
-  const esMoto = norm(vehiculo) === "MOTOVEHICULO";
-  const d1 = esMoto ? (buscarPremio("C") ?? menor) : menor;
-  const d2 = mediana;
-  const d3 = mayor;
+  const n = dfPlanes.length;
+  if (n === 0) {
+    // sin DF → d1/d2/d3 quedan undefined
+  } else if (n === 1) {
+    // solo un DF → va a D3
+    d3 = dfPlanes[0].premio;
+  } else if (n === 2) {
+    // dos DF → D1 vacío, D2 = menor, D3 = mayor
+    d2 = dfPlanes[0].premio;
+    d3 = dfPlanes[1].premio;
+  } else {
+    // 3 o más → D1 = menor, D2 = mediana, D3 = mayor
+    d1 = dfPlanes[0].premio;
+    d2 = dfPlanes[Math.floor(n / 2)].premio;
+    d3 = dfPlanes[n - 1].premio;
+  }
 
   const rc = buscarPremio("A");
   const c  = buscarPremio("P", "F");
@@ -155,4 +168,5 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     d3,
   };
 }
+
 

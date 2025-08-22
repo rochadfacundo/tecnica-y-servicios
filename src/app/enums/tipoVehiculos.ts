@@ -1,4 +1,4 @@
-export enum TipoVehiculo{
+export enum ETipoVehiculo{
   VEHICULO='VEHICULO',
   MOTOVEHICULO='MOTOVEHICULO',
   CAMION='CAMION'

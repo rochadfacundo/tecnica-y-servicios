@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CotizacionRioUruguay, VigenciaRus } from '../interfaces/cotizacionRioUruguay';
-import { TipoVehiculo } from '../enums/tipoVehiculos';
+import { ETipoVehiculo } from '../enums/tipoVehiculos';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +37,7 @@ export class RioUruguayService {
     return this.http.get(`${this.apiBaseUrl}/versiones`, { params });
   }
 
-  getVigencias(tipo: TipoVehiculo): Observable<VigenciaRus[]> {
+  getVigencias(tipo: ETipoVehiculo): Observable<VigenciaRus[]> {
     return this.http.get<VigenciaRus[]>(`${this.apiBaseUrl}/vigencias`, {
       params: { tipo }
     });

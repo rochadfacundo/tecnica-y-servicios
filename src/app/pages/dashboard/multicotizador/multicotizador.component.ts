@@ -20,8 +20,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
 import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
-import { Cotizacion } from '../../../interfaces/cotizacion';
-import { buildFederacionRequest, construirCotizacionFederacion } from './cotizadores/federacionPatronal';
+import { CompaniaCotizada, Cotizacion } from '../../../interfaces/cotizacion';
+import { buildFederacionRequest, construirCotizacionFederacion, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
@@ -37,6 +37,7 @@ import { firstValueFrom } from 'rxjs';
 import { DignaService } from '../../../services/digna.service';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
 
 @Component({
   selector: 'app-multicotizador',
@@ -366,7 +367,7 @@ export class MulticotizadorComponent implements OnInit {
         const respuesta = await firstValueFrom(observable$);
         console.log('✅ Cotización exitosa RUS:', respuesta.dtoList);
         const cotizacionesRus = respuesta.dtoList;
-        const cotizacionRUS = construirCotizacionRus(cotizacionesRus);
+        const cotizacionRUS = construirCotizacionRus(cotizacionesRus,this.getTipoVehiculo());
         this.cotizaciones.companiasCotizadas.push(cotizacionRUS);
       } catch (error:any) {
 
@@ -446,30 +447,99 @@ export class MulticotizadorComponent implements OnInit {
 
   //Federacion patronal
 
-    async cotizarFederacion() {
-      if (!this.productorLog) {
-        console.error('❌ No hay productor logueado');
-        return;
-      }
+  async cotizarFederacion(franquicia:number) {
+    if (!this.productorLog) {
+      console.error('❌ No hay productor logueado');
+      return;
+    }
 
-      const cotizacionFederacion = buildFederacionRequest(
-        this.form,
-        this.codigoInfoAuto,
-        this.productorLog,
-        this.getTipoVehiculo()
+    const cotizacionFederacion = buildFederacionRequest(
+      this.form,
+      this.codigoInfoAuto,
+      this.productorLog,
+      this.getTipoVehiculo(),
+      franquicia
+    );
+
+    try {
+      const respuesta = await firstValueFrom(
+        this.s_fedPat.cotizarFederacion(
+          cotizacionFederacion,
+          this.codigoPostalFederacion,
+          this.getTipoVehiculo()
+        )
       );
 
-      try {
+      console.log('✅ Cotización exitosa Federación:', respuesta);
 
-        const respuesta = await firstValueFrom(this.s_fedPat.cotizarFederacion(cotizacionFederacion,this.codigoPostalFederacion,this.getTipoVehiculo()));
+      // 👉 franquicia realmente aplicada por el WS (fallback a la enviada)
+      const franqResp = Number(respuesta?.coberturas?.franquicia) || franquicia;
+      if (franqResp !== franquicia) {
+        console.warn('[FED] Mismatch franquicia: enviada', franquicia, 'devuelta', franqResp);
+      }
 
-        console.log('✅ Cotización exitosa Federación:', respuesta);
-        const cotizacion = construirCotizacionFederacion(respuesta.coberturas.planes);
-        this.cotizaciones.companiasCotizadas.push(cotizacion);
-      } catch (error) {
-        console.error('❌ Error en cotización Federación:', error);
+      // 👉 evitar cargar dos veces la misma franquicia (p.ej. 106 repetida)
+      (this as any).__fed_frans_ok ??= new Set<number>();
+      if ((this as any).__fed_frans_ok.has(franqResp)) {
+        console.warn('[FED] Franquicia duplicada recibida:', franqResp, '→ omito asignar');
+        return;
+      }
+      (this as any).__fed_frans_ok.add(franqResp);
+
+      // ⚠️ pasar la franquicia DEVUELTA a construirCotizacionFederacion
+      const parcial = construirCotizacionFederacion(respuesta?.coberturas?.planes ?? [], franqResp);
+
+      // 🔑 1) Asegurar UNA sola fila “Federación Patronal” (upsert sin duplicar)
+      let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
+      if (!fila) {
+        fila = {
+          compania: 'Federación Patronal',
+          rc: undefined, c: undefined, c1: undefined,
+          d1: undefined, d2: undefined, d3: undefined,
+        };
+        this.cotizaciones.companiasCotizadas.push(fila);
+      }
+
+      // 🔑 2) Solo completar comunes si aún no están (evita reescrituras)
+      if (fila.rc === undefined && parcial.rc !== undefined) fila.rc = parcial.rc;
+      if (fila.c  === undefined && parcial.c  !== undefined) fila.c  = parcial.c;
+      if (fila.c1 === undefined && parcial.c1 !== undefined) fila.c1 = parcial.c1;
+
+      // 🔑 3) Poner el TR correcto según la franquicia DEVUELTA (no la enviada)
+      const key = (franq => {
+        if (franq === franquiciaDosPorCiento) return 'd1';
+        if (franq === franquiciaCuatroPorCiento) return 'd2';
+        return 'd3'; // franquiciaSeisPorCiento
+      })(franqResp) as 'd1'|'d2'|'d3';
+
+      if (parcial[key] !== undefined) {
+        (fila as any)[key] = (parcial as any)[key];
+      }
+
+    } catch (error: any) {
+      console.error('❌ Error en cotización Federación:', error);
+
+      // ✅ Manejo específico del error de la 2ª (4%)
+      const msg = error?.error?.message || error?.message || String(error);
+      const esRelacionMulti = msg.includes('Error al insertar relacion entre cotizaciones multirramicas');
+
+      // asegurar fila única aunque falle
+      let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
+      if (!fila) {
+        fila = {
+          compania: 'Federación Patronal',
+          rc: undefined, c: undefined, c1: undefined,
+          d1: undefined, d2: undefined, d3: undefined,
+        };
+        this.cotizaciones.companiasCotizadas.push(fila);
+      }
+
+      if (esRelacionMulti) {
+        // marcá la celda del 4% como no disponible y seguí
+        (fila as any).d2 = undefined; // o null si tu UI lo prefiere
       }
     }
+  }
 
 
   //ATM
@@ -522,33 +592,44 @@ export class MulticotizadorComponent implements OnInit {
   async cotizar() {
     this.form = this.getForm();
 
+    const esMoto = this.getTipoVehiculo() == ETipoVehiculo.MOTOVEHICULO;
+
+    // 👉 Federación: secuencial para autos, única para moto
+    const tareaFederacion = async () => {
+      if (esMoto) {
+        // una sola llamada (el parámetro se ignora para motos)
+        await this.cotizarFederacion(sinFranquicia);
+      } else {
+        await this.cotizarFederacion(franquiciaDosPorCiento);
+        await new Promise(r => setTimeout(r, 200));
+        await this.cotizarFederacion(franquiciaCuatroPorCiento);
+        await new Promise(r => setTimeout(r, 200));
+        await this.cotizarFederacion(franquiciaSeisPorCiento);
+      }
+    };
+
     const tareas = [
+      tareaFederacion,
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      () => this.cotizarATM(),
-      () => this.cotizarFederacion(),
-      ()=> this.cotizarDigna(),
+      //() => this.cotizarATM(),
+      () => this.cotizarDigna(),
     ];
 
-    // Mostramos spinner manualmente
     this.s_spinner.show(ESpinner.Rebote);
-
     try {
       const promesas = tareas.map(fn => fn());
       await Promise.allSettled(promesas);
-      this.cotizaciones.nroCotizacion=getRandomNumber();
+      this.cotizaciones.nroCotizacion = getRandomNumber();
     } finally {
-
-      // Lo ocultamos solo cuando todas realmente terminaron
       this.s_spinner.hide(ESpinner.Rebote);
     }
 
-    // Redirigir a la tabla
     this.router.navigate(['/dashboard/tabla-cotizadora'], {
-      state: {
-        cotizaciones: this.cotizaciones
-      }
+      state: { cotizaciones: this.cotizaciones }
     });
   }
+
+
 }

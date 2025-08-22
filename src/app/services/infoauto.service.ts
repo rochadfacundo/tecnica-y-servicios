@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, doc, setDoc, getDoc } from 'firebase/firestore'; // Importa las funciones necesarias de Firebase
 import { getFirestore } from 'firebase/firestore';
 import { Observable } from 'rxjs';
-import { TipoVehiculo } from '../enums/tipoVehiculos';
+import { ETipoVehiculo } from '../enums/tipoVehiculos';
 import { Year } from '../interfaces/year';
 import { Brand } from '../classes/infoauto';
 

@@ -83,7 +83,7 @@ export function construirCotizacionMercantil(coberturas: any[]): CompaniaCotizad
     c1: buscarPremio('M PLUS', 'M PLUS+'),
     d1: buscarPremio('D2 0020', 'D2 0025'),   // distintas opciones del 20%
     d2: buscarPremio('D2 0030'),
-    d3: buscarPremio('D2 0050'),
+    d3: buscarPremio('D2 0050','D2 0040'),
   };
 
   return companiaCotizada;

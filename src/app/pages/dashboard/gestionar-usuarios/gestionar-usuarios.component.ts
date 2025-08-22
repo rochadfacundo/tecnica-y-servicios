@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { Productor } from '../../../models/productor.model';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
 import { Role } from '../../../enums/role';
-import { TipoVehiculo } from '../../../enums/tipoVehiculos';
+import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
 import { SpinnerService } from '../../../services/spinner.service';
 import { ESpinner } from '../../../enums/ESpinner';
 import { ToastrService } from 'ngx-toastr';
@@ -264,8 +264,8 @@ reestablecerPassword(usuario: Productor) {
     this.vigenciasRusCargadas = false;
     try {
       const [autos, motos] = await Promise.all([
-        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.VEHICULO)),
-        firstValueFrom(this.s_rus.getVigencias(TipoVehiculo.MOTOVEHICULO)),
+        firstValueFrom(this.s_rus.getVigencias(ETipoVehiculo.VEHICULO)),
+        firstValueFrom(this.s_rus.getVigencias(ETipoVehiculo.MOTOVEHICULO)),
       ]);
       this.vigenciasRusAuto = autos;
       this.vigenciasRusMoto = motos;
