@@ -3,6 +3,13 @@
   publish = "dist/tecnicayservicios/browser"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "20"
+  # Si alguna vez tenés problemas de peer deps, podés descomentar:
+  # NPM_FLAGS = "--legacy-peer-deps"
+  # Y si llegara a tirar errores de memoria en build Angular:
+  # NODE_OPTIONS = "--max_old_space_size=4096"
+
 [[headers]]
   for = "/*"
   [headers.values]
