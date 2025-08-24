@@ -8,7 +8,7 @@ import { Productor } from '../models/productor.model';
 })
 export class AtmService {
   //private apiUrl = 'http://3.149.136.15:3000/ATM';
-  private apiUrl = 'https://atm.tecnicayservicios.com.ar/ATM'; //solo para prod
+  private apiUrl = 'https://atm.tecnicayservicios.com.ar/ATM';
 
   constructor(private http: HttpClient) {}
 
