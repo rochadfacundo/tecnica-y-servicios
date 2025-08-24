@@ -1,47 +1,105 @@
 <div class="p-4">
-<table class="table table-bordered table-striped">
-  <thead class="table-light text-center fs-4">
-    <tr>
-      <th rowspan="2">Compañía</th>
-      <th rowspan="2">Responsabilidad Civil</th>
-      <th colspan="2">Terceros Completos</th>
-       <!--
-      Si es moto Cambiar terceros completos por Robo y todo riesgo por Robo Premium.
-        -->
-      <th colspan="3">Todo Riesgo</th>
-    </tr>
-    <tr>
-      <th>C</th>
-         <!--
-     C en motos es B
-     C1 en motos es B1
-        -->
-      <th>C1</th>
-      <th>D1</th>
-            <!--
-     D1 en motos es C1
-     D2 en motos es C2
-     D3 NO EXISTE EN MOTOS
-        -->
-      <th>D2</th>
-      <th>D3</th>
-    </tr>
-  </thead>
-  <tbody class="fs-5">
-    <tr *ngFor="let cot of cotizaciones?.companiasCotizadas">
-      <td>{{ cot.compania }}</td>
-      <td>{{ cot.rc | currency:'ARS ' }}</td>
-      <td>{{ cot.c | currency:'ARS ' }}</td>
-      <td>{{ cot.c1 | currency:'ARS ' }}</td>
-      <td>{{ cot.d1 | currency:'ARS ' }}</td>
-      <td>{{ cot.d2 | currency:'ARS ' }}</td>
-      <td>{{ cot.d3 | currency:'ARS ' }}</td>
-    </tr>
-  </tbody>
-</table>
+  <table class="table table-bordered table-striped">
+    <thead class="table-light text-center fs-4">
 
-<div class="text-center mt-3">
-  <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>
-</div>
+      <!-- Encabezado para AUTO -->
+      <ng-container *ngIf="tipoVehiculo === 'VEHICULO'; else encabezadoMoto">
+        <tr>
+          <th rowspan="2">Compañía</th>
+          <th rowspan="2">Responsabilidad Civil</th>
+          <th colspan="2">Terceros Completos</th>
+          <th colspan="3">Todo Riesgo</th>
+        </tr>
+        <tr>
+          <th>C</th>
+          <th>C1</th>
+          <th>D1</th>
+          <th>D2</th>
+          <th>D3</th>
+        </tr>
+      </ng-container>
 
+      <!-- Encabezado para MOTO -->
+      <ng-template #encabezadoMoto>
+        <tr>
+          <th rowspan="2">Compañía</th>
+          <th rowspan="2">Responsabilidad Civil</th>
+          <th colspan="2">Robo</th>
+          <th colspan="2">Robo Premium</th>
+        </tr>
+        <tr>
+          <!-- C -> B | C1 -> B1 -->
+          <th>B</th>
+          <th>B1</th>
+          <!-- D1 -> C1 | D2 -> C2 | D3 NO existe -->
+          <th>C1</th>
+          <th>C2</th>
+        </tr>
+      </ng-template>
+    </thead>
+
+    <tbody class="fs-5">
+      <tr *ngFor="let cot of cotizaciones?.companiasCotizadas">
+        <td>{{ cot.compania }}</td>
+
+        <!-- RC -->
+        <td>
+          {{ cot.rc | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.rc)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.rc) | currency:'$' }}
+          </div>
+        </td>
+
+        <!-- C o B -->
+        <td>
+          {{ cot.c | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.c) | currency:'$' }}
+          </div>
+        </td>
+
+        <!-- C1 o B1 -->
+        <td>
+          {{ cot.c1 | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c1)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.c1) | currency:'$' }}
+          </div>
+        </td>
+
+        <!-- D1 o C1 -->
+        <td>
+          {{ cot.d1 | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d1)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.d1) | currency:'$' }}
+          </div>
+        </td>
+
+        <!-- D2 o C2 -->
+        <td>
+          {{ cot.d2 | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d2)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.d2) | currency:'$' }}
+          </div>
+        </td>
+
+        <!-- D3 solo autos -->
+        <td *ngIf="tipoVehiculo === 'VEHICULO'">
+          {{ cot.d3 | currency:'$' }}
+          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d3)">
+            {{ getCuotasDe(cot.compania) }} cuotas:
+            {{ calcularImportePorCuota(cot.compania, cot.d3) | currency:'$' }}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="text-center mt-3">
+    <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>
+  </div>
 </div>

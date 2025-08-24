@@ -643,7 +643,7 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRivadavia(),
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
-      //() => this.cotizarATM(),
+      () => this.cotizarATM(),
       () => this.cotizarDigna(),
     ];
 
@@ -657,7 +657,10 @@ export class MulticotizadorComponent implements OnInit {
     }
 
     this.router.navigate(['/dashboard/tabla-cotizadora'], {
-      state: { cotizaciones: this.cotizaciones }
+      state: {
+        cotizaciones: this.cotizaciones,
+        tipoVehiculo: this.getTipoVehiculo()
+      }
     });
   }
 
