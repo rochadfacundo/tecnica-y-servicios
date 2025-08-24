@@ -106,49 +106,63 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     return match?.id || 0;
   }
 
-  export function construirCotizacionRus(coberturas: any[],tipoVehiculo:string): CompaniaCotizada {
-    const norm = (s?: string) => (s ?? "").toUpperCase().trim();
+  export function construirCotizacionRus(coberturas: any[], tipoVehiculo: string): CompaniaCotizada {
+    const norm = (s?: string) => (s ?? '').toUpperCase().trim();
 
     const getPremioPorCodigoCasco = (...codigos: string[]): number | undefined => {
       const set = new Set(codigos.map(norm));
       const found = coberturas.find(c => set.has(norm(c.codigoCasco)));
-      return found?.premio;
+      return found ? Number(found.premio) : undefined;
     };
 
     const getPremioPorCodigoRC = (...codigos: string[]): number | undefined => {
       const set = new Set(codigos.map(norm));
-      const found = coberturas.find(
-        c => !c.codigoCasco && set.has(norm(c.codigoRC))
-      );
-      return found?.premio;
+      const found = coberturas.find(c => !c.codigoCasco && set.has(norm(c.codigoRC)));
+      return found ? Number(found.premio) : undefined;
     };
 
-    const d1 = getPremioPorCodigoCasco('T32', 'T34','T24');
-    const d2 = getPremioPorCodigoCasco('T31','T25');
-    const d3 = getPremioPorCodigoCasco('T37', 'T44','T39');
+    // --- TR ordenado por % de franquicia (menor→mayor) ---
+    // Lista de códigos típicos de TR en RUS (podés ampliar si aparecen nuevos)
+    const TR_CODES = new Set(['T31','T37','T44','T39','T32','T34','T24','T25']);
 
-    /*
-    const d3 = getPremioPorCodigoCasco(...grupos.d3);
-    const d2 = getPremioPorCodigoCasco(...grupos.d2);
-    const d1 = getPremioPorCodigoCasco(...grupos.d1);*/
+    const trOrdenadas = coberturas
+      .filter(c => c?.codigoCasco && TR_CODES.has(norm(c.codigoCasco)))
+      .map(c => {
+        const suma = Number(c?.sumaAsegurada) || 0;
+        const franq = Number(c?.franquicia) || 0;
+
+        // porcentaje por cálculo; si no se puede, intentar parsear del texto
+        let perc = suma > 0 ? (franq / suma) * 100 : undefined;
+        if (!perc || !isFinite(perc)) {
+          const txt = String(c?.descripcionComercial ?? c?.descripcionCasco ?? '');
+          const m = txt.match(/(\d+(?:[.,]\d+)?)\s*%/);
+          if (m) perc = parseFloat(m[1].replace(',', '.'));
+        }
+
+        return {
+          code: norm(c.codigoCasco),
+          premio: Number(c?.premio) || undefined,
+          perc
+        };
+      })
+      .filter(x => x.premio != null && x.perc != null)
+      .sort((a, b) => (a.perc as number) - (b.perc as number));
+
+    const d1 = trOrdenadas[0]?.premio; // menor %
+    const d2 = trOrdenadas[1]?.premio; // medio %
+    const d3 = trOrdenadas[2]?.premio; // mayor %
 
     // Otras coberturas
     const rc = getPremioPorCodigoRC('RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM');
 
+    // C / C1 según vehículo
+    let c  = getPremioPorCodigoCasco('C-80');               // autos
+    let c1 = getPremioPorCodigoCasco('S', 'S0', 'SIGMA IMPORTADOS');
 
-    var c  = getPremioPorCodigoCasco('C-80');// B1 80 en C
-    var c1 = getPremioPorCodigoCasco('S', 'S0','Sigma Importados'); // B80 en C1
-
-    console.log(tipoVehiculo);
-
-    if(tipoVehiculo=="MOTOVEHICULO"){
-       c  = getPremioPorCodigoCasco('B1-80 - MOTO');// B1 80 en C
-       c1 = getPremioPorCodigoCasco('B-80 - MOTO'); // B80 en C1
-
-       console.log(c);
+    if (tipoVehiculo === 'MOTOVEHICULO') {
+      c  = getPremioPorCodigoCasco('B1-80 - MOTO');
+      c1 = getPremioPorCodigoCasco('B-80 - MOTO');
     }
-
-
 
     const companiaCotizada: CompaniaCotizada = {
       compania: 'Río Uruguay',
@@ -162,6 +176,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
     return companiaCotizada;
   }
+
 
 
 

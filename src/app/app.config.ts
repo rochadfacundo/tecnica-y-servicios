@@ -31,7 +31,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr(
       {
-        timeOut:1000,
+        timeOut:6000,
         easeTime: 500, // tiempo de transición entrada/salida
         positionClass: 'toast-top-center',
         preventDuplicates:true,

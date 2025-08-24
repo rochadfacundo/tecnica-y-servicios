@@ -96,36 +96,48 @@ export function buildFederacionRequest(
  */
 export function construirCotizacionFederacion(
   coberturas: any[],
-  franquicia: number
+  franquicia: number,                          // 102 | 104 | 106 (solo autos)
+  tipoVehiculo: string
 ): Partial<CompaniaCotizada> {
   const buscarPremio = (codigo: string): number | undefined => {
-    const cobertura = coberturas?.find((c: any) => String(c.codigo).toUpperCase() === codigo.toUpperCase());
+    const cobertura = coberturas?.find(
+      (c: any) => String(c.codigo).toUpperCase() === codigo.toUpperCase()
+    );
     const v = cobertura?.premio_total;
     return v != null ? Number(v) : undefined;
   };
 
-  // comunes (solo para completar una vez en el merge)
+  // Mapas según tipo de vehículo
+  // - Para autos: C y CF (como tenías)
+  // - Para motos: B (→C) y B1 (→C1)
+  const codigoC  = tipoVehiculo === 'MOTOVEHICULO' ? 'B1'  : 'C1';
+  const codigoC1 = tipoVehiculo === 'MOTOVEHICULO' ? 'B' : 'C';
+
   const parcial: Partial<CompaniaCotizada> = {
     rc: buscarPremio('A4'),
-    c:  buscarPremio('C'),
-    c1: buscarPremio('CF'),
+    c:  buscarPremio(codigoC),
+    c1: buscarPremio(codigoC1),
   };
 
-  // TR fija: siempre TD3
-  const premioTR = buscarPremio('TD3');
+  // TR fija: siempre TD3, pero SOLO para autos (no aplicar franquicia en motos)
+  if (tipoVehiculo === 'VEHICULO') {
+    const premioTR = buscarPremio('TD3');
 
-  // mapa 102→d1, 104→d2, 106→d3 (solo si coincide con alguno válido)
-  const key = franquicia === 102 ? 'd1'
-           : franquicia === 104 ? 'd2'
-           : franquicia === 106 ? 'd3'
-           : undefined;
+    // mapa 102→d1, 104→d2, 106→d3
+    const key =
+      franquicia === 102 ? 'd1' :
+      franquicia === 104 ? 'd2' :
+      franquicia === 106 ? 'd3' :
+      undefined;
 
-  if (key && premioTR !== undefined) {
-    (parcial as any)[key] = premioTR; // asigna d1|d2|d3
+    if (key && premioTR !== undefined) {
+      (parcial as any)[key] = premioTR;
+    }
   }
 
   return parcial;
 }
+
 
 
 /**

@@ -373,6 +373,8 @@ export class MulticotizadorComponent implements OnInit {
 
         console.error("❌ Error en cotizacion RUS:",
           error?.error?.error || "Error desconocido");
+
+          this.s_toast.error(error?.error?.error,"Error al cotizar en Rio Uruguay");
       }
 
     }
@@ -399,20 +401,16 @@ export class MulticotizadorComponent implements OnInit {
       const cotizacionMercantil = construirCotizacionMercantil(respuesta.resultado);
       this.cotizaciones.companiasCotizadas.push(cotizacionMercantil);
     } catch (error: any) {
-      const payload = error?.error?.message;
-      let mensaje = 'Error inesperado';
-      let detalle = '';
 
-      try {
-        const parsed = typeof payload === 'string' ? JSON.parse(payload) : payload;
-        mensaje = parsed?.message || mensaje;
-        detalle = parsed?.errors?.[0]?.message || '';
-      } catch (e) {
-        console.error('❌ Error desconocido al parsear:', error);
-      }
+      console.log("Error cotizacion mercantil", error);
+
+      // intentar leer el mensaje
+      const payload = error?.error?.message;
+      let mensaje = payload || 'Error inesperado';
+
+      this.s_toast.error(mensaje, "Error al cotizar en Mercantil Andina");
 
       console.error('❌ Error principal:', mensaje);
-      console.warn('🧾 Detalle técnico:', detalle);
     }
   }
 
@@ -439,9 +437,36 @@ export class MulticotizadorComponent implements OnInit {
       console.log(cotizacionRivadavia);
       this.cotizaciones.companiasCotizadas.push(cotizacionRivadavia);
 
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log('❌ Rivadavia error bruto:', error);
+
+      // El backend envía: { message: { code, message, fieldErrors[] } }
+      const mObj = error?.error?.message;
+
+      let msg: string;
+
+      if (mObj && typeof mObj === 'object') {
+        const base = mObj.message || 'Error de validación';
+        const detalles = Array.isArray(mObj.fieldErrors)
+          ? mObj.fieldErrors
+              .map((e: any) => `${e.field}: ${e.message}`)
+              .join(' · ')
+          : '';
+
+        msg = detalles ? `${base}: ${detalles}` : base;
+      } else {
+        // otros casos (string o HttpErrorResponse.message)
+        msg =
+          (typeof mObj === 'string' && mObj) ||
+          error?.message ||
+          JSON.stringify(error?.error?.message ?? error);
+      }
+
+      this.s_toast.error(msg, 'Error al cotizar en Rivadavia');
+      console.error('❌ Error principal:', msg);
     }
+
+
 
   }
 
@@ -487,7 +512,7 @@ export class MulticotizadorComponent implements OnInit {
       (this as any).__fed_frans_ok.add(franqResp);
 
       // ⚠️ pasar la franquicia DEVUELTA a construirCotizacionFederacion
-      const parcial = construirCotizacionFederacion(respuesta?.coberturas?.planes ?? [], franqResp);
+      const parcial = construirCotizacionFederacion(respuesta?.coberturas?.planes ?? [], franqResp,this.getTipoVehiculo());
 
       // 🔑 1) Asegurar UNA sola fila “Federación Patronal” (upsert sin duplicar)
       let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
@@ -519,25 +544,29 @@ export class MulticotizadorComponent implements OnInit {
     } catch (error: any) {
       console.error('❌ Error en cotización Federación:', error);
 
+      // tratar de sacar el mensaje en orden
+      const msg =
+        error?.error?.message ||
+        error?.message ||
+        (typeof error === 'string' ? error : JSON.stringify(error));
+
+      this.s_toast.error(msg, 'Error al cotizar en Federación Patronal');
+
       // ✅ Manejo específico del error de la 2ª (4%)
-      const msg = error?.error?.message || error?.message || String(error);
       const esRelacionMulti = msg.includes('Error al insertar relacion entre cotizaciones multirramicas');
 
       // asegurar fila única aunque falle
       let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
       if (!fila) {
-        fila = {
-          compania: 'Federación Patronal',
-          rc: undefined, c: undefined, c1: undefined,
-          d1: undefined, d2: undefined, d3: undefined,
-        };
+        fila = { compania: 'Federación Patronal', rc: undefined, c: undefined, c1: undefined, d1: undefined, d2: undefined, d3: undefined };
         this.cotizaciones.companiasCotizadas.push(fila);
       }
 
       if (esRelacionMulti) {
-        // marcá la celda del 4% como no disponible y seguí
-        (fila as any).d2 = undefined; // o null si tu UI lo prefiere
+        (fila as any).d2 = undefined;
       }
+
+      console.error('❌ Error principal:', msg);
     }
   }
 
@@ -564,8 +593,9 @@ export class MulticotizadorComponent implements OnInit {
       const resultado = parsearXML(respuesta);
       const cotizacionATM = construirCotizacionATM(resultado);
       this.cotizaciones.companiasCotizadas.push(cotizacionATM);
-    } catch (error) {
+    } catch (error:any) {
       console.error('❌ Error en cotización ATM:', error);
+      this.s_toast.error(error,"Error en cotización ATM");
     }
   }
 
