@@ -152,7 +152,6 @@ actualizarProductorLocal(productor: Productor) {
       }
 
       console.log('✅ Usuario actualizado correctamente');
-      this.s_toast.success('✅ Usuario actualizado correctamente',"Usuario actualizado");
       return await response.json();
     } catch (error) {
       console.error('❌ Error en actualización completa:', error);
