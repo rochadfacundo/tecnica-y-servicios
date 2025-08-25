@@ -71,7 +71,7 @@ export function buildFederacionRequest(
       franquicia: franquicia,
     },
     // por defecto lo incluimos y lo quitamos para moto
-    asegura2: [{ ramo: 35, producto: "350001" }]
+    //asegura2: [{ ramo: 35, producto: "350001" }]
   };
 
   if (tipoVehiculo === ETipoVehiculo.VEHICULO && cotizacionFederacion.coberturas) {
