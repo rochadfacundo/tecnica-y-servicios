@@ -5,6 +5,7 @@ import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { Productor } from '../models/productor.model';
 import { updatePassword,getIdToken } from "@angular/fire/auth";
 import { HttpClient } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class AuthService {
   private apiUrl = 'https://api-5cekuonbbq-uc.a.run.app/users';
   //private apiUrl = environment.URL_DEV+'/users';
   private http = inject(HttpClient);
+  private s_toast = inject(ToastrService);
 
   private _auth = inject(Auth);
   private firestore = inject(Firestore);
@@ -150,6 +152,7 @@ actualizarProductorLocal(productor: Productor) {
       }
 
       console.log('✅ Usuario actualizado correctamente');
+      this.s_toast.success('✅ Usuario actualizado correctamente',"Usuario actualizado");
       return await response.json();
     } catch (error) {
       console.error('❌ Error en actualización completa:', error);
@@ -171,18 +174,25 @@ actualizarProductorLocal(productor: Productor) {
     return await response.json();
   }
   async deleteUser(uid: string): Promise<void> {
+    const token = await this.getToken();
+    if (!token) throw new Error('No se pudo obtener el token');
+
     const response = await fetch(`${this.apiUrl}/${uid}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('❌ Error eliminando usuario:', errorText);
-      throw new Error('Error al eliminar usuario');
+      this.s_toast.error('Error al eliminar el usuario','Error al eliminar');
     }
-
+    this.s_toast.success('✅ Usuario eliminado correctamente',"Usuario eliminado");
     console.log('✅ Usuario eliminado correctamente');
   }
+
 
 
  async logout() {

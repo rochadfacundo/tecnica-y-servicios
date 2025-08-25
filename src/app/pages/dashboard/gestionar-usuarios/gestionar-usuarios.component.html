@@ -46,7 +46,7 @@
 
           <div class="mb-3">
             <select class="form-select" formControlName="role">
-              <option [ngValue]="null" disabled selected>Seleccionar compañía</option>
+              <option [ngValue]="null" disabled selected>Seleccionar rol</option>
               <option placeholder="Rol" *ngFor="let rol of this.roles" [ngValue]="rol">{{ rol }}</option>
             </select>
           </div>
@@ -162,6 +162,7 @@
                   </ng-container>
 
                   <ng-container *ngSwitchCase="'FEDERACION PATRONAL'">
+                    <label for="refacturaciones">Refacturaciones</label>
                     <select class="form-select mb-2" formControlName="refacturaciones">
                       <option *ngFor="let r of configCompanias['FEDERACION PATRONAL'].refacturaciones | keyvalue" [value]="r.value">{{ r.key }}</option>
                     </select>
