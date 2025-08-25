@@ -111,10 +111,6 @@
 
           <ng-container *ngSwitchCase="'ATM'">
             <div class="mb-2">
-              <label>Código Vendedor</label>
-              <input type="text" class="form-control" formControlName="codigoVendedor" />
-            </div>
-            <div class="mb-2">
               <label>Plan</label>
               <select class="form-select" formControlName="plan" >
                 <option *ngFor="let p of configCompanias['ATM'].planes" [value]="p.plan">{{ p.descripcion }} ({{ p.formaPago }})</option>
