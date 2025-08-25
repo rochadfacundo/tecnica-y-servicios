@@ -44,6 +44,15 @@ export class TablaCotizadoraComponent implements OnInit {
     @Inject(ToastrService) private s_toast: ToastrService
   ) {}
 
+  companiasConDatos(): any[] {
+    if (!this.cotizaciones?.companiasCotizadas) return [];
+
+    return this.cotizaciones.companiasCotizadas.filter(cot => {
+      const importes = [cot.rc, cot.c, cot.c1, cot.d1, cot.d2, cot.d3];
+      return importes.some(val => val != null && Number(val) > 0);
+    });
+  }
+
   // ===== helpers =====
 
   private norm(s: Maybe<string>): string {
