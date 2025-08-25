@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideFirebaseApp(() =>
       initializeApp({
         projectId: "tecnicayservicios-dbeb6",
@@ -40,7 +40,6 @@ export const appConfig: ApplicationConfig = {
       }),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    provideHttpClient(withInterceptors([authInterceptor])),
   ]
 };
 

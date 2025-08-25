@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, User } from '@angular/fire/auth';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { Productor } from '../models/productor.model';
@@ -104,27 +104,18 @@ actualizarProductorLocal(productor: Productor) {
   }
 
   async register(productor: Productor) {
-    try {
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
+    const token = await this.getToken();
+    if (!token) throw new Error('No se pudo obtener el token');
+
+    return firstValueFrom(
+      this.http.post(this.apiUrl, productor, {
         headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productor),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Error al guardar usuario en Firestore:', errorText);
-        throw new Error('Error al guardar usuario en Firestore');
-      }
-
-      console.log('✅ Usuario registrado correctamente en Firestore');
-    } catch (error) {
-      console.error('❌ Error en registro completo:', error);
-      throw error;
-    }
+          Authorization: `Bearer ${token}`
+        }
+      })
+    );
   }
+
 
 
   updatePassword(uid: string, newPassword: string) {
