@@ -40,10 +40,13 @@
 
     <tbody class="fs-5">
       <tr *ngFor="let cot of companiasConDatos()">
+
         <td>{{ cot.compania }}</td>
 
         <!-- RC -->
-        <td>
+        <td
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['A0']) : (getDescRC(cot) || '')"
+          placement="top">
           {{ cot.rc | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.rc)">
             {{ getCuotasDe(cot.compania) }} cuotas:
@@ -52,7 +55,9 @@
         </td>
 
         <!-- C o B -->
-        <td>
+        <td
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['C3','C3-BÁSICA','B2']) : (getDescC_B(cot) || '')"
+          placement="top">
           {{ cot.c | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c)">
             {{ getCuotasDe(cot.compania) }} cuotas:
@@ -61,7 +66,9 @@
         </td>
 
         <!-- C1 o B1 -->
-        <td>
+        <td
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['C2','C2-MEDIA']) : (getDescC1_B1(cot) || '')"
+          placement="top">
           {{ cot.c1 | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c1)">
             {{ getCuotasDe(cot.compania) }} cuotas:
@@ -70,7 +77,9 @@
         </td>
 
         <!-- D1 o C1 -->
-        <td>
+        <td
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D1','D2','C']) : (getDescD1(cot) || '')"
+          placement="top">
           {{ cot.d1 | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d1)">
             {{ getCuotasDe(cot.compania) }} cuotas:
@@ -79,7 +88,9 @@
         </td>
 
         <!-- D2 o C2 -->
-        <td>
+        <td
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D3']) : (getDescD2(cot) || '')"
+          placement="top">
           {{ cot.d2 | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d2)">
             {{ getCuotasDe(cot.compania) }} cuotas:
@@ -88,13 +99,16 @@
         </td>
 
         <!-- D3 solo autos -->
-        <td *ngIf="tipoVehiculo === 'VEHICULO'">
+        <td *ngIf="tipoVehiculo === 'VEHICULO'"
+          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D4']) : (getDescD3(cot) || '')"
+          placement="top">
           {{ cot.d3 | currency:'$' }}
           <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d3)">
             {{ getCuotasDe(cot.compania) }} cuotas:
             {{ calcularImportePorCuota(cot.compania, cot.d3) | currency:'$' }}
           </div>
         </td>
+
       </tr>
     </tbody>
   </table>

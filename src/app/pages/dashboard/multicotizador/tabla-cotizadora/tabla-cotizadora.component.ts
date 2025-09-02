@@ -3,12 +3,16 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
-import { Cotizacion } from '../../../../interfaces/cotizacion';
+import { Cotizacion, CotizacionATM } from '../../../../interfaces/cotizacion';
 import { AuthService } from '../../../../services/auth.service';
 import { Productor } from '../../../../models/productor.model';
 import { ETipoVehiculo } from '../../../../enums/tipoVehiculos';
+import { ToolTipDirective } from '../../../../directives/tool-tip.directive';
+import { buildTooltipATM } from '../cotizadores/atm';
 
 type Maybe<T> = T | null | undefined;
+
+
 
 interface ProdCompania {
   compania: string;
@@ -24,7 +28,7 @@ interface ProdCompania {
 @Component({
   selector: 'app-tabla-cotizadora',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ToolTipDirective],
   templateUrl: './tabla-cotizadora.component.html',
   styleUrl: './tabla-cotizadora.component.css'
 })
@@ -32,7 +36,8 @@ export class TablaCotizadoraComponent implements OnInit {
   cotizaciones!: Cotizacion;
   tipoVehiculo!: ETipoVehiculo;
   user!: Productor | null;
-
+  coberturasATM: CotizacionATM[] = [];
+  buildTooltipATM = buildTooltipATM;
   /**
    * Cache: nombre canonizado de compañía -> cantidad de cuotas (null/undefined = mensual/no mostrar)
    */
@@ -43,6 +48,33 @@ export class TablaCotizadoraComponent implements OnInit {
     @Inject(AuthService) private s_auth: AuthService,
     @Inject(ToastrService) private s_toast: ToastrService
   ) {}
+
+    // ===== lifecycle =====
+
+    async ngOnInit(): Promise<void> {
+      this.user = await this.s_auth.obtenerProductorLogueado();
+      if (!this.user) return;
+
+      const state = history.state as {
+        cotizaciones?: Cotizacion;
+        tipoVehiculo?: ETipoVehiculo;
+        coberturasATM?: CotizacionATM[]; };
+
+      if (state?.cotizaciones && state?.tipoVehiculo) {
+        this.cotizaciones = state.cotizaciones;
+        this.tipoVehiculo = state.tipoVehiculo;
+
+         //setear las coberturas de ATM para tooltips
+         this.coberturasATM = Array.isArray(state.coberturasATM) ? state.coberturasATM : [];
+
+        // construimos el cache de cuotas según productor + tipo vehículo
+        this.construirMapaCuotas();
+      } else {
+        console.warn('⚠️ No se encontraron cotizaciones en el estado');
+        this.router.navigate(['/dashboard']);
+      }
+    }
+
 
   companiasConDatos(): any[] {
     if (!this.cotizaciones?.companiasCotizadas) return [];
@@ -207,23 +239,87 @@ export class TablaCotizadoraComponent implements OnInit {
     }
 
 
-  // ===== lifecycle =====
 
-  async ngOnInit(): Promise<void> {
-    this.user = await this.s_auth.obtenerProductorLogueado();
-    if (!this.user) return;
 
-    const state = history.state as { cotizaciones?: Cotizacion; tipoVehiculo?: ETipoVehiculo };
 
-    if (state?.cotizaciones && state?.tipoVehiculo) {
-      this.cotizaciones = state.cotizaciones;
-      this.tipoVehiculo = state.tipoVehiculo;
+  /** Devuelve la descripción para un rol (rc, c, c1, d1, d2, d3) leyendo rol2codigo + detallesPorCodigo */
+  getDescPorRol(cot: any, rol: 'rc'|'c'|'c1'|'d1'|'d2'|'d3'): string | null {
+    // 1) preferimos el tooltip ya armado por el adapter (incluye CODE y %)
+    const tip = cot?.rol2tooltip?.[rol];
+    if (typeof tip === 'string' && tip.trim()) return tip.trim();
 
-      // construimos el cache de cuotas según productor + tipo vehículo
-      this.construirMapaCuotas();
-    } else {
-      console.warn('⚠️ No se encontraron cotizaciones en el estado');
-      this.router.navigate(['/dashboard']);
-    }
+    // 2) fallback por código + desc + % si es TR
+    const code: string | undefined = cot?.rol2codigo?.[rol];
+    if (!code) return null;
+
+    const raw = cot?.detallesPorCodigo?.[code]?.descripcion ?? '';
+    const toSentence = (s?: string) => {
+      const t = (s ?? '').trim().toLowerCase();
+      return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
+    };
+    const pct = rol === 'd1' ? ' 2%' : rol === 'd2' ? ' 4%' : rol === 'd3' ? ' 6%' : '';
+    const human = toSentence(raw || code);
+
+    return `${code}: ${human}${pct}`.trim();
   }
+
+/** RC */
+getDescRC(cot: any): string | null {
+  return this.getDescPorRol(cot, 'rc');
 }
+
+/** C (auto) o B (moto). Si el adapter no cargó B/B1, caerá en C/C1 por como lo construimos. */
+getDescC_B(cot: any): string | null {
+  // Si querés distinguir estrictamente por tipo, podés consultar this.esMoto
+  // pero como el adapter ya resolvió rol->código, alcanza con pedir 'c'.
+  return this.getDescPorRol(cot, 'c');
+}
+
+/** C1 (auto) o B1 (moto) */
+getDescC1_B1(cot: any): string | null {
+  return this.getDescPorRol(cot, 'c1');
+}
+
+/** D1 con fallback a TD3 si el adapter asignó TR por franquicia */
+getDescD1(cot: any): string | null {
+  return this.getDescPorRol(cot, 'd1') || null;
+}
+
+/** D2 con fallback a TD3 */
+getDescD2(cot: any): string | null {
+  return this.getDescPorRol(cot, 'd2') || null;
+}
+
+/** D3 con fallback a TD3 */
+getDescD3(cot: any): string | null {
+  return this.getDescPorRol(cot, 'd3') || null;
+}
+
+
+
+  /** ATM */
+
+
+
+  /** Devuelve la primera cobertura que coincida con los códigos dados */
+  getCoberturaATM(codigos: string[]): CotizacionATM | undefined {
+    if (!this.coberturasATM?.length) return undefined;
+    for (const code of codigos) {
+      const hit = this.coberturasATM.find(c => String(c.codigo).toUpperCase() === code.toUpperCase());
+      if (hit) return hit;
+    }
+    return undefined;
+  }
+
+  /** Devuelve el texto final del tooltip (multi-línea) */
+  tooltipATM(codigos: string[]): string {
+    const c = this.getCoberturaATM(codigos);
+    if (!c) return 'Sin detalle';
+    const t = this.buildTooltipATM(c);
+    return `${t.title}\n${t.lines.join('\n')}`;
+  }
+
+}
+
+
+

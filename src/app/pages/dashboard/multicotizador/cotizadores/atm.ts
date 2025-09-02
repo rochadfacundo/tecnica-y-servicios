@@ -1,9 +1,10 @@
 import { XMLParser } from "fast-xml-parser";
 import { MedioPago, Plan } from "../../../../enums/EnumAtm";
-import { CompaniaCotizada, Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
+import { Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
-import { CodigosPersoneria, getRandomNumber, getYesNo }from "../../../../utils/utils";
+import { CodigosPersoneria, getRandomNumber, getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
+import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 
 export function buildATMRequest(
   form: CotizacionFormValue,
@@ -12,29 +13,27 @@ export function buildATMRequest(
   tipo: string
 ): string {
   const today = form.vigenciaDesde;
-  const [year, month, day] = today.split('-');
+  const [year, month, day] = today.split("-");
   const atmFormatDay = `${day}${month}${year}`;
 
   const alarma = form.alarma ? 1 : 0;
   const ajuste = 10; // ajuste de 10
-  const configATM = productor.companias?.find(c => c.compania === 'ATM');
+  const configATM = productor.companias?.find((c) => c.compania === "ATM");
 
-  const yes = 'S';
-  const no = 'N';
+  const yes = "S";
+  const no = "N";
   const personaFisica = "F";
   const condicionFiscal = "CF";
   const cerokm = "N";
   const micrograbado = "N";
-  const tipousoMoto="1";  //particular
+  const tipousoMoto = "1"; // particular
 
   // Determinar si es auto o moto
   const esAuto = tipo === "VEHICULO";
   const seccionAuto = esAuto ? 3 : 4;
 
   // XML condicional para uso
-  const usoXML = esAuto
-    ? `<uso>0101</uso>`
-    : `<tipo_uso>1</tipo_uso>`;
+  const usoXML = esAuto ? `<uso>0101</uso>` : `<tipo_uso>1</tipo_uso>`;
 
   const xml = `
 <soapenv:Envelope xmlns:tem="http://tempuri.org/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -75,47 +74,47 @@ export function buildATMRequest(
   </soapenv:Body>
 </soapenv:Envelope>`.trim();
 
-console.log("xml a atm",xml);
+  console.log("xml a atm", xml);
 
   return xml;
 }
 
-
-export function parsearXML(res:string):CotizacionATM[]{
+export function parsearXML(res: string): CotizacionATM[] {
   const parser = new XMLParser({ ignoreAttributes: false });
   const parsed = parser.parse(res);
 
   // Acceso al nodo principal
-  const coberturas = parsed['SOAP-ENV:Envelope']
-    ['SOAP-ENV:Body']
-    ['ns1:AUTOS_CotizarResponse']
-    ['ns1:AUTOS_CotizarResult']
-    .auto
-    .cotizacion
-    .cobertura;
+  const coberturas =
+  parsed["SOAP-ENV:Envelope"]
+  ["SOAP-ENV:Body"]
+  ["ns1:AUTOS_CotizarResponse"]
+  ["ns1:AUTOS_CotizarResult"].auto.cotizacion.cobertura;
 
-  const resultado: CotizacionATM[] = Array.isArray(coberturas) ? coberturas.map((c) => ({
-    codigo: c.codigo,
-    descripcion: c.descripcion,
-    prima: parseFloat(c.prima),
-    premio: parseFloat(c.premio),
-    cuotas: parseInt(c.cuotas),
-    impcuotas: parseFloat(c.impcuotas),
-    ajuste: c.ajuste,
-    formapago: c.formapago,
-    plan_cot: c.plan_cot,
-    solicitud_glm: c.solicitud_glm
-  })) : [];
-  console.log(resultado);
+  const toNum = (v: any) => Number.parseFloat(String(v));
+
+  const resultado: CotizacionATM[] = Array.isArray(coberturas)
+    ? coberturas.map((c: any) => ({
+        codigo: c.codigo,
+        descripcion: c.descripcion,
+        prima: toNum(c.prima),
+        premio: toNum(c.premio),
+        cuotas: Number.parseInt(c.cuotas),
+        impcuotas: toNum(c.impcuotas),
+        ajuste: c.ajuste,
+        formapago: c.formapago,
+        plan_cot: c.plan_cot,
+        solicitud_glm: c.solicitud_glm,
+        comision: c.comision != null ? toNum(c.comision) : undefined,
+      }))
+    : [];
 
   return resultado;
 }
 
-
 export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
   const buscarPremio = (...codigos: string[]): number | undefined => {
     for (const codigo of codigos) {
-      const cobertura = coberturas.find(c => c.codigo === codigo);
+      const cobertura = coberturas.find((c) => c.codigo === codigo);
       if (cobertura?.premio) {
         return cobertura.premio;
       }
@@ -124,14 +123,53 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
   };
 
   const companiaCotizada: CompaniaCotizada = {
-    compania: 'ATM',
-    rc: buscarPremio('A0'),
-    c: buscarPremio('C3', 'C3-BÁSICA','B2'), //B2 PARA MOTO
-    c1: buscarPremio('C2', 'C2-MEDIA'),
-    d1: buscarPremio('D1', 'D2','C'), //C PARA MOTO
-    d2: buscarPremio('D3'),
-    d3: buscarPremio('D4'),
+    compania: "ATM",
+    rc: buscarPremio("A0"),
+    c: buscarPremio("C3", "C3-BÁSICA", "B2"), // B2 PARA MOTO
+    c1: buscarPremio("C2", "C2-MEDIA"),
+    d1: buscarPremio("D1", "D2", "C"), // C PARA MOTO
+    d2: buscarPremio("D3"),
+    d3: buscarPremio("D4"),
   };
 
   return companiaCotizada;
+}
+
+/* ---------------- Tooltip Helpers ---------------- */
+
+const moneyAR = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  minimumFractionDigits: 2,
+});
+
+/** Extrae "3%" / "6%" de descripciones TR tipo:
+ * "TODO RIESGO C/FCIA.VARIABLE 6% SUMA ASEGURADA"
+ */
+function extraerFranquicia(descripcion: string): string | null {
+  const m = descripcion?.match(/(\d{1,2})\s*%/);
+  return m ? `${m[1]}%` : null;
+}
+
+/** Devuelve la franquicia solo si aplica (códigos D* suelen ser TR) */
+function franquiciaSiAplica(c: CotizacionATM): string | null {
+  if (!/^D\d/.test(c.codigo)) return null;
+  return extraerFranquicia(c.descripcion);
+}
+
+export function buildTooltipATM(c: CotizacionATM): { title: string; lines: string[] } {
+  const fran = franquiciaSiAplica(c);
+  const title = `Plan ${c.codigo}: ${c.descripcion}${fran ? ` (${fran})` : ""}`;
+
+  const lines: string[] = [
+  //  `Premio total: ${moneyAR.format(c.premio)}`,
+  //  `Cuotas: ${String(c.cuotas).padStart(2, "0")} x ${moneyAR.format(c.impcuotas)}`,
+  //  `Forma de pago: ${c.formapago} \n`,
+    ` - Ajuste: ${c.ajuste}\n`,
+  ];
+
+  //if (c.plan_cot) lines.push(`Plan: ${c.plan_cot}`);
+  //if (Number.isFinite(c.comision as number)) lines.push(`Comisión: ${moneyAR.format(c.comision as number)}`);
+
+  return { title, lines };
 }

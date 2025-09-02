@@ -18,9 +18,9 @@ import { Tipo, TipoId, TipoPersoneria, TipoVehiculo } from '../../../interfaces/
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
-import { buildATMRequest, construirCotizacionATM, parsearXML } from './cotizadores/atm';
+import { buildATMRequest, buildTooltipATM, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
-import { CompaniaCotizada, Cotizacion } from '../../../interfaces/cotizacion';
+import { Cotizacion, CotizacionATM } from '../../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
@@ -88,6 +88,9 @@ export class MulticotizadorComponent implements OnInit {
   productorLog!: Productor|null;
   cotizaciones: Cotizacion;
   animar:boolean = false;
+
+  public coberturasATM: CotizacionATM[] = [];
+  public buildTooltipATM = buildTooltipATM; // para usarlo en el template
 
 
   constructor(
@@ -491,7 +494,7 @@ export class MulticotizadorComponent implements OnInit {
         this.s_fedPat.cotizarFederacion(
           cotizacionFederacion,
           this.codigoPostalFederacion,
-          this.getTipoVehiculo()
+          this.getTipoVehiculo(),
         )
       );
 
@@ -512,7 +515,15 @@ export class MulticotizadorComponent implements OnInit {
       (this as any).__fed_frans_ok.add(franqResp);
 
       // ⚠️ pasar la franquicia DEVUELTA a construirCotizacionFederacion
-      const parcial = construirCotizacionFederacion(respuesta?.coberturas?.planes ?? [], franqResp,this.getTipoVehiculo());
+      const parcial = construirCotizacionFederacion(
+        respuesta?.coberturas?.planes ?? [],
+        respuesta?.coberturas?.franquicia,         // ej. 102/104/106
+        this.getTipoVehiculo(),                           // 'VEHICULO' | 'MOTOVEHICULO',
+        respuesta?.coberturas?.ajuste_automatico
+      );
+
+
+
 
       // 🔑 1) Asegurar UNA sola fila “Federación Patronal” (upsert sin duplicar)
       let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
@@ -521,9 +532,33 @@ export class MulticotizadorComponent implements OnInit {
           compania: 'Federación Patronal',
           rc: undefined, c: undefined, c1: undefined,
           d1: undefined, d2: undefined, d3: undefined,
+          detallesPorCodigo: {},
+          rol2codigo: {},
+          rol2tooltip: {},
+          detalles: {}
         };
         this.cotizaciones.companiasCotizadas.push(fila);
       }
+
+      // ✅ 2a) Merge de mapas para tooltips (no pisa claves existentes)
+      fila.detallesPorCodigo = {
+        ...(fila.detallesPorCodigo || {}),
+        ...(parcial.detallesPorCodigo || {})
+      };
+      fila.rol2codigo = {
+        ...(fila.rol2codigo || {}),
+        ...(parcial.rol2codigo || {})
+      };
+      fila.rol2tooltip = {
+        ...(fila.rol2tooltip || {}),
+        ...(parcial.rol2tooltip || {})
+      };
+      fila.detalles = {
+        ...(fila.detalles || {}),
+        ...(parcial.detalles || {})
+      };
+
+
 
       // 🔑 2) Solo completar comunes si aún no están (evita reescrituras)
       if (fila.rc === undefined && parcial.rc !== undefined) fila.rc = parcial.rc;
@@ -587,15 +622,18 @@ export class MulticotizadorComponent implements OnInit {
     );
 
     try {
-      const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm,this.productorLog));
+      const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm, this.productorLog));
       console.log(respuesta);
       console.log('✅ Cotización exitosa ATM');
+
       const resultado = parsearXML(respuesta);
+      this.coberturasATM = resultado;
+
       const cotizacionATM = construirCotizacionATM(resultado);
       this.cotizaciones.companiasCotizadas.push(cotizacionATM);
     } catch (error:any) {
       console.error('❌ Error en cotización ATM:', error);
-      this.s_toast.error(error,"Error en cotización ATM");
+      this.s_toast.error(error, "Error en cotización ATM");
     }
   }
 
@@ -659,7 +697,8 @@ export class MulticotizadorComponent implements OnInit {
     this.router.navigate(['/dashboard/tabla-cotizadora'], {
       state: {
         cotizaciones: this.cotizaciones,
-        tipoVehiculo: this.getTipoVehiculo()
+        tipoVehiculo: this.getTipoVehiculo(),
+        coberturasATM: this.coberturasATM,
       }
     });
   }

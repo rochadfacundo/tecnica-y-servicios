@@ -1,0 +1,19 @@
+.app-tooltip {
+  position: relative;
+  max-width: 280px;
+  padding: .35rem .5rem;
+  font-size: .825rem;
+  line-height: 1.2;
+  background: rgba(0,0,0,.88);
+  color: #fff;
+  border-radius: .375rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,.2);
+  pointer-events: none; /* evita que el mouse cause flicker */
+  user-select: none;
+}
+.app-tooltip-arrow {
+  position: absolute;
+  width: .6rem; height: .6rem;
+  transform: rotate(45deg);
+  background: rgba(0,0,0,.88);
+}

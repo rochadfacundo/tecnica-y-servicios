@@ -1,5 +1,4 @@
-
-import { CompaniaCotizada, Cotizacion } from "../../../../interfaces/cotizacion";
+import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPago } from "../../../../interfaces/cotizacionRivadavia";
 import { Productor } from "../../../../models/productor.model";
@@ -96,13 +95,10 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
   return `${yyyy}-${mm}-${dd}`;
 }
 
-
-
 export function construirCotizacionRivadavia(planes: any[], vehiculo: string): CompaniaCotizada {
   const norm = (s?: string) => (s ?? "").toUpperCase().trim();
 
-  // ✅ No removemos "." (decimal). Solo sacamos $ y espacios.
-  // Si hay coma y no hay punto, asumimos coma decimal y la cambiamos por punto.
+  // ✅ Normalizador numérico (mantiene punto decimal, cambia coma por punto si no hay punto).
   const toNumber = (v: any): number | undefined => {
     if (v == null) return undefined;
     let s = String(v).trim().replace(/\$/g, "");
@@ -111,8 +107,16 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     return Number.isFinite(n) ? n : undefined;
   };
 
+  // Index por nombre de plan
   const byPlan = new Map<string, any>();
   for (const p of planes) byPlan.set(norm(p.plan), p);
+
+  const pickPlan = (...nombresPlanes: string[]): string | undefined => {
+    for (const plan of nombresPlanes) {
+      if (byPlan.has(norm(plan))) return plan;
+    }
+    return undefined;
+  };
 
   const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
     for (const plan of nombresPlanes) {
@@ -122,43 +126,58 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     return undefined;
   };
 
-  // Detección dinámica de DF (D F1, DF2, etc.)
+  // Detección dinámica DF → D1/D2/D3 (conservo tu lógica; ahora también guardo el nombre bruto del plan para tooltip)
   const dfPlanes = planes
     .map(p => {
-      const name = norm(p.plan);
-      const m = /^D\s*F\s*(\d+)\b/.exec(name) || /^DF\s*(\d+)\b/.exec(name);
-      return m ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal) } : null;
+      const nameNorm = norm(p.plan);
+      const m = /^D\s*F\s*(\d+)\b/.exec(nameNorm) || /^DF\s*(\d+)\b/.exec(nameNorm);
+      return m ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal), planRaw: String(p.plan) } : null;
     })
-    .filter((x): x is { num: number; premio: number | undefined } => !!x && x.premio !== undefined)
-    .sort((a, b) => a.num - b.num); // menor → mayor
+    .filter((x): x is { num: number; premio: number | undefined; planRaw: string } => !!x && x.premio !== undefined)
+    .sort((a, b) => a.num - b.num);
 
-  // --- Mapeo a D1/D2/D3 sin duplicar cuando hay 2 elementos ---
-  let d1: number | undefined;
-  let d2: number | undefined;
-  let d3: number | undefined;
+  let d1: number | undefined, d2: number | undefined, d3: number | undefined;
+  let planD1: string | undefined, planD2: string | undefined, planD3: string | undefined;
 
   const n = dfPlanes.length;
-  if (n === 0) {
-    // sin DF → d1/d2/d3 quedan undefined
-  } else if (n === 1) {
-    // solo un DF → va a D3
-    d3 = dfPlanes[0].premio;
+  if (n === 1) {
+    d3 = dfPlanes[0].premio; planD3 = dfPlanes[0].planRaw;
   } else if (n === 2) {
-    // dos DF → D1 vacío, D2 = menor, D3 = mayor
-    d2 = dfPlanes[0].premio;
-    d3 = dfPlanes[1].premio;
-  } else {
-    // 3 o más → D1 = menor, D2 = mediana, D3 = mayor
-    d1 = dfPlanes[0].premio;
-    d2 = dfPlanes[Math.floor(n / 2)].premio;
-    d3 = dfPlanes[n - 1].premio;
+    d2 = dfPlanes[0].premio; planD2 = dfPlanes[0].planRaw;
+    d3 = dfPlanes[1].premio; planD3 = dfPlanes[1].planRaw;
+  } else if (n >= 3) {
+    d1 = dfPlanes[0].premio;                       planD1 = dfPlanes[0].planRaw;
+    d2 = dfPlanes[Math.floor(n / 2)].premio;       planD2 = dfPlanes[Math.floor(n / 2)].planRaw;
+    d3 = dfPlanes[n - 1].premio;                   planD3 = dfPlanes[n - 1].planRaw;
   }
 
-  const rc = buscarPremio("A");
-  const c  = buscarPremio("P", "F");
-  const c1 = buscarPremio("MX", "B");
+  // 🔧 Selección de C y C1 según tipo de vehículo (conservo tu lógica)
+  const tipo = norm(vehiculo);
+  let cPlans: string[] = [];
+  let c1Plans: string[] = [];
 
-  return {
+  if (tipo === "VEHICULO") {
+    cPlans = ["P"];     // C → P
+    c1Plans = ["MX"];   // C1 → MX
+  } else if (tipo === "MOTOVEHICULO") {
+    cPlans = ["F"];     // C → F
+    c1Plans = ["B"];    // C1 → B
+  } else {
+    // Fallback por si llega algo inesperado
+    cPlans = ["P", "F"];
+    c1Plans = ["MX", "B"];
+  }
+
+  const rcPlan = pickPlan("A");
+  const cPlan  = pickPlan(...cPlans);
+  const c1Plan = pickPlan(...c1Plans);
+
+  const rc = buscarPremio("A");
+  const c  = buscarPremio(...cPlans);
+  const c1 = buscarPremio(...c1Plans);
+
+  // === Resultado base (SIN romper nada de lo que tenías) ===
+  const fila: CompaniaCotizada = {
     compania: "Rivadavia",
     rc,
     c,
@@ -167,6 +186,20 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     d2,
     d3,
   };
+
+  // === Tooltips por plan (solo “Plan: XXX”) ===
+  // Usamos rol2tooltip para que tu tabla lo priorice.
+  const rol2tooltip: NonNullable<CompaniaCotizada['rol2tooltip']> = {};
+  if (rc !== undefined && rcPlan)  rol2tooltip.rc  = `Plan ${rcPlan}: `;
+  if (c  !== undefined && cPlan)   rol2tooltip.c   = `Plan ${cPlan}: `;
+  if (c1 !== undefined && c1Plan)  rol2tooltip.c1  = `Plan ${c1Plan}: `;
+  if (d1 !== undefined && planD1)  rol2tooltip.d1  = `Plan ${planD1}: `;
+  if (d2 !== undefined && planD2)  rol2tooltip.d2  = `Plan ${planD2}: `;
+  if (d3 !== undefined && planD3)  rol2tooltip.d3  = `Plan ${planD3}: `;
+
+  if (Object.keys(rol2tooltip).length) {
+    (fila as any).rol2tooltip = rol2tooltip;
+  }
+
+  return fila;
 }
-
-
