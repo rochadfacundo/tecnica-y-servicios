@@ -188,7 +188,7 @@ export function construirCotizacionFederacion(
     rol2codigo.c1 = pick('B1', 'C1');
   } else {
     rol2codigo.c  = pick('C');
-    rol2codigo.c1 = pick('C1');
+    rol2codigo.c1 = pick('CF');
   }
 
   if (rol2codigo.c)  rol2tooltip.c  = tipFor(rol2codigo.c);
