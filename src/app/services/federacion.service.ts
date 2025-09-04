@@ -18,9 +18,13 @@ export class FederacionService {
     }
 
     getLocalidades(zipCode:number): Observable<any> {
-      return this.http.get<any[]>(`${this.apiUrl}/localidades`, {
+      return this.http.get<any[]>(`${this.apiUrl}/localidadesPorCodigo`, {
         params: { zipCode: zipCode }
       });
+    }
+
+    getTodasLasLocalidades(): Observable<any> {
+      return this.http.get<any[]>(`${this.apiUrl}/localidades`);
     }
     getFranquicia(codInfoAuto: string, fecha: string): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/franquicia/${codInfoAuto}/${fecha}`);
