@@ -2,9 +2,9 @@
 @import 'ngx-toastr/toastr';
 /* 🎨 Variables globales */
 :root {
-  --menu-bg-color: #4c5c4c;
-  --bg-color-light-green: #94c484;
-  --color-light2-green: #74b45c;
+  --menu-bg-color:   #458548;/* #4c5c4c;*/
+  --bg-color-light-green: #7dba80; /* #94c484;*/
+  --color-light2-green: #7dba80;
   --color-principal: #4c5c4c;
   --color-secundario: #2f362f;
   --color-acento: #a6d98f;
@@ -28,7 +28,107 @@ body {
   font-size: 15px;
 }
 
+/* === Magofah Regular === */
+@font-face {
+  font-family: 'Magofah';
+  src:
+    url('assets/fonts/Magofah.woff2') format('woff2'),
+    url('assets/fonts/Magofah.woff') format('woff'),
+    url('assets/fonts/Magofah.ttf') format('truetype'),
+    url('assets/fonts/Magofah.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
+/* === Magofah Italic === */
+@font-face {
+  font-family: 'Magofah';
+  src:
+    url('assets/fonts/Magofah Italic.woff2') format('woff2'),
+    url('assets/fonts/Magofah Italic.woff') format('woff'),
+    url('assets/fonts/Magofah Italic.ttf') format('truetype'),
+    url('assets/fonts/Magofah Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Usos prácticos */
+.titulo-magofah {
+  font-family: 'Magofah', serif;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 3px 3px 8px rgba(0,0,0,.6);    /* sombra clara, ajustable */
+}
+
+.titulo-magofah-italic {
+  font-family: 'Magofah', serif;
+  font-style: italic;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0,0,0,.5);
+}
+
+/* Ajuste del bloque derecho según lo que veníamos tocando */
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background: var(--bg-color-light-green);
+  color: #fff;
+  padding: 6rem 2rem 2rem; /* arriba / lados / abajo */
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .right-section { padding-top: 3.5rem; }
+}
+
+@font-face {
+  font-family: 'JosephSophia';
+  src: url('assets/fonts/josephsophia.ttf') format('truetype'),
+       url('assets/fonts/josephsophia.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'ave';
+  src: url('assets/fonts/ave.ttf') format('truetype');
+}
+
+.titulo-workforce {
+  font-family: 'ave', sans-serif;
+  font-size: 8rem;
+  line-height: 1.2;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  opacity: 70%;
+}
+
+@font-face {
+  font-family: 'safiro';
+  src: url('assets/fonts/safiro.otf') format('truetype');
+}
+
+.titulo-safiro {
+  font-family: 'safiro', sans-serif;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.titulo-nombres {
+  font-family: 'JosephSophia', cursive !important;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem) !important;
+  line-height: 1.2 !important;
+}
 
 .title,
 .header,

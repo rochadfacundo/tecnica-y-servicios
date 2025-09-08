@@ -1,0 +1,27 @@
+[
+  {
+    "codigo": "A",
+    "descripcion": "A: Responsabilidad Civil"
+  },
+  {
+    "codigo": "P",
+    "descripcion": "P Mega Premium: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo"
+  },
+  {
+    "codigo": "MX",
+    "descripcion": "MX Mega Premium: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo"
+  },
+  {
+    "codigo": "D F3",
+    "descripcion": "D con Franq. 3%: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo con Franq. del 3% de la SA"
+  },
+  {
+    "codigo": "D F4",
+    "descripcion": "D con Franq. 4%: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo con Franq. del 4% de la SA"
+  },
+  {
+    "codigo": "D F5",
+    "descripcion": "D con Franq. 5%: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo con Franq. del 5% de la SA"
+  }
+
+]

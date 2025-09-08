@@ -14,12 +14,17 @@
   height: 100%;  /* Asegura que ocupen toda la altura */
 }
 
+
 .acerca-de-left {
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: var(--color-light2-green);
+}
+
+.acerca-de-left h2:last-of-type {
+  margin-top: 2rem;   /* ajustá: 1.5rem, 2.5rem, etc. */
 }
 
 .acerca-de-left h2,

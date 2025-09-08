@@ -11,9 +11,10 @@ import { Component } from '@angular/core';
 export class PresentationComponent {
   companias = [
     { nombre: 'Río Uruguay', logo: '../../../assets/rus.png' },
-    { nombre: 'Mercantil Andina', logo: '../../../assets/mercantil.png' },
-    { nombre: 'ATM', logo: '../../../assets/atm.png' },
-    { nombre: 'Rivadavia', logo: '../../../assets/rivadavia.png' },
+    { nombre: 'Mercantil Andina', logo: '../../../assets/mercantil.jpeg' },
+    { nombre: 'ATM', logo: '../../../assets/atm.jpeg' },
+    { nombre: 'Rivadavia', logo: '../../../assets/rivadavia.jpeg' },
     { nombre: 'Federación Patronal', logo: '../../../assets/federacion.png' },
+    { nombre: 'Digna', logo: '../../../assets/digna.jpeg' },
   ];
 }

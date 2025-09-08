@@ -1,15 +1,37 @@
 <div class="acerca-de-container d-flex flex-wrap">
   <!-- Texto izquierda -->
   <div class="acerca-de-left animate__animated animate__fadeInLeft animate__faster">
-    <h2>Acerca de:</h2>
-    <p>Somos una organización de Seguros especializada en brindar asesoramiento y apoyo al productor.</p>
+    <h2>
+      <span class="titulo-safiro fs-3">Acerca de:</span>
+    </h2>
+
+    <p >
+      <span class="titulo-safiro fs-4">  Somos una organización de Seguros especializada en brindar asesoramiento y apoyo al productor.</span>
+    </p>
     <p>
+      <span class="titulo-safiro fs-4">
       Creemos que el Asesor de Seguros es un eje fundamental del mercado asegurador, por ello nos enfocamos en brindar soluciones integrales y personalizadas.
       Junto al PAS desde el primer día, nos encontramos a disposición para acompañarte con las mejores herramientas, capacitaciones, desarrollo de tu cartera de clientes y relaciones comerciales con las compañías líderes en el mercado.
+      </span>
     </p>
-    <p>Nuestra trayectoria de más de 30 años fue construida y se sostiene en nuestros valores de trabajo en equipo, conocimientos técnicos y servicio.</p>
-    <p>Los tiempos cambian, pero nuestros valores no, hoy más que nunca estamos cerca.</p>
-    <h3><strong>Somos Técnica y Servicios</strong></h3>
+    <p>
+      <span  class="titulo-safiro fs-4">
+        Nuestra trayectoria de más de 30 años fue construida y se sostiene en nuestros valores de trabajo en equipo, conocimientos técnicos y servicio.
+      </span>
+    </p>
+    <p>
+      <span class="titulo-safiro fs-4">
+        Los tiempos cambian, pero nuestros valores no, hoy más que nunca estamos cerca.
+      </span>
+
+    </p>
+    <h2>
+      <strong>
+        <span class="titulo-safiro fs-2">
+        Somos Técnica y Servicios
+      </span>
+      </strong>
+    </h2>
   </div>
 
   <!-- Imagen derecha -->
@@ -21,7 +43,11 @@
 <!-- Sección Conociendo al equipo -->
 <div class="conociendo-equipo mt-5">
   <h2 class="text-center animate__animated animate__fadeInDown animate__faster">
-    <strong>Conociendo al equipo</strong>
+    <strong>
+      <span class="titulo-safiro fs-2">
+      Conociendo al equipo
+    </span>
+    </strong>
   </h2>
 
   <div class="row">
@@ -29,9 +55,9 @@
       <div class="card m-3" #animatedCard>
         <div class="card-body text-center">
           <img [src]="employee.photo" alt="{{ employee.name }}" class="card-img-top rounded-circle mb-3" />
-          <h5 class="card-title font-weight-bold">{{ employee.name }} {{ employee.surName }}</h5>
-          <p class="card-text text-muted">{{ employee.role }}</p>
-          <p class="card-text text-muted" *ngIf="employee.email" style="font-size: 0.9rem;">{{ employee.email }}</p>
+          <h5 class="card-title font-weight-bold titulo-nombres">{{ employee.name }} {{ employee.surName }}</h5>
+          <p class="card-text text-muted titulo-safiro">{{ employee.role }}</p>
+          <p class="card-text text-muted titulo-safiro" *ngIf="employee.email" style="font-size: 0.9rem;">{{ employee.email }}</p>
         </div>
       </div>
     </div>

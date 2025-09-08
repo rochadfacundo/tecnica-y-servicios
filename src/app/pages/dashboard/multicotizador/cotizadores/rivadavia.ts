@@ -4,6 +4,23 @@ import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPa
 import { Productor } from "../../../../models/productor.model";
 import { CodigosPersoneria, getRandomNumber } from "../../../../utils/utils";
 
+import PLANES_RIV from '../../../../../assets/planesRivadavia.json';
+
+
+
+type PlanRiv = { codigo: string; descripcion: string };
+const norm = (s?: string) => (s ?? '').toUpperCase().trim();
+// Mapa código → descripción normalizado (A, P, MX, D F3, etc.)
+const DESC_RIV: Record<string, string> = {};
+for (const it of (PLANES_RIV as PlanRiv[])) {
+  DESC_RIV[norm(it.codigo)] = (it.descripcion ?? '').trim();
+}
+
+// Helper para obtener la descripción por código/plan
+const descPlan = (code?: string) => {
+  if (!code) return undefined;
+  return DESC_RIV[norm(code)];}
+
 export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,productor:Productor){
     //formatDateSinceYear
     const gnc= form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
@@ -96,7 +113,7 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
 }
 
 export function construirCotizacionRivadavia(planes: any[], vehiculo: string): CompaniaCotizada {
-  const norm = (s?: string) => (s ?? "").toUpperCase().trim();
+  const normLocal = (s?: string) => (s ?? "").toUpperCase().trim();
 
   // ✅ Normalizador numérico (mantiene punto decimal, cambia coma por punto si no hay punto).
   const toNumber = (v: any): number | undefined => {
@@ -109,27 +126,27 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
 
   // Index por nombre de plan
   const byPlan = new Map<string, any>();
-  for (const p of planes) byPlan.set(norm(p.plan), p);
+  for (const p of planes) byPlan.set(normLocal(p.plan), p);
 
   const pickPlan = (...nombresPlanes: string[]): string | undefined => {
     for (const plan of nombresPlanes) {
-      if (byPlan.has(norm(plan))) return plan;
+      if (byPlan.has(normLocal(plan))) return plan;
     }
     return undefined;
   };
 
   const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
     for (const plan of nombresPlanes) {
-      const hit = byPlan.get(norm(plan));
+      const hit = byPlan.get(normLocal(plan));
       if (hit) return toNumber(hit.premioTotal);
     }
     return undefined;
   };
 
-  // Detección dinámica DF → D1/D2/D3 (conservo tu lógica; ahora también guardo el nombre bruto del plan para tooltip)
+  // Detección DFx → D1/D2/D3 (tomamos valores bajo patrón DF %)
   const dfPlanes = planes
     .map(p => {
-      const nameNorm = norm(p.plan);
+      const nameNorm = normLocal(p.plan);
       const m = /^D\s*F\s*(\d+)\b/.exec(nameNorm) || /^DF\s*(\d+)\b/.exec(nameNorm);
       return m ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal), planRaw: String(p.plan) } : null;
     })
@@ -151,8 +168,8 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     d3 = dfPlanes[n - 1].premio;                   planD3 = dfPlanes[n - 1].planRaw;
   }
 
-  // 🔧 Selección de C y C1 según tipo de vehículo (conservo tu lógica)
-  const tipo = norm(vehiculo);
+  // 🔧 Selección de C y C1 según tipo de vehículo
+  const tipo = normLocal(vehiculo);
   let cPlans: string[] = [];
   let c1Plans: string[] = [];
 
@@ -163,7 +180,6 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     cPlans = ["F"];     // C → F
     c1Plans = ["B"];    // C1 → B
   } else {
-    // Fallback por si llega algo inesperado
     cPlans = ["P", "F"];
     c1Plans = ["MX", "B"];
   }
@@ -172,11 +188,11 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
   const cPlan  = pickPlan(...cPlans);
   const c1Plan = pickPlan(...c1Plans);
 
-  const rc = buscarPremio("A");
-  const c  = buscarPremio(...cPlans);
-  const c1 = buscarPremio(...c1Plans);
+  const rc  = buscarPremio("A");
+  const c   = buscarPremio(...cPlans);
+  const c1  = buscarPremio(...c1Plans);
 
-  // === Resultado base (SIN romper nada de lo que tenías) ===
+  // === Resultado base ===
   const fila: CompaniaCotizada = {
     compania: "Rivadavia",
     rc,
@@ -187,19 +203,42 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     d3,
   };
 
-  // === Tooltips por plan (solo “Plan: XXX”) ===
-  // Usamos rol2tooltip para que tu tabla lo priorice.
-  const rol2tooltip: NonNullable<CompaniaCotizada['rol2tooltip']> = {};
-  if (rc !== undefined && rcPlan)  rol2tooltip.rc  = `Plan ${rcPlan}: `;
-  if (c  !== undefined && cPlan)   rol2tooltip.c   = `Plan ${cPlan}: `;
-  if (c1 !== undefined && c1Plan)  rol2tooltip.c1  = `Plan ${c1Plan}: `;
-  if (d1 !== undefined && planD1)  rol2tooltip.d1  = `Plan ${planD1}: `;
-  if (d2 !== undefined && planD2)  rol2tooltip.d2  = `Plan ${planD2}: `;
-  if (d3 !== undefined && planD3)  rol2tooltip.d3  = `Plan ${planD3}: `;
+  // >>> NUEVO: rol2codigo con el plan “bruto” seleccionado
+  const rol2codigo: Record<string, string> = {};
+  if (rc !== undefined && rcPlan) rol2codigo["rc"] = rcPlan;
+  if (c  !== undefined && cPlan)  rol2codigo["c"]  = cPlan;
+  if (c1 !== undefined && c1Plan) rol2codigo["c1"] = c1Plan;
+  if (d1 !== undefined && planD1) rol2codigo["d1"] = planD1;
 
-  if (Object.keys(rol2tooltip).length) {
-    (fila as any).rol2tooltip = rol2tooltip;
+
+  if (d2 !== undefined && planD2) rol2codigo["d2"] = planD2;
+  if (d3 !== undefined && planD3) rol2codigo["d3"] = planD3;
+  if (Object.keys(rol2codigo).length) (fila as any).rol2codigo = rol2codigo;
+
+  // >>> NUEVO: detallesPorCodigo con la descripción del JSON (para fallback en la tabla)
+  const detallesPorCodigo: Record<string, { descripcion: string }> = {};
+  for (const code of Object.values(rol2codigo)) {
+    const desc = descPlan(code);
+    if (desc) detallesPorCodigo[code] = { descripcion: desc };
   }
+  if (Object.keys(detallesPorCodigo).length) (fila as any).detallesPorCodigo = detallesPorCodigo;
+
+  // === Tooltips por plan (ahora con descripción del JSON si existe)
+  const withDesc = (plan?: string) => {
+    if (!plan) return '';
+    const d = descPlan(plan);
+    return d ? `Plan ${d}` : `Plan ${plan}:`;
+  };
+
+  const rol2tooltip: NonNullable<CompaniaCotizada['rol2tooltip']> = {};
+  if (rc !== undefined && rcPlan)  rol2tooltip.rc  = withDesc(rcPlan);
+  if (c  !== undefined && cPlan)   rol2tooltip.c   = withDesc(cPlan);
+  if (c1 !== undefined && c1Plan)  rol2tooltip.c1  = withDesc(c1Plan);
+  if (d1 !== undefined && planD1)  rol2tooltip.d1  = withDesc(planD1);
+  if (d2 !== undefined && planD2)  rol2tooltip.d2  = withDesc(planD2);
+  if (d3 !== undefined && planD3)  rol2tooltip.d3  = withDesc(planD3);
+
+  if (Object.keys(rol2tooltip).length) (fila as any).rol2tooltip = rol2tooltip;
 
   return fila;
 }
