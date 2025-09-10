@@ -1,97 +1,89 @@
-import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
+import { Cotizacion } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
-import { CondicionIB, CondicionIVA, DatosCotizacionRivadavia, EstadoGNC, FormaPago } from "../../../../interfaces/cotizacionRivadavia";
+import {
+  CondicionIB,
+  CondicionIVA,
+  DatosCotizacionRivadavia,
+  EstadoGNC,
+  FormaPago,
+} from "../../../../interfaces/cotizacionRivadavia";
 import { Productor } from "../../../../models/productor.model";
-import { CodigosPersoneria, getRandomNumber } from "../../../../utils/utils";
+import { CodigosPersoneria } from "../../../../utils/utils";
+import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 
-import PLANES_RIV from '../../../../../assets/planesRivadavia.json';
+export function buildRivadaviaRequest(
+  form: CotizacionFormValue,
+  codigoInfoAuto: number,
+  productor: Productor
+) {
+  const gnc = form.tieneGnc
+    ? EstadoGNC.POSEE_GNC_ASEGURA
+    : EstadoGNC.NO_POSEE_GNC;
 
+  const valorGnc = form.gnc ? form.gnc : 0;
 
+  const formaPago = FormaPago.CBU;
+  const configRiv = productor.companias?.find(
+    (c) => c.compania === "RIVADAVIA"
+  );
+  const ajuste = 20;
 
-type PlanRiv = { codigo: string; descripcion: string };
-const norm = (s?: string) => (s ?? '').toUpperCase().trim();
-// Mapa código → descripción normalizado (A, P, MX, D F3, etc.)
-const DESC_RIV: Record<string, string> = {};
-for (const it of (PLANES_RIV as PlanRiv[])) {
-  DESC_RIV[norm(it.codigo)] = (it.descripcion ?? '').trim();
+  let cotizacion: DatosCotizacionRivadavia = {
+    nroProductor: "",
+    claveProductor: "",
+  };
+
+  if (configRiv) {
+    cotizacion = {
+      nroProductor: configRiv.nroProductor,
+      claveProductor: configRiv.claveProductor,
+      datoAsegurado: {
+        tipoDocumento: form.tipoId,
+        condicionIVA: CondicionIVA.CONSUMIDOR_FINAL,
+        condicionIB: CondicionIB.CONSUMIDOR_FINAL,
+        nroDocumento: form.nroId,
+        personaJuridica: CodigosPersoneria.Rivadavia.esJuridica,
+        formaPago: formaPago,
+      },
+      datoVehiculo: {
+        codigoInfoAuto: String(codigoInfoAuto),
+        codigoVehiculo: "",
+        modeloAnio: String(form.anio),
+        sumaAsegurada: 0,
+        porcentajeAjuste: ajuste,
+      },
+      datoPoliza: {
+        nroPoliza: "12322",
+        fechaVigenciaDesde: form.vigenciaDesde,
+        fechaVigenciaHasta: calcularFechaHastaPorTipoFacturacion(
+          form.vigenciaDesde,
+          configRiv.tipoFacturacion
+        ),
+        cantidadCuotas: configRiv.cantidadCuotas,
+        tipoFacturacion: configRiv.tipoFacturacion,
+        provincia: form.provincia.provinciaRiv,
+        codigoPostal: form.cpLocalidadGuarda,
+        sumaAseguradaAccesorios: valorGnc,
+        sumaAseguradaEquipaje: 0,
+        gnc: gnc,
+      },
+      polizasVinculadas: {
+        accidentePasajeros: "n",
+        accidentePersonales: "n",
+        combinadoFamiliar: "n",
+        incendio: "n",
+        vidaIndividual: "n",
+      },
+    };
+  }
+
+  return cotizacion;
 }
 
-// Helper para obtener la descripción por código/plan
-const descPlan = (code?: string) => {
-  if (!code) return undefined;
-  return DESC_RIV[norm(code)];}
-
-export function buildRivadaviaRequest(form:CotizacionFormValue,codigoInfoAuto:number,productor:Productor){
-    //formatDateSinceYear
-    const gnc= form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
-
-    const valorGnc= form.gnc? form.gnc : 0;
-
-    //const formaPago= form.medioPago.codigo === 1 ? FormaPago.CBU : FormaPago.TARJETA_CREDITO;
-    const formaPago=FormaPago.CBU;
-    const configRiv = productor.companias?.find(c => c.compania === 'RIVADAVIA');
-    const ajuste=20; //20 a 50
-
-    console.log("riv",configRiv);
-    let cotizacion:DatosCotizacionRivadavia={nroProductor:"",claveProductor:""};
-    if(configRiv){
-       cotizacion = {
-        nroProductor: configRiv.nroProductor,
-        claveProductor: configRiv.claveProductor,
-        datoAsegurado: {
-          tipoDocumento: form.tipoId,
-          condicionIVA: CondicionIVA.CONSUMIDOR_FINAL,
-          condicionIB: CondicionIB.CONSUMIDOR_FINAL, //lo agrego?
-          nroDocumento: form.nroId,
-          //cuil: "",
-          //cuit: "asd",
-          //fechaNacimiento?: string;
-          personaJuridica:CodigosPersoneria.Rivadavia.esJuridica,
-           formaPago: formaPago
-        },
-        datoVehiculo: {
-          codigoInfoAuto: String(codigoInfoAuto),
-          codigoVehiculo: "",
-          modeloAnio: String(form.anio),
-          sumaAsegurada: 0,
-          porcentajeAjuste: ajuste,
-        },
-        datoPoliza: {
-          nroPoliza: "12322",
-          fechaVigenciaDesde: form.vigenciaDesde,
-          fechaVigenciaHasta: calcularFechaHastaPorTipoFacturacion(form.vigenciaDesde, configRiv.tipoFacturacion),
-          cantidadCuotas: configRiv.cantidadCuotas,
-          tipoFacturacion: configRiv.tipoFacturacion, //tiene mas que fedpat.
-          provincia: form.provincia.provinciaRiv,
-          codigoPostal: form.cpLocalidadGuarda,
-          sumaAseguradaAccesorios: valorGnc, //y aca sumamos resto de accesorios(int)
-          sumaAseguradaEquipaje: 0,    //omnibus
-          gnc: gnc,
-            //cantidadAsientos?: string;
-            //alarmaSatelital?: AlarmaSatelital;
-            //subrogado?: boolean;
-            //coeficienteRC?: number;    ESTOS SON DECUENTOS agregarlo con POLIZAS VINCULADAS
-            //coeficienteCasco?: number;  ESTOS SON DESCUENTOS agregarlo con POLIZAS VINCULADAS
-            //porcentajeBonificacion?: number;   DESCUENTOS PERO DESCONTANDO COMISION
-            //aniosSinSiniestros?: AniosSinSiniestros;
-        },
-        polizasVinculadas: {
-          accidentePasajeros: "n",
-          accidentePersonales: "n",
-          combinadoFamiliar: "n",
-          incendio: "n",
-          vidaIndividual: "n"
-        }
-      };
-    }
-
-
-    console.log("enviar a rivadavia",cotizacion);
-    return cotizacion;
-
-}
-
-function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: string): string {
+function calcularFechaHastaPorTipoFacturacion(
+  desde: string,
+  tipoFacturacion?: string
+): string {
   const mapa: Record<string, number> = {
     CUATRIMESTRAL: 4,
     ANUAL: 12,
@@ -106,16 +98,17 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
   fecha.setMonth(fecha.getMonth() + meses);
 
   const yyyy = fecha.getFullYear();
-  const mm = String(fecha.getMonth() + 1).padStart(2, '0');
-  const dd = String(fecha.getDate()).padStart(2, '0');
+  const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+  const dd = String(fecha.getDate()).padStart(2, "0");
 
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function construirCotizacionRivadavia(planes: any[], vehiculo: string): CompaniaCotizada {
-  const normLocal = (s?: string) => (s ?? "").toUpperCase().trim();
+export function construirCotizacionRivadavia(
+  planes: any[]
+): CompaniaCotizada {
+  const norm = (s?: string) => (s ?? "").toUpperCase().trim();
 
-  // ✅ Normalizador numérico (mantiene punto decimal, cambia coma por punto si no hay punto).
   const toNumber = (v: any): number | undefined => {
     if (v == null) return undefined;
     let s = String(v).trim().replace(/\$/g, "");
@@ -124,121 +117,56 @@ export function construirCotizacionRivadavia(planes: any[], vehiculo: string): C
     return Number.isFinite(n) ? n : undefined;
   };
 
-  // Index por nombre de plan
   const byPlan = new Map<string, any>();
-  for (const p of planes) byPlan.set(normLocal(p.plan), p);
-
-  const pickPlan = (...nombresPlanes: string[]): string | undefined => {
-    for (const plan of nombresPlanes) {
-      if (byPlan.has(normLocal(plan))) return plan;
-    }
-    return undefined;
-  };
+  for (const p of planes) byPlan.set(norm(p.plan), p);
 
   const buscarPremio = (...nombresPlanes: string[]): number | undefined => {
     for (const plan of nombresPlanes) {
-      const hit = byPlan.get(normLocal(plan));
+      const hit = byPlan.get(norm(plan));
       if (hit) return toNumber(hit.premioTotal);
     }
     return undefined;
   };
 
-  // Detección DFx → D1/D2/D3 (tomamos valores bajo patrón DF %)
+  // Detección dinámica de DF (ej.: "D F1", "DF2", etc.)
   const dfPlanes = planes
-    .map(p => {
-      const nameNorm = normLocal(p.plan);
-      const m = /^D\s*F\s*(\d+)\b/.exec(nameNorm) || /^DF\s*(\d+)\b/.exec(nameNorm);
-      return m ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal), planRaw: String(p.plan) } : null;
+    .map((p) => {
+      const name = norm(p.plan);
+      const m = /^D\s*F\s*(\d+)\b/.exec(name) || /^DF\s*(\d+)\b/.exec(name);
+      return m
+        ? { num: parseInt(m[1], 10), premio: toNumber(p.premioTotal) }
+        : null;
     })
-    .filter((x): x is { num: number; premio: number | undefined; planRaw: string } => !!x && x.premio !== undefined)
+    .filter(
+      (x): x is { num: number; premio: number } =>
+        !!x && x.premio !== undefined
+    )
     .sort((a, b) => a.num - b.num);
 
-  let d1: number | undefined, d2: number | undefined, d3: number | undefined;
-  let planD1: string | undefined, planD2: string | undefined, planD3: string | undefined;
+  // Asignación a D1/D2/D3
+  let d1: number | undefined;
+  let d2: number | undefined;
+  let d3: number | undefined;
 
-  const n = dfPlanes.length;
-  if (n === 1) {
-    d3 = dfPlanes[0].premio; planD3 = dfPlanes[0].planRaw;
-  } else if (n === 2) {
-    d2 = dfPlanes[0].premio; planD2 = dfPlanes[0].planRaw;
-    d3 = dfPlanes[1].premio; planD3 = dfPlanes[1].planRaw;
-  } else if (n >= 3) {
-    d1 = dfPlanes[0].premio;                       planD1 = dfPlanes[0].planRaw;
-    d2 = dfPlanes[Math.floor(n / 2)].premio;       planD2 = dfPlanes[Math.floor(n / 2)].planRaw;
-    d3 = dfPlanes[n - 1].premio;                   planD3 = dfPlanes[n - 1].planRaw;
+  const count = dfPlanes.length;
+  if (count === 1) {
+    d3 = dfPlanes[0].premio;
+  } else if (count === 2) {
+    d2 = dfPlanes[0].premio;
+    d3 = dfPlanes[1].premio;
+  } else if (count >= 3) {
+    d1 = dfPlanes[0].premio;
+    d2 = dfPlanes[Math.floor(count / 2)].premio;
+    d3 = dfPlanes[count - 1].premio;
   }
 
-  // 🔧 Selección de C y C1 según tipo de vehículo
-  const tipo = normLocal(vehiculo);
-  let cPlans: string[] = [];
-  let c1Plans: string[] = [];
-
-  if (tipo === "VEHICULO") {
-    cPlans = ["P"];     // C → P
-    c1Plans = ["MX"];   // C1 → MX
-  } else if (tipo === "MOTOVEHICULO") {
-    cPlans = ["F"];     // C → F
-    c1Plans = ["B"];    // C1 → B
-  } else {
-    cPlans = ["P", "F"];
-    c1Plans = ["MX", "B"];
-  }
-
-  const rcPlan = pickPlan("A");
-  const cPlan  = pickPlan(...cPlans);
-  const c1Plan = pickPlan(...c1Plans);
-
-  const rc  = buscarPremio("A");
-  const c   = buscarPremio(...cPlans);
-  const c1  = buscarPremio(...c1Plans);
-
-  // === Resultado base ===
-  const fila: CompaniaCotizada = {
+  return {
     compania: "Rivadavia",
-    rc,
-    c,
-    c1,
+    rc: buscarPremio("A"),
+    c: buscarPremio("P", "F"),
+    c1: buscarPremio("MX", "B"),
     d1,
     d2,
     d3,
   };
-
-  // >>> NUEVO: rol2codigo con el plan “bruto” seleccionado
-  const rol2codigo: Record<string, string> = {};
-  if (rc !== undefined && rcPlan) rol2codigo["rc"] = rcPlan;
-  if (c  !== undefined && cPlan)  rol2codigo["c"]  = cPlan;
-  if (c1 !== undefined && c1Plan) rol2codigo["c1"] = c1Plan;
-  if (d1 !== undefined && planD1) rol2codigo["d1"] = planD1;
-
-
-  if (d2 !== undefined && planD2) rol2codigo["d2"] = planD2;
-  if (d3 !== undefined && planD3) rol2codigo["d3"] = planD3;
-  if (Object.keys(rol2codigo).length) (fila as any).rol2codigo = rol2codigo;
-
-  // >>> NUEVO: detallesPorCodigo con la descripción del JSON (para fallback en la tabla)
-  const detallesPorCodigo: Record<string, { descripcion: string }> = {};
-  for (const code of Object.values(rol2codigo)) {
-    const desc = descPlan(code);
-    if (desc) detallesPorCodigo[code] = { descripcion: desc };
-  }
-  if (Object.keys(detallesPorCodigo).length) (fila as any).detallesPorCodigo = detallesPorCodigo;
-
-  // === Tooltips por plan (ahora con descripción del JSON si existe)
-  const withDesc = (plan?: string) => {
-    if (!plan) return '';
-    const d = descPlan(plan);
-    return d ? `Plan ${d}` : `Plan ${plan}:`;
-  };
-
-  const rol2tooltip: NonNullable<CompaniaCotizada['rol2tooltip']> = {};
-  if (rc !== undefined && rcPlan)  rol2tooltip.rc  = withDesc(rcPlan);
-  if (c  !== undefined && cPlan)   rol2tooltip.c   = withDesc(cPlan);
-  if (c1 !== undefined && c1Plan)  rol2tooltip.c1  = withDesc(c1Plan);
-  if (d1 !== undefined && planD1)  rol2tooltip.d1  = withDesc(planD1);
-  if (d2 !== undefined && planD2)  rol2tooltip.d2  = withDesc(planD2);
-  if (d3 !== undefined && planD3)  rol2tooltip.d3  = withDesc(planD3);
-
-  if (Object.keys(rol2tooltip).length) (fila as any).rol2tooltip = rol2tooltip;
-
-  return fila;
 }

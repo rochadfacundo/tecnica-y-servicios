@@ -436,7 +436,7 @@ export class MulticotizadorComponent implements OnInit {
       const respuesta = await firstValueFrom(observable$);
 
       console.log('✅ Cotización exitosa Rivadavia:', respuesta);
-      const cotizacionRivadavia = construirCotizacionRivadavia(respuesta.coberturas,this.getTipoVehiculo());
+      const cotizacionRivadavia = construirCotizacionRivadavia(respuesta.coberturas);
       console.log(cotizacionRivadavia);
       this.cotizaciones.companiasCotizadas.push(cotizacionRivadavia);
 

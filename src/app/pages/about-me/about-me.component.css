@@ -1,37 +1,41 @@
+/* === Fondo solo para esta página === */
+.acerca-de-page {
+  background-color: var(--color-light2-green);
+  min-height: 100vh;
+  display: block;
+}
+
+/* =======================
+   Acerca de
+   ======================= */
 .acerca-de-container {
   display: flex;
-  flex-direction: row;  /* Las secciones están en fila en pantallas grandes */
-  height: 100vh;  /* La altura ocupa toda la pantalla */
-  width: 100%;  /* Asegura que el ancho sea completo */
-  gap: 0;  /* Sin espacio entre las dos secciones */
-  align-items: stretch;  /* Estira las secciones a la altura completa */
-  justify-content: center;  /* Centra horizontalmente */
+  flex-direction: row;
+  min-height: 80vh;
+  align-items: stretch;
+  justify-content: center;
+  padding-bottom: 0;
 }
 
 .acerca-de-left,
 .acerca-de-right {
-  flex: 1;  /* Ambos ocupan el 50% del ancho en pantallas grandes */
-  height: 100%;  /* Asegura que ocupen toda la altura */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
 
 .acerca-de-left {
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  background: var(--color-light2-green);
-}
-
-.acerca-de-left h2:last-of-type {
-  margin-top: 2rem;   /* ajustá: 1.5rem, 2.5rem, etc. */
+  color: #fff;
 }
 
 .acerca-de-left h2,
 .acerca-de-left h3,
 .acerca-de-left p {
-  color: white; /* Color de texto blanco */
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Sombra de texto */
+  color: white;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+  margin-bottom: 0;
 }
 
 .acerca-de-left h2 {
@@ -44,130 +48,111 @@
   line-height: 1.6;
 }
 
+.acerca-de-left h2:last-of-type {
+  margin-top: 2rem;
+}
+
 .acerca-de-right {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
 }
 
 .acerca-de-right img {
-  width: 100%;  /* La imagen ocupa todo el ancho disponible */
-  height: 100%;  /* La imagen ocupa toda la altura disponible */
-  object-fit: cover;  /* Asegura que la imagen se adapte correctamente */
-}
-
-h2, h3 {
-  font-family: "libre-baskerville-bold";
-}
-
-p {
-  font-family: "libre-baskerville-regular";
-  font-size: 15px;
-}
-
-/* Estilos específicos para pantallas pequeñas */
-@media (max-width: 768px) {
-  .acerca-de-container {
-    flex-direction: column; /* Las secciones se apilan en pantallas pequeñas */
-    height: auto; /* Ajustamos la altura para pantallas pequeñas */
-  }
-
-  .acerca-de-left,
-  .acerca-de-right {
-    width: 100%; /* Ambas secciones ocupan el 100% del ancho */
-    height: auto; /* Ajustamos la altura para pantallas pequeñas */
-  }
-
-  .acerca-de-left {
-    padding: 1rem;  /* Reducimos el padding en pantallas pequeñas */
-  }
-
-  .acerca-de-right img {
-    height: auto;  /* La imagen ajusta su altura */
-  }
-}
-
-
-h2, h3 {
-  font-family: "libre-baskerville-bold";
-}
-
-p {
-  font-family: "libre-baskerville-regular";
-  font-size: 15px;
-}
-/* Estilos generales para la sección Conociendo al equipo */
-/* Contenedor principal */
-.conociendo-equipo {
-  padding: 3rem 2rem;
-  background-color: var(--color-light2-green);
-}
-
-.conociendo-equipo h2 {
-  color: white;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* Estilo para las filas */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: space-between;
-}
-
-/* Estilo para las columnas */
-.col-md-4 {
-  flex: 1 1 calc(33.333% - 1.5rem); /* 3 por fila con espacio entre ellas */
-  box-sizing: border-box;
-}
-
-/* Estilo para las columnas (2 por fila) */
-.col-md-6 {
-  flex: 1 1 calc(50% - 1.5rem); /* 2 columnas por fila con espacio entre ellas */
-  box-sizing: border-box;
-}
-
-/* Estilo para la imagen dentro de la card */
-.card-img-top {
-  width: 120px;
-  height: 120px;
-  object-fit: cover; /* Asegura que la imagen se ajuste correctamente */
-  margin: 0 auto; /* Centra la imagen */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-/* Estilo de las cards */
-.card {
-  background-color: white;
-  border: 2px solid var(--menu-bg-color); /* Usando la variable de borde */
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Opcional: sombra para más estilo */
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animación al pasar el mouse */
+/* =======================
+   Conociendo al equipo
+   ======================= */
+.conociendo-equipo {
+  padding: 3rem 2rem;
+  color: #fff;
+  margin-top: 0;
 }
+
+.conociendo-equipo h2 {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+/* Cards de integrantes */
+.card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid var(--menu-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.separador {
+  border: none;
+  height: 2px;
+  background: #fff;
+  margin: 2rem auto;
+  width: 60%;
+  opacity: 0.7;
+}
+
 
 .card:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Estilo del contenido */
+.card-img-top {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  margin: 0 auto;
+  display: block;
+  border-radius: 50%;
+}
+
 .card-body {
   text-align: center;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
+  color: var(--menu-bg-color);
 }
 
 .card-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
+  color: #333;
 }
 
-.card-text.text-muted {
-  color: #6c757d;
+/* =======================
+   Responsive
+   ======================= */
+@media (max-width: 768px) {
+  .acerca-de-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .acerca-de-left,
+  .acerca-de-right {
+    width: 100%;
+    height: auto;
+  }
+
+  .acerca-de-left {
+    padding: 1rem;
+  }
+
+  .acerca-de-right img {
+    height: auto;
+  }
+
+  .card-img-top {
+    width: 75px;
+    height: 75px;
+  }
 }
