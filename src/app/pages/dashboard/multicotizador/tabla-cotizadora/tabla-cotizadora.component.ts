@@ -265,7 +265,7 @@ export class TablaCotizadoraComponent implements OnInit {
 
 
 
-  async descargarPDF() {
+  async downloadPDF() {
     if (!this.tablaCotizaciones) {
       this.s_toast.error('No se encontró la tabla', 'Error al exportar');
       return;
