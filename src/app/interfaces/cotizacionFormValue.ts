@@ -1,6 +1,7 @@
 import { FormControl } from "@angular/forms";
 import { Tipo, TipoPersoneria, TipoRefacturacion, TipoVehiculo } from "./tipos";
 import { Provincia } from "./provincia";
+import { ECobertura } from "../enums/Ecobertura";
 
 export interface CotizacionFormValue {
   tipoInteres: Tipo;
@@ -43,4 +44,7 @@ export interface CotizacionFormValue {
   gnc?: number;
   vigenciaDesde: any;
   vigenciaHasta: any;
+
+  //filtro de coberturas
+  coberturasSeleccionadas: ECobertura[];
 }

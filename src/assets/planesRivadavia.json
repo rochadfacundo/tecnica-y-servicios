@@ -4,6 +4,22 @@
     "descripcion": "A: Responsabilidad Civil"
   },
   {
+    "codigo": "C",
+    "descripcion": "C Tercero Completo: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo"
+  },
+  {
+    "codigo": "F",
+    "descripcion": "F: RC + INCENDIO Y ROBO TOTAL"
+  },
+  {
+    "codigo": "B",
+    "descripcion": "B: RC + DESTRUCCION TOTAL + INCENDIO Y ROBO TOTAL"
+  },
+  {
+    "codigo": "M",
+    "descripcion": "M Mega Plan: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo"
+  },
+  {
     "codigo": "P",
     "descripcion": "P Mega Premium: RC + Dest. Total + Perd. Total y Parcial por Inc./Robo"
   },

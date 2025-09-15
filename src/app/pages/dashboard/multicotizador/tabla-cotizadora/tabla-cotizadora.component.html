@@ -1,119 +1,223 @@
 <div class="p-4">
-  <table class="table table-bordered table-striped">
+  <table #tablaCotizaciones id="tabla-cotizaciones" class="table table-bordered table-striped">
     <thead class="table-light text-center fs-4">
-
-      <!-- Encabezado para AUTO -->
-      <ng-container *ngIf="tipoVehiculo === 'VEHICULO'; else encabezadoMoto">
-        <tr>
-          <th rowspan="2">Compañía</th>
-          <th rowspan="2">Responsabilidad Civil</th>
-          <th colspan="2">Terceros Completos</th>
-          <th colspan="3">Todo Riesgo</th>
-        </tr>
-        <tr>
-          <th>Basico</th>
-          <th>Premium</th>
-          <th>D1</th>
-          <th>D2</th>
-          <th>D3</th>
-        </tr>
-      </ng-container>
-
-      <!-- Encabezado para MOTO -->
-      <ng-template #encabezadoMoto>
-        <tr>
-          <th rowspan="2">Compañía</th>
-          <th rowspan="2">Responsabilidad Civil</th>
-          <th colspan="2">Robo</th>
-          <th colspan="2">Robo Premium</th>
-        </tr>
-        <tr>
-          <!-- C -> B | C1 -> B1 -->
-          <th>B</th>
-          <th>B1</th>
-          <!-- D1 -> C1 | D2 -> C2 | D3 NO existe -->
-          <th>C1</th>
-          <th>C2</th>
-        </tr>
-      </ng-template>
+      <tr>
+        <th>Cobertura</th>
+        <th *ngFor="let cot of companiasConDatos()">
+          {{ cot.compania }}
+        </th>
+      </tr>
     </thead>
 
     <tbody class="fs-5">
-      <tr *ngFor="let cot of companiasConDatos()">
 
-        <td>{{ cot.compania }}</td>
+      <!-- ====== AUTOS ====== -->
+      <ng-container *ngIf="tipoVehiculo === 'VEHICULO'; else cuerpoMoto">
 
         <!-- RC -->
-        <td
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['A0']) : (getDescRC(cot) || '')"
-          placement="top">
-          {{ cot.rc | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.rc)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.rc) | currency:'$' }}
-          </div>
-        </td>
+        <tr *ngIf="mostrarRC()">
+          <td>Responsabilidad Civil</td>
+          <td *ngFor="let cot of companiasConDatos()"
+              [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                ? tooltipATM(['A0'])
+                : (getDescRC(cot) || '')"
+              placement="top">
+            {{ cot.rc | currency:'$' }}
+            <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.rc)">
+              {{ getCuotasDe(cot.compania) }} cuotas:
+              {{ calcularImportePorCuota(cot.compania, cot.rc) | currency:'$' }}
+            </div>
+          </td>
+        </tr>
 
-        <!-- C o B -->
-        <td
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['C3','C3-BÁSICA','B2']) : (getDescC_B(cot) || '')"
-          placement="top">
-          {{ cot.c | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.c) | currency:'$' }}
-          </div>
-        </td>
+        <!-- Grupo Robo -->
+        <ng-container *ngIf="mostrarRobo()">
+          <tr>
+            <td rowspan="2" class="align-middle">Robo</td>
+            <!-- B1 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['B1'])
+                  : (getDescB1(cot) || '')"
+                placement="top">
+              {{ cot.b1 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- B2 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['B0','B2'])
+                  : (getDescB2(cot) || '')"
+                placement="top">
+              {{ cot.b2 | currency:'$' }}
+            </td>
+          </tr>
+        </ng-container>
 
-        <!-- C1 o B1 -->
-        <td
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['C2','C2-MEDIA']) : (getDescC1_B1(cot) || '')"
-          placement="top">
-          {{ cot.c1 | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.c1)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.c1) | currency:'$' }}
-          </div>
-        </td>
+        <!-- Grupo Terceros -->
+        <ng-container *ngIf="mostrarTerceros()">
+          <tr>
+            <td rowspan="4" class="align-middle">Terceros</td>
+            <!-- C -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C2','C3-BÁSICA','B2'])
+                  : (getDescC(cot) || '')"
+                placement="top">
+              {{ cot.c | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- C1 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C3','C2-MEDIA'])
+                  : (getDescC1(cot) || '')"
+                placement="top">
+              {{ cot.c1 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- C2 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C4','C2-MEDIA'])
+                  : (getDescC2(cot) || '')"
+                placement="top">
+              {{ cot.c2 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- C3 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C0'])
+                  : (getDescC3(cot) || '')"
+                placement="top">
+              {{ cot.c3 | currency:'$' }}
+            </td>
+          </tr>
+        </ng-container>
 
-        <!-- D1 o C1 -->
-        <td
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D1','D2','C']) : (getDescD1(cot) || '')"
-          placement="top">
-          {{ cot.d1 | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d1)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.d1) | currency:'$' }}
-          </div>
-        </td>
+        <!-- Grupo Todo Riesgo -->
+        <ng-container *ngIf="mostrarTodoRiesgo()">
+          <tr>
+            <td rowspan="4" class="align-middle">Todo Riesgo</td>
+            <!-- D1 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['D1','D2','C'])
+                  : (getDescD1(cot) || '')"
+                placement="top">
+              {{ cot.d1 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- D2 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['D3'])
+                  : (getDescD2(cot) || '')"
+                placement="top">
+              {{ cot.d2 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- D3 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['D4'])
+                  : (getDescD3(cot) || '')"
+                placement="top">
+              {{ cot.d3 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- D4 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['D5'])
+                  : (getDescD4(cot) || '')"
+                placement="top">
+              {{ cot.d4 | currency:'$' }}
+            </td>
+          </tr>
+        </ng-container>
 
-        <!-- D2 o C2 -->
-        <td
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D3']) : (getDescD2(cot) || '')"
-          placement="top">
-          {{ cot.d2 | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d2)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.d2) | currency:'$' }}
-          </div>
-        </td>
+      </ng-container>
 
-        <!-- D3 solo autos -->
-        <td *ngIf="tipoVehiculo === 'VEHICULO'"
-          [appTooltip]="cot.compania === 'ATM' ? tooltipATM(['D4']) : (getDescD3(cot) || '')"
-          placement="top">
-          {{ cot.d3 | currency:'$' }}
-          <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.d3)">
-            {{ getCuotasDe(cot.compania) }} cuotas:
-            {{ calcularImportePorCuota(cot.compania, cot.d3) | currency:'$' }}
-          </div>
-        </td>
+      <!-- ====== MOTOS ====== -->
+      <ng-template #cuerpoMoto>
 
-      </tr>
+        <!-- RC -->
+        <tr *ngIf="mostrarRC()">
+          <td>Responsabilidad Civil</td>
+          <td *ngFor="let cot of companiasConDatos()"
+              [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                ? tooltipATM(['A0'])
+                : (getDescRC(cot) || '')"
+              placement="top">
+            {{ cot.rc | currency:'$' }}
+          </td>
+        </tr>
+
+        <!-- Grupo Robo -->
+        <ng-container *ngIf="mostrarRobo()">
+          <tr>
+            <td rowspan="2" class="align-middle">Robo</td>
+            <!-- B -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['B0','B2'])
+                  : (getDescB2(cot) || '')"
+                placement="top">
+              {{ cot.b2 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- B1 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['B1'])
+                  : (getDescB1(cot) || '')"
+                placement="top">
+              {{ cot.b1 | currency:'$' }}
+            </td>
+          </tr>
+        </ng-container>
+
+        <!-- Grupo Terceros -->
+        <ng-container *ngIf="mostrarTerceros()">
+          <tr>
+            <td rowspan="2" class="align-middle">Terceros</td>
+            <!-- C1 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C3','C2-MEDIA'])
+                  : (getDescC1(cot) || '')"
+                placement="top">
+              {{ cot.c1 | currency:'$' }}
+            </td>
+          </tr>
+          <tr>
+            <!-- C2 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C4','C2-MEDIA'])
+                  : (getDescC2(cot) || '')"
+                placement="top">
+              {{ cot.c2 | currency:'$' }}
+            </td>
+          </tr>
+        </ng-container>
+
+      </ng-template>
     </tbody>
   </table>
 
-  <div class="text-center mt-3">
+  <div class="text-center mt-3 d-flex justify-content-center gap-2">
     <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>
+    <button class="btn btn-danger" (click)="descargarPDF()">Descargar PDF</button>
   </div>
 </div>

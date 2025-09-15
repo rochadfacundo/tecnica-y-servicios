@@ -108,6 +108,8 @@ export function parsearXML(res: string): CotizacionATM[] {
       }))
     : [];
 
+
+    console.log(resultado);
   return resultado;
 }
 
@@ -125,11 +127,15 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
   const companiaCotizada: CompaniaCotizada = {
     compania: "ATM",
     rc: buscarPremio("A0"),
-    c: buscarPremio("C3", "C3-BÁSICA", "B2"), // B2 PARA MOTO
-    c1: buscarPremio("C2", "C2-MEDIA"),
+    b1:buscarPremio("B1"),
+    b2:buscarPremio("B0"),
+    c: buscarPremio("C2", "C3-BÁSICA", "B2"), // B2 PARA MOTO
+    c1: buscarPremio("C3", "C2-MEDIA"),
+    c2:buscarPremio("C4", "C2-MEDIA"),
+    c3: buscarPremio("C0"),
     d1: buscarPremio("D1", "D2", "C"), // C PARA MOTO
-    d2: buscarPremio("D3"),
-    d3: buscarPremio("D4"),
+    d2: buscarPremio("D3"), //3%
+    d3: buscarPremio("D4"), //6%
   };
 
   return companiaCotizada;

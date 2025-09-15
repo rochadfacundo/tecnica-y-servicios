@@ -15,6 +15,7 @@ export const sinFranquicia=99;
 export const franquiciaDosPorCiento = 102;  // TR 2%
 export const franquiciaCuatroPorCiento = 104; // TR 4%
 export const franquiciaSeisPorCiento = 106;  // TR 6%
+export const franquiciaUnPorCiento = 101;  // TR 1%
 
 type Plan = {
   codigo: string;
@@ -22,8 +23,6 @@ type Plan = {
   premio_total?: number;
   monto_cuota_total?: number;
 };
-
-
 
 export function buildFederacionRequest(
   form: CotizacionFormValue,
@@ -69,8 +68,6 @@ export function buildFederacionRequest(
       plan: TODAS_LAS_COBERTURAS,
       franquicia: franquicia,
     },
-    // por defecto lo incluimos y lo quitamos para moto
-   // asegura2: [{ ramo: 35, producto: "350001" }]
   };
 
   if (tipoVehiculo === ETipoVehiculo.VEHICULO && cotizacionFederacion.coberturas) {
@@ -79,20 +76,12 @@ export function buildFederacionRequest(
     cotizacionFederacion.coberturas.casco_conosur = true as any;
     cotizacionFederacion.coberturas.rc_conosur = 1 as any;
   } else if (tipoVehiculo === ETipoVehiculo.MOTOVEHICULO) {
-    // 🔑 motos: NO debe figurar asegura2
     delete (cotizacionFederacion as any).asegura2;
   }
 
   console.log("Enviar a federacion:", cotizacionFederacion);
   return cotizacionFederacion;
 }
-
-
-/**
- * Construye un parcial de CompaniaCotizada a partir de coberturas y la franquicia solicitada.
- * - Llena rc, c, c1 si están presentes en la respuesta.
- * - Setea d1/d2/d3 según franquicia (2/4/6%).
- */
 
 export function construirCotizacionFederacion(
   planes: Plan[],
@@ -119,6 +108,7 @@ export function construirCotizacionFederacion(
 
   const pctFromFranq = (() => {
     const f = Number(franquicia || 0);
+    if (f === franquiciaUnPorCiento) return '1%';
     if (f === franquiciaDosPorCiento) return '2%';
     if (f === franquiciaCuatroPorCiento) return '4%';
     if (f === franquiciaSeisPorCiento)  return '6%';
@@ -130,7 +120,6 @@ export function construirCotizacionFederacion(
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
   };
 
-  /** Arma "CODE: Descripción [extra1] - AJUSTE X" */
   const tipFor = (code?: string, extras?: string[]) => {
     if (!code) return '';
     const raw = detallesPorCodigo[code]?.descripcion ?? '';
@@ -143,17 +132,13 @@ export function construirCotizacionFederacion(
         if (s) parts.push(s);
       }
     }
-    // siempre agregamos el ajuste si hay dato
-    if (ajusteStr) parts.push(` - ajuste ${ajusteStr}`)
-    else parts.push(` - Sin ajuste`)
+    if (ajusteStr) parts.push(` - ajuste ${ajusteStr}`);
+    else parts.push(` - Sin ajuste`);
 
     const tail = parts.length ? ` ${parts.join('')}` : '';
     return `Plan ${code}: ${human}${tail}`.trim();
   };
 
-
-
-  // 1) Armo detallesPorCodigo con TODO lo que venga
   const detallesPorCodigo: Record<string, CoberturaDet> = {};
   for (const p of planes ?? []) {
     const code = norm(p.codigo);
@@ -166,7 +151,6 @@ export function construirCotizacionFederacion(
     };
   }
 
-  // 2) Defino rol->codigo según tipo y disponibilidad real en la respuesta
   const tiene = (code: string) => !!detallesPorCodigo[norm(code)];
   const pick = (...codes: string[]) => {
     for (const c of codes) if (tiene(c)) return norm(c);
@@ -177,97 +161,91 @@ export function construirCotizacionFederacion(
   const rol2tooltip: NonNullable<CompaniaCotizada['rol2tooltip']> = {};
 
   // RC
-  rol2codigo.rc = pick('A4'); // Federación usa A4 para RC
+  rol2codigo.rc = pick('A4');
   if (rol2codigo.rc) {
     rol2tooltip.rc = tipFor(rol2codigo.rc);
   }
 
-  // C / C1 (auto)  o  B / B1 (moto), con fallback si no vienen B/B1
+  // C / C1 (auto) + B / B1
   if (isMoto) {
     rol2codigo.c  = pick('B', 'C');
     rol2codigo.c1 = pick('B1', 'C1');
   } else {
     rol2codigo.c  = pick('C');
     rol2codigo.c1 = pick('CF');
+    rol2codigo.b1 = pick('B1');
+    rol2codigo.b2 = pick('B');
   }
 
-  if (rol2codigo.c)  rol2tooltip.c  = tipFor(rol2codigo.c);
-  if (rol2codigo.c1) rol2tooltip.c1 = tipFor(rol2codigo.c1);
+  if (rol2codigo.c)   rol2tooltip.c  = tipFor(rol2codigo.c);
+  if (rol2codigo.c1)  rol2tooltip.c1 = tipFor(rol2codigo.c1);
+  if (rol2codigo.b1)  rol2tooltip.b1 = tipFor(rol2codigo.b1);
+  if (rol2codigo.b2)  rol2tooltip.b2 = tipFor(rol2codigo.b2);
 
-  // TR fija mapeada por franquicia (TD3 es el plan)
-  const franq = Number(franquicia || 0);
-  const td3 = pick('TD3'); // puede no venir en motos; no pasa nada si falta
+  // TR (franquicias)
+  const td3 = pick('TD3');
   if (td3) {
-    if (franquicia === franquiciaDosPorCiento) {
+    if (franquicia === franquiciaUnPorCiento) {
       rol2codigo.d1 = td3;
-      rol2tooltip.d1 = tipFor(td3, [pctFromFranq]); // "2%" + " - AJUSTE ..."
+      rol2tooltip.d1 = tipFor(td3, [pctFromFranq]);
+    }
+    if (franquicia === franquiciaDosPorCiento) {
+      rol2codigo.d2 = td3;
+      rol2tooltip.d2 = tipFor(td3, [pctFromFranq]);
     }
     if (franquicia === franquiciaCuatroPorCiento) {
-      rol2codigo.d2 = td3;
-      rol2tooltip.d2 = tipFor(td3, [pctFromFranq]); // "4%" + " - AJUSTE ..."
+      rol2codigo.d3 = td3;
+      rol2tooltip.d3 = tipFor(td3, [pctFromFranq]);
     }
     if (franquicia === franquiciaSeisPorCiento) {
-      rol2codigo.d3 = td3;
-      rol2tooltip.d3 = tipFor(td3, [pctFromFranq]); // "6%" + " - AJUSTE ..."
+      rol2codigo.d4 = td3;
+      rol2tooltip.d4 = tipFor(td3, [pctFromFranq]);
     }
   }
 
-  // 3) Cargo los importes visibles usando rol2codigo
-  const premio = (rol?: keyof typeof rol2codigo): number | undefined => {
-    const code = rol ? rol2codigo[rol] : undefined;
+  // ✅ Corregido: aceptar cualquier rol string, no solo keyof
+  const premio = (rol?: string): number | undefined => {
+    const code = rol ? (rol2codigo as any)[rol] : undefined;
     return code ? detallesPorCodigo[code]?.premio : undefined;
   };
 
   const parcial: Partial<CompaniaCotizada> = {
     compania: 'Federación Patronal',
-    // importes “clásicos” de tu fila:
     rc: premio('rc'),
+    b1: premio('b1'),
+    b2: premio('b2'),
     c:  premio('c'),
     c1: premio('c1'),
     d1: premio('d1'),
     d2: premio('d2'),
     d3: premio('d3'),
-
-    // mapas para tooltips/UI desacoplada
+    d4: premio('d4'),
     detallesPorCodigo,
     rol2codigo,
     rol2tooltip,
   };
 
-  // (Opcional) Si todavía usás `detalles` por claves genéricas, lo completamos liviano:
-  // Map de códigos propios → claves genéricas tuyas
-  const mapCodigoAKey: Record<string, CoberturaKey> = {
-    'A4': 'rc',
-    'C':  'c',
-    'C1': 'c1',
-    'B':  'b',
-    'B1': 'b1',
-    'TD3':'td3',
-    'TD': 'td',
-    'TD1':'td1',
-    'CF': 'cf',
-    'E':  'e',
-    'E1': 'e1',
-    'LB': 'lb',
-    'LB1':'lb1',
-  };
-  const detalles: NonNullable<CompaniaCotizada['detalles']> = {};
-  for (const [code, info] of Object.entries(detallesPorCodigo)) {
-    const key = mapCodigoAKey[norm(code)];
-    if (key) detalles[key] = info;
-  }
-  if (Object.keys(detalles).length) (parcial as any).detalles = detalles;
+    // 🔍 Log detallado para debug
+    console.log("⚡ [Federación Patronal] CompaniaCotizada construida:", {
+      rc: parcial.rc,
+      b1: parcial.b1,
+      b2: parcial.b2,
+      c: parcial.c,
+      c1: parcial.c1,
+      d1: parcial.d1,
+      d2: parcial.d2,
+      d3: parcial.d3,
+      d4: parcial.d4,
+      rol2codigo,
+      rol2tooltip,
+      detallesPorCodigo
+    });
+
 
   return parcial;
 }
 
 
-
-
-/**
- * Fusiona el objeto base (si existe) con un parcial, sin pisar valores ya definidos.
- * Devuelve el objeto CompaniaCotizada final para la fila “Federación Patronal”.
- */
 export function mergeCotizacionFederacion(
   base: CompaniaCotizada | undefined,
   parcial: Partial<CompaniaCotizada>
@@ -278,15 +256,16 @@ export function mergeCotizacionFederacion(
     ...inicial,
     compania: 'Federación Patronal',
 
-    // montos visibles (no pisar lo que ya esté en base):
-    rc: inicial.rc ?? parcial.rc,
-    c:  inicial.c  ?? parcial.c,
-    c1: inicial.c1 ?? parcial.c1,
-    d1: inicial.d1 ?? parcial.d1,
-    d2: inicial.d2 ?? parcial.d2,
-    d3: inicial.d3 ?? parcial.d3,
+    rc: parcial.rc ?? inicial.rc,
+    b1: parcial.b1 ?? inicial.b1,
+    b2: parcial.b2 ?? inicial.b2,
+    c:  parcial.c  ?? inicial.c,
+    c1: parcial.c1 ?? inicial.c1,
+    d1: parcial.d1 ?? inicial.d1,
+    d2: parcial.d2 ?? inicial.d2,
+    d3: parcial.d3 ?? inicial.d3,
+    d4: parcial.d4 ?? inicial.d4,
 
-    // mapas (merge no destructivo)
     detallesPorCodigo: {
       ...(inicial.detallesPorCodigo ?? {}),
       ...(parcial.detallesPorCodigo ?? {}),
@@ -299,10 +278,10 @@ export function mergeCotizacionFederacion(
       ...(inicial.rol2tooltip ?? {}),
       ...(parcial.rol2tooltip ?? {}),
     },
-    // si hay `detalles` genérico:
     detalles: {
       ...(inicial.detalles ?? {}),
       ...(parcial.detalles ?? {}),
     },
   };
 }
+

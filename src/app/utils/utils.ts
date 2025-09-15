@@ -3,6 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { Brand } from '../classes/infoauto';
 import { Role } from '../enums/role';
 import { HttpClient } from '@angular/common/http';
+import { ECobertura } from '../enums/Ecobertura';
 
 
 export async function filterCars(http: HttpClient, marcasOriginales: Brand[]): Promise<Brand[]> {
@@ -19,7 +20,12 @@ export async function filterCars(http: HttpClient, marcasOriginales: Brand[]): P
   });
 }
 
-
+export const opcionesDeCobertura = [
+  { id: ECobertura.RC, label: 'Responsabilidad Civil' },
+  { id: ECobertura.ROBO, label: 'Robo' },
+  { id: ECobertura.TERCEROS, label: 'Terceros' },
+  { id: ECobertura.TODO_RIESGO, label: 'Todo Riesgo' },
+];
 
 export const configCompanias: Record<string, any> = {
   'RIVADAVIA': {

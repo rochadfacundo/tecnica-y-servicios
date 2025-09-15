@@ -1,14 +1,29 @@
 /** Roles fijos que usa la tabla (no cambian por compañía) */
-export type RolCobertura = 'rc' | 'c' | 'c1' | 'd1' | 'd2' | 'd3';
+/** Roles fijos que usa la tabla (no cambian por compañía) */
+export type RolCobertura =
+  | 'rc'
+  | 'c'
+  | 'c1'
+  | 'b1'
+  | 'b2'
+  | 'c2'
+  | 'c3'
+  | 'd1'
+  | 'd2'
+  | 'd3'
+  | 'd4';
+
+
 
 /** Conjunto ampliado de claves posibles (guardar más variantes) */
 export type CoberturaKey =
   | 'rc' | 'c' | 'c1' | 'cf'
   | 'd1' | 'd2' | 'd3'
-  | 'b'  | 'b1'
+  | 'b'  | 'b1' | 'b2'
   | 'e'  | 'e1'
   | 'lb' | 'lb1'
   | 'td' | 'td1' | 'td3';
+
 
 /** Detalle de una cobertura tal como viene de la compañía */
 export interface CoberturaDet {
@@ -36,9 +51,15 @@ export interface CompaniaCotizada {
   rc?: number;
   c?: number;
   c1?: number;
+  b1?: number;
+  b2?: number;
+  c2?: number;
+  c3?: number;
+  c4?: number;
   d1?: number;
   d2?: number;
   d3?: number;
+  d4?: number;
 
   /** (Opcional) Detalles indexados por claves genéricas (si los querés usar) */
   detalles?: Partial<Record<CoberturaKey, CoberturaDet>>;
@@ -55,3 +76,5 @@ export interface CompaniaCotizada {
    /** Tooltip listo por rol (prioridad sobre rol2codigo+detallesPorCodigo) */
    rol2tooltip?: Partial<Record<RolCobertura, string>>;
 }
+
+

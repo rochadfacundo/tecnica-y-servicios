@@ -11,17 +11,17 @@ import { Brand, Group, Model } from '../../../classes/infoauto';
 import { RivadaviaService } from '../../../services/rivadavia.service';
 import {  DatosCotizacionRivadavia} from '../../../interfaces/cotizacionRivadavia';
 import { FederacionService } from '../../../services/federacion.service';
-import {LocalidadesFederacion } from '../../../interfaces/cotizacionfederacion';
+
 import { AtmService } from '../../../services/atm.service';
 import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber } from '../../../utils/utils';
+import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber, opcionesDeCobertura } from '../../../utils/utils';
 import { buildATMRequest, buildTooltipATM, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { Cotizacion, CotizacionATM } from '../../../interfaces/cotizacion';
-import { buildFederacionRequest, construirCotizacionFederacion, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
+import { buildFederacionRequest, construirCotizacionFederacion, franquiciaUnPorCiento, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
@@ -38,6 +38,7 @@ import { DignaService } from '../../../services/digna.service';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
+import { ECobertura } from '../../../enums/Ecobertura';
 
 @Component({
   selector: 'app-multicotizador',
@@ -92,6 +93,9 @@ export class MulticotizadorComponent implements OnInit {
   public coberturasATM: CotizacionATM[] = [];
   public buildTooltipATM = buildTooltipATM; // para usarlo en el template
 
+  //filtro
+  opcionesCobertura = opcionesDeCobertura;
+
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -115,8 +119,10 @@ export class MulticotizadorComponent implements OnInit {
   async ngOnInit() {
     this.initForm();
     this.setupValueChanges();
+
     setTimeout(() => {
       this.animar = true;
+
     }, 5);
     this.productorLog= await this.s_auth.obtenerProductorLogueado();
   }
@@ -153,6 +159,7 @@ export class MulticotizadorComponent implements OnInit {
       version: [{ value: null, disabled: true }, Validators.required],
       vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
+      coberturasSeleccionadas: [[] as ECobertura[]]
     });
 
     this.s_http.get<Tipo[]>('assets/mediosPago.json').subscribe(data => {
@@ -475,7 +482,7 @@ export class MulticotizadorComponent implements OnInit {
 
   //Federacion patronal
 
-  async cotizarFederacion(franquicia:number) {
+  async cotizarFederacion(franquicia: number) {
     if (!this.productorLog) {
       console.error('❌ No hay productor logueado');
       return;
@@ -517,21 +524,19 @@ export class MulticotizadorComponent implements OnInit {
       // ⚠️ pasar la franquicia DEVUELTA a construirCotizacionFederacion
       const parcial = construirCotizacionFederacion(
         respuesta?.coberturas?.planes ?? [],
-        respuesta?.coberturas?.franquicia,         // ej. 102/104/106
-        this.getTipoVehiculo(),                           // 'VEHICULO' | 'MOTOVEHICULO',
+        respuesta?.coberturas?.franquicia,
+        this.getTipoVehiculo(),
         respuesta?.coberturas?.ajuste_automatico
       );
-
-
-
 
       // 🔑 1) Asegurar UNA sola fila “Federación Patronal” (upsert sin duplicar)
       let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
       if (!fila) {
         fila = {
           compania: 'Federación Patronal',
-          rc: undefined, c: undefined, c1: undefined,
-          d1: undefined, d2: undefined, d3: undefined,
+          rc: undefined, b1: undefined, b2: undefined,
+          c: undefined, c1: undefined,
+          d1: undefined, d2: undefined, d3: undefined, d4: undefined,
           detallesPorCodigo: {},
           rol2codigo: {},
           rol2tooltip: {},
@@ -558,28 +563,22 @@ export class MulticotizadorComponent implements OnInit {
         ...(parcial.detalles || {})
       };
 
-
-
-      // 🔑 2) Solo completar comunes si aún no están (evita reescrituras)
+      // 🔑 2) Solo completar comunes si aún no están
       if (fila.rc === undefined && parcial.rc !== undefined) fila.rc = parcial.rc;
+      if (fila.b1 === undefined && parcial.b1 !== undefined) fila.b1 = parcial.b1;
+      if (fila.b2 === undefined && parcial.b2 !== undefined) fila.b2 = parcial.b2;
       if (fila.c  === undefined && parcial.c  !== undefined) fila.c  = parcial.c;
       if (fila.c1 === undefined && parcial.c1 !== undefined) fila.c1 = parcial.c1;
 
-      // 🔑 3) Poner el TR correcto según la franquicia DEVUELTA (no la enviada)
-      const key = (franq => {
-        if (franq === franquiciaDosPorCiento) return 'd1';
-        if (franq === franquiciaCuatroPorCiento) return 'd2';
-        return 'd3'; // franquiciaSeisPorCiento
-      })(franqResp) as 'd1'|'d2'|'d3';
-
-      if (parcial[key] !== undefined) {
-        (fila as any)[key] = (parcial as any)[key];
-      }
+      // 🔑 3) Guardar todas las variantes de Todo Riesgo
+      if (parcial.d1 !== undefined) fila.d1 = parcial.d1;
+      if (parcial.d2 !== undefined) fila.d2 = parcial.d2;
+      if (parcial.d3 !== undefined) fila.d3 = parcial.d3;
+      if (parcial.d4 !== undefined) fila.d4 = parcial.d4;
 
     } catch (error: any) {
       console.error('❌ Error en cotización Federación:', error);
 
-      // tratar de sacar el mensaje en orden
       const msg =
         error?.error?.message ||
         error?.message ||
@@ -587,13 +586,12 @@ export class MulticotizadorComponent implements OnInit {
 
       this.s_toast.error(msg, 'Error al cotizar en Federación Patronal');
 
-      // ✅ Manejo específico del error de la 2ª (4%)
       const esRelacionMulti = msg.includes('Error al insertar relacion entre cotizaciones multirramicas');
 
       // asegurar fila única aunque falle
       let fila = this.cotizaciones.companiasCotizadas.find(x => x.compania === 'Federación Patronal');
       if (!fila) {
-        fila = { compania: 'Federación Patronal', rc: undefined, c: undefined, c1: undefined, d1: undefined, d2: undefined, d3: undefined };
+        fila = { compania: 'Federación Patronal', rc: undefined, c: undefined, c1: undefined, d1: undefined, d2: undefined, d3: undefined, d4: undefined };
         this.cotizaciones.companiasCotizadas.push(fila);
       }
 
@@ -604,6 +602,7 @@ export class MulticotizadorComponent implements OnInit {
       console.error('❌ Error principal:', msg);
     }
   }
+
 
 
   //ATM
@@ -644,6 +643,23 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
+  //Filtros
+  onCoberturaChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const selected = this.cotizacionForm.get('coberturasSeleccionadas')?.value || [];
+
+    if (input.checked) {
+      this.cotizacionForm.patchValue({
+        coberturasSeleccionadas: [...selected, input.value]
+      });
+    } else {
+      this.cotizacionForm.patchValue({
+        coberturasSeleccionadas: selected.filter((id: string) => id !== input.value)
+      });
+    }
+  }
+
+
 
   getForm()
   {
@@ -668,6 +684,8 @@ export class MulticotizadorComponent implements OnInit {
         // una sola llamada (el parámetro se ignora para motos)
         await this.cotizarFederacion(sinFranquicia);
       } else {
+        await this.cotizarFederacion(franquiciaUnPorCiento);
+        await new Promise(r => setTimeout(r, 200));
         await this.cotizarFederacion(franquiciaDosPorCiento);
         await new Promise(r => setTimeout(r, 200));
         await this.cotizarFederacion(franquiciaCuatroPorCiento);
@@ -699,6 +717,7 @@ export class MulticotizadorComponent implements OnInit {
         cotizaciones: this.cotizaciones,
         tipoVehiculo: this.getTipoVehiculo(),
         coberturasATM: this.coberturasATM,
+        coberturasSeleccionadas: this.form.coberturasSeleccionadas
       }
     });
   }

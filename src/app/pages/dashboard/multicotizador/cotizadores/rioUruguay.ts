@@ -1,4 +1,29 @@
 
+//cambiemos rio uruguay chat. mira la captura.
+
+
+// cobertura B1 se guarda en interface CompaniaCotizada b1
+// cobertura B se guarda en interface CompaniaCotizada b2
+// buscar las siguientes todo riesgo: (4)
+// T34 es 2%
+// T32 es 3%
+// T31 es 5%
+// T37 es 7%
+
+
+
+// b1 en companiaCotizada debe ser: 'B1-80'
+// b2 en companiaCotizada debe ser: 'B-80'
+//c1 en companiaCotizada debe ser: 'S0' o 'S' o 'SIGMA IMPORTADOS'
+
+// C NO SE USA C1-80 ni C2-80.. C se carga con cobertura 'C3-80'
+// como esta y Rc como esta
+// T44 es 10%: NO LA VAMOS A USAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../../enums/tiposDeUso";
@@ -11,12 +36,6 @@ import { CoberturaDet, CompaniaCotizada } from "../../../../interfaces/companiaC
 
 type Vigencia = { id: number; descripcion: string; meses: number };
 type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
-
-const grupos = {
-  d3: ['T32','T34'],
-  d2: ['T31'],
-  d1: ['T37','T44'],
-} as const;
 
 
 const vigenciasPorRamo: VigenciasPorRamo = rawData;
@@ -116,154 +135,94 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
         .replace(/\s+/g, ' ')
         .trim();
 
-    const parsePerc = (s?: string): number | undefined => {
-      if (!s) return undefined;
-      const clean = s.replace('.', '').replace(',', '.'); // "20,00" -> "20.00"
-      const n = Number(clean);
-      return Number.isFinite(n) ? n : undefined;
-    };
-
-    const ajusteDe = (item: any): string => {
-      const p = parsePerc(item?.ajusteAutomatico);
-      return !p || p <= 0 ? 'Sin ajuste' : `Ajuste ${p}%`;
-    };
-
-    const humanDescCasco = (item: any): string => {
-      // Preferimos descripcionComercial, si no, descripcionCasco
-      let raw = 'Plan '+ item?.codigoCasco  +' ' +item?.descripcionCasco;
-      raw = stripHtml(raw);
-      // Quitar duplicación "(T32)" al final si viene
-      raw = raw.replace(/\(([^)]+)\)\s*$/, '').trim();
-      // Uniformar "T32 - ..." -> "T32: ..."
-      raw = raw.replace(/^([A-Z0-9-]+)\s*-\s*/i, '$1: ');
-      return raw;
-    };
-
-    const humanDescRC = (item: any): string => {
-      const code = norm(item?.codigoRC || 'RCA');
-      const txt  = stripHtml(item?.detalleCoberturaRC ?? item?.descripcionRC ?? '');
-      const short = txt.split('.').shift()?.trim() || txt;
-      return `${code}: ${short}`;
-    };
-
-    const tipCasco = (item?: any) => item ? `${humanDescCasco(item)} - ${ajusteDe(item)}` : '';
-    const tipRC    = (item?: any) => item ? `${humanDescRC(item)} - ${ajusteDe(item)}` : '';
-
     const premio = (item?: any): number | undefined => {
       const n = Number(item?.premio);
       return Number.isFinite(n) ? n : undefined;
     };
 
-    // --- índices útiles ---
-    const byCasco: Record<string, any> = {};
+    const humanDesc = (item: any): string => {
+      if (!item) return '';
+      const raw = stripHtml(item?.descripcionComercial ?? item?.descripcionCasco ?? item?.detalleCoberturaRC ?? '');
+      return `${item?.codigoCasco || item?.codigoRC}: ${raw}`;
+    };
+
+    const tipFor = (item?: any) => item ? `${humanDesc(item)} - Ajuste ${item?.ajusteAutomatico || 'N/D'}` : '';
+
+    // --- índices por código ---
+    const byCode: Record<string, any> = {};
     const rcItems: any[] = [];
     for (const it of coberturas ?? []) {
-      const ccode = norm(it?.codigoCasco);
-      const rcode = norm(it?.codigoRC);
-      if (ccode) byCasco[ccode] = it;
-      if (!ccode && rcode) rcItems.push(it);
+      const codeCasco = norm(it?.codigoCasco);
+      const codeRC    = norm(it?.codigoRC);
+      if (codeCasco) byCode[codeCasco] = it;
+      if (!codeCasco && codeRC) rcItems.push(it);
     }
 
-    const pickRC = (...cods: string[]) => {
-      const set = new Set(cods.map(norm));
-      return rcItems.find(it => set.has(norm(it?.codigoRC)));
-    };
+    // helpers
+    const getRC = () => rcItems.find(it =>
+      ['RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM'].includes(norm(it?.codigoRC))
+    );
+    const get = (code: string) => byCode[norm(code)];
 
-    const pickCasco = (...cods: string[]) => {
-      for (const c of cods) {
-        const hit = byCasco[norm(c)];
-        if (hit) return hit;
-      }
-      return undefined;
-    };
+    // === Roles ===
+    const rcIt  = getRC();
+    const b1It  = get('B1-80');
+    const b2It  = get('B-80');
+    const cIt   = get('C3-80');
+    const c1It  = get('S0') || get('S') || get('SIGMA IMPORTADOS');
 
-    // === RC (cualquiera de los más comunes) ===
-    const rcIt = pickRC('RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM');
+    // TR fijos
+    const d1It = get('T34'); // 2%
+    const d2It = get('T32'); // 3%
+    const d3It = get('T31'); // 5%
+    const d4It = get('T37'); // 7%
+    // ❌ T44 ignorado
 
-    // === C y C1 ===
-    let cIt: any;
-    let c1It: any;
-
-    if (norm(tipoVehiculo) === 'MOTOVEHICULO') {
-      cIt  = pickCasco('B1-80 - MOTO', 'B-80 - MOTO');
-      c1It = undefined;
-    } else {
-      cIt  = pickCasco('C2-80', 'B1-80', 'B-80');
-      c1It = pickCasco('S0', 'C1-80');
-      // Fallbacks que ya usabas
-      if (!cIt)  cIt  = pickCasco('C-80');
-      if (!c1It) c1It = pickCasco('S', 'SIGMA IMPORTADOS');
-    }
-
-    // === TR ordenado por % de franquicia (menor → mayor) ===
-    const esTR = (code: string) => /^T\d+(\s|$)/i.test(code);
-    const trOrdenadas = (coberturas ?? [])
-      .filter(it => it?.codigoCasco && esTR(norm(it.codigoCasco)))
-      .map(it => {
-        const suma = Number(it?.sumaAsegurada) || 0;
-        const fran = Number(it?.franquicia) || 0;
-        let perc: number | undefined = suma > 0 ? (fran / suma) * 100 : undefined;
-        if (!perc || !isFinite(perc)) {
-          const txt = `${it?.descripcionComercial ?? it?.descripcionCasco ?? ''}`;
-          const m = txt.match(/(\d+(?:[.,]\d+)?)\s*%/);
-          if (m) perc = Number(m[1].replace(',', '.'));
-        }
-        return { it, perc };
-      })
-      .filter(x => x.perc != null && Number.isFinite(x.perc))
-      .sort((a, b) => (a.perc as number) - (b.perc as number));
-
-    const d1It = trOrdenadas[0]?.it; // menor %
-    const d2It = trOrdenadas[1]?.it; // medio %
-    const d3It = trOrdenadas[2]?.it; // mayor %
-
-    // === mapas tipados sin undefined ===
+    // === mapas ===
     const rol2codigo: Record<string, string> = {};
     const rol2tooltip: Record<string, string> = {};
-    const setIf = (obj: Record<string, string>, key: string, val?: string) => { if (val) obj[key] = val; };
 
-    setIf(rol2codigo, 'rc',  norm(rcIt?.codigoRC));
-    setIf(rol2codigo, 'c',   norm(cIt?.codigoCasco));
-    setIf(rol2codigo, 'c1',  norm(c1It?.codigoCasco));
-    setIf(rol2codigo, 'd1',  norm(d1It?.codigoCasco));
-    setIf(rol2codigo, 'd2',  norm(d2It?.codigoCasco));
-    setIf(rol2codigo, 'd3',  norm(d3It?.codigoCasco));
+    const setIf = (rol: string, code: string | undefined, item: any) => {
+      if (code && item) {
+        rol2codigo[rol] = code;
+        rol2tooltip[rol] = tipFor(item);
+      }
+    };
 
-    setIf(rol2tooltip, 'rc', tipRC(rcIt));
-    setIf(rol2tooltip, 'c',  tipCasco(cIt));
-    setIf(rol2tooltip, 'c1', tipCasco(c1It));
-    setIf(rol2tooltip, 'd1', tipCasco(d1It));
-    setIf(rol2tooltip, 'd2', tipCasco(d2It));
-    setIf(rol2tooltip, 'd3', tipCasco(d3It));
+    setIf('rc',  norm(rcIt?.codigoRC), rcIt);
+    setIf('b1',  'B1-80', b1It);
+    setIf('b2',  'B-80', b2It);
+    setIf('c',   'C3-80', cIt);
+    setIf('c1',  norm(c1It?.codigoCasco), c1It);
+    setIf('d1',  'T34', d1It);
+    setIf('d2',  'T32', d2It);
+    setIf('d3',  'T31', d3It);
+    setIf('d4',  'T37', d4It);
 
-    // === detallesPorCodigo tipado (SIN entradas vacías) ===
+    // === detallesPorCodigo ===
     const detallesPorCodigo: Record<string, CoberturaDet> = {};
-    for (const it of coberturas ?? []) {
-      const rawCode = it?.codigoCasco || it?.codigoRC;
-      const code = norm(rawCode);
-      if (!code) continue;
-
-      const isRC = !it?.codigoCasco;
-      const desc = isRC ? humanDescRC(it) : humanDescCasco(it);
-
+    for (const [code, it] of Object.entries(byCode)) {
       detallesPorCodigo[code] = {
         codigo: code,
-        descripcion: desc,
+        descripcion: humanDesc(it),
         premio: premio(it),
-        cuota: undefined, // RUS no trae monto por cuota en este payload
+        cuota: undefined,
       };
     }
 
-    // === armar fila ===
+    // === fila final ===
     const fila: CompaniaCotizada = {
       compania: 'Río Uruguay',
 
       rc:  premio(rcIt),
+      b1:  premio(b1It),
+      b2:  premio(b2It),
       c:   premio(cIt),
       c1:  premio(c1It),
       d1:  premio(d1It),
       d2:  premio(d2It),
       d3:  premio(d3It),
+      d4:  premio(d4It),
 
       rol2codigo,
       rol2tooltip,
@@ -272,6 +231,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
     return fila;
   }
+
 
 
 

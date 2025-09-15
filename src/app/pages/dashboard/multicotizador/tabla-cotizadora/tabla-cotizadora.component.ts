@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -9,38 +9,40 @@ import { Productor } from '../../../../models/productor.model';
 import { ETipoVehiculo } from '../../../../enums/tipoVehiculos';
 import { ToolTipDirective } from '../../../../directives/tool-tip.directive';
 import { buildTooltipATM } from '../cotizadores/atm';
+import { ECobertura } from '../../../../enums/Ecobertura';
+
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 type Maybe<T> = T | null | undefined;
-
-
 
 interface ProdCompania {
   compania: string;
   cuotasMoto?: number | string | null;
   cuotasAuto?: number | string | null;
   cantidadCuotas?: string | null;   // Rivadavia
-  cuotas?: string | null;            // Mercantil Andina
-  refacturaciones?: string | null;   // Federación Patronal
-  plan?: string | null;              // ATM
-  // ...otros campos que ya tengas
+  cuotas?: string | null;           // Mercantil Andina
+  refacturaciones?: string | null;  // Federación Patronal
+  plan?: string | null;             // ATM
 }
 
 @Component({
   selector: 'app-tabla-cotizadora',
   standalone: true,
-  imports: [CommonModule,ToolTipDirective],
+  imports: [CommonModule, ToolTipDirective],
   templateUrl: './tabla-cotizadora.component.html',
   styleUrl: './tabla-cotizadora.component.css'
 })
 export class TablaCotizadoraComponent implements OnInit {
+  @ViewChild('tablaCotizaciones') tablaCotizaciones!: ElementRef;
+
   cotizaciones!: Cotizacion;
   tipoVehiculo!: ETipoVehiculo;
   user!: Productor | null;
   coberturasATM: CotizacionATM[] = [];
   buildTooltipATM = buildTooltipATM;
-  /**
-   * Cache: nombre canonizado de compañía -> cantidad de cuotas (null/undefined = mensual/no mostrar)
-   */
+  coberturasSeleccionadas: ECobertura[] = [];
+
   private cuotasPorCompania = new Map<string, number | null>();
 
   constructor(
@@ -49,43 +51,58 @@ export class TablaCotizadoraComponent implements OnInit {
     @Inject(ToastrService) private s_toast: ToastrService
   ) {}
 
-    // ===== lifecycle =====
+  async ngOnInit(): Promise<void> {
+    this.user = await this.s_auth.obtenerProductorLogueado();
+    if (!this.user) return;
 
-    async ngOnInit(): Promise<void> {
-      this.user = await this.s_auth.obtenerProductorLogueado();
-      if (!this.user) return;
+    const state = history.state as {
+      cotizaciones?: Cotizacion;
+      tipoVehiculo?: ETipoVehiculo;
+      coberturasATM?: CotizacionATM[];
+      coberturasSeleccionadas?: ECobertura[];
+    };
 
-      const state = history.state as {
-        cotizaciones?: Cotizacion;
-        tipoVehiculo?: ETipoVehiculo;
-        coberturasATM?: CotizacionATM[]; };
-
-      if (state?.cotizaciones && state?.tipoVehiculo) {
-        this.cotizaciones = state.cotizaciones;
-        this.tipoVehiculo = state.tipoVehiculo;
-
-         //setear las coberturas de ATM para tooltips
-         this.coberturasATM = Array.isArray(state.coberturasATM) ? state.coberturasATM : [];
-
-        // construimos el cache de cuotas según productor + tipo vehículo
-        this.construirMapaCuotas();
-      } else {
-        console.warn('⚠️ No se encontraron cotizaciones en el estado');
-        this.router.navigate(['/dashboard']);
-      }
+    if (state?.cotizaciones && state?.tipoVehiculo) {
+      this.cotizaciones = state.cotizaciones;
+      this.tipoVehiculo = state.tipoVehiculo;
+      this.coberturasATM = Array.isArray(state.coberturasATM) ? state.coberturasATM : [];
+      this.coberturasSeleccionadas = state.coberturasSeleccionadas ?? [];
+      this.construirMapaCuotas();
+    } else {
+      console.warn('⚠️ No se encontraron cotizaciones en el estado');
+      this.router.navigate(['/dashboard']);
     }
+  }
+
+  // ====== FILTROS con ENUM ======
+  mostrarRC(): boolean {
+    return this.coberturasSeleccionadas.includes(ECobertura.RC);
+  }
+
+  mostrarRobo(): boolean {
+    return this.coberturasSeleccionadas.includes(ECobertura.ROBO);
+  }
+
+  mostrarTerceros(): boolean {
+    return this.coberturasSeleccionadas.includes(ECobertura.TERCEROS);
+  }
+
+  mostrarTodoRiesgo(): boolean {
+    return this.coberturasSeleccionadas.includes(ECobertura.TODO_RIESGO);
+  }
 
 
   companiasConDatos(): any[] {
     if (!this.cotizaciones?.companiasCotizadas) return [];
-
     return this.cotizaciones.companiasCotizadas.filter(cot => {
-      const importes = [cot.rc, cot.c, cot.c1, cot.d1, cot.d2, cot.d3];
+      const importes = [
+        cot.rc, cot.b1, cot.b2, cot.c, cot.c1, cot.c2, cot.c3,
+        cot.d1, cot.d2, cot.d3, cot.d4
+      ];
       return importes.some(val => val != null && Number(val) > 0);
     });
   }
 
-  // ===== helpers =====
 
   private norm(s: Maybe<string>): string {
     return (s ?? '')
@@ -95,7 +112,7 @@ export class TablaCotizadoraComponent implements OnInit {
       .trim();
   }
 
-  private canonCompania(nombre: Maybe<string>): string {
+  public canonCompania(nombre: Maybe<string>): string {
     const n = this.norm(nombre);
     if (n.includes('RUS') || n.includes('RIO URUGUAY')) return 'RIO URUGUAY';
     if (n.includes('FEDERACION')) return 'FEDERACION PATRONAL';
@@ -110,66 +127,45 @@ export class TablaCotizadoraComponent implements OnInit {
     return this.tipoVehiculo === ETipoVehiculo.MOTOVEHICULO;
   }
 
-  /**
-   * Regla central por compañía: devuelve cantidad de cuotas o null/undefined si es mensual.
-   */
   private resolverCuotas(comp: ProdCompania): number | null {
     const nombre = this.canonCompania(comp.compania);
 
-    // RIO URUGUAY (RUS): usa cuotasMoto/cuotasAuto (number). 12 => mensual (ocultar).
     if (nombre === 'RIO URUGUAY') {
       const raw = this.esMoto ? comp.cuotasMoto : comp.cuotasAuto;
       const n = Number(raw);
       if (!isFinite(n) || n <= 0 || n === 12) return null;
       return n;
     }
-
-    // RIVADAVIA: cantidadCuotas (string). "12" => mensual.
     if (nombre === 'RIVADAVIA') {
       const n = Number(comp.cantidadCuotas);
       if (!isFinite(n) || n <= 0 || n === 12) return null;
       return n;
     }
-
-    // MERCANTIL ANDINA: cuotas (string). "12" => mensual.
     if (nombre === 'MERCANTIL ANDINA') {
       const n = Number(comp.cuotas);
       if (!isFinite(n) || n <= 0 || n === 12) return null;
       return n;
     }
-
-    // FEDERACION PATRONAL: refacturaciones (string)
-    // "12" => mensual (ocultar)
-    // "2" => semestral => mostrar 6
-    // otro r => si 12/r es entero, mostrar ese valor
     if (nombre === 'FEDERACION PATRONAL') {
       const r = Number(comp.refacturaciones);
       if (!isFinite(r) || r <= 0) return null;
-      if (r === 12) return null; // mensual
-      if (r === 2) return 6;     // semestral
+      if (r === 12) return null;
+      if (r === 2) return 6;
       const guess = 12 / r;
       return Number.isInteger(guess) ? guess : null;
     }
-
-    // ATM: por plan
-    // 02 / 11 => mensual => ocultar
-    // 04 / 03 => bimestral => 2
-    // 01 => trimestral => 3
     if (nombre === 'ATM') {
       const plan = this.norm(comp.plan);
-      if (plan === '02' || plan === '11') return null; // mensual
-      if (plan === '04' || plan === '03') return 2;    // bimestral
-      if (plan === '01') return 3;                     // trimestral
+      if (plan === '02' || plan === '11') return null;
+      if (plan === '04' || plan === '03') return 2;
+      if (plan === '01') return 3;
       return null;
     }
-
-    // DIGNA / otros sin dato => no mostrar
     return null;
   }
 
   private construirMapaCuotas(): void {
     this.cuotasPorCompania.clear();
-    // en tu modelo, las compañías del productor suelen venir en this.user.companias
     const listado = (this.user as any)?.companias as ProdCompania[] | undefined;
     if (!Array.isArray(listado)) return;
 
@@ -180,27 +176,16 @@ export class TablaCotizadoraComponent implements OnInit {
     }
   }
 
-  /**
-   * Se usa desde la vista: retorna las cuotas para la compañía de la fila
-   */
   getCuotasDe(companiaDeTabla: string): number | null {
     const key = this.canonCompania(companiaDeTabla);
     return this.cuotasPorCompania.get(key) ?? null;
   }
 
-  /**
-   * Devuelve true si corresponde mostrar la leyenda "Cuotas: q" para ese importe.
-   * Requisitos:
-   *  - q = getCuotasDe(compania) > 1 (si es 1 o mensual, no mostrar)
-   *  - importe numérico > 0 (si no hay valor en la celda, no mostrar)
-   */
   tieneCuotas(compania: string, importe: any): boolean {
     const q = this.getCuotasDe(compania);
     const val = Number(importe);
     return !!q && q > 1 && isFinite(val) && val > 0;
   }
-
-  // ===== acciones =====
 
   async guardarCotizaciones() {
     if (!this.user || !this.cotizaciones) return;
@@ -226,29 +211,17 @@ export class TablaCotizadoraComponent implements OnInit {
     }
   }
 
-    /**
-   * Calcula el valor de cada cuota si corresponde.
-   * - Solo si q > 1 y el importe > 0.
-   * - Devuelve null si no aplica.
-   */
-    calcularImportePorCuota(compania: string, importe: any): number | null {
-      const q = this.getCuotasDe(compania);
-      const val = Number(importe);
-      if (!q || q <= 1 || !isFinite(val) || val <= 0) return null;
-      return val / q;
-    }
+  calcularImportePorCuota(compania: string, importe: any): number | null {
+    const q = this.getCuotasDe(compania);
+    const val = Number(importe);
+    if (!q || q <= 1 || !isFinite(val) || val <= 0) return null;
+    return val / q;
+  }
 
-
-
-
-
-  /** Devuelve la descripción para un rol (rc, c, c1, d1, d2, d3) leyendo rol2codigo + detallesPorCodigo */
-  getDescPorRol(cot: any, rol: 'rc'|'c'|'c1'|'d1'|'d2'|'d3'): string | null {
-    // 1) preferimos el tooltip ya armado por el adapter (incluye CODE y %)
+  getDescPorRol(cot: any, rol: 'rc'|'b1'|'b2'|'c'|'c1'|'c2'|'c3'|'d1'|'d2'|'d3'|'d4'): string | null {
     const tip = cot?.rol2tooltip?.[rol];
     if (typeof tip === 'string' && tip.trim()) return tip.trim();
 
-    // 2) fallback por código + desc + % si es TR
     const code: string | undefined = cot?.rol2codigo?.[rol];
     if (!code) return null;
 
@@ -257,51 +230,22 @@ export class TablaCotizadoraComponent implements OnInit {
       const t = (s ?? '').trim().toLowerCase();
       return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
     };
-    const pct = rol === 'd1' ? ' 2%' : rol === 'd2' ? ' 4%' : rol === 'd3' ? ' 6%' : '';
     const human = toSentence(raw || code);
-
-    return `${code}: ${human}${pct}`.trim();
+    return `${code}: ${human}`.trim();
   }
 
-/** RC */
-getDescRC(cot: any): string | null {
-  return this.getDescPorRol(cot, 'rc');
-}
+  getDescRC(cot: any): string | null { return this.getDescPorRol(cot, 'rc'); }
+  getDescB1(cot: any): string | null { return this.getDescPorRol(cot, 'b1'); }
+  getDescB2(cot: any): string | null { return this.getDescPorRol(cot, 'b2'); }
+  getDescC(cot: any): string | null { return this.getDescPorRol(cot, 'c'); }
+  getDescC1(cot: any): string | null { return this.getDescPorRol(cot, 'c1'); }
+  getDescC2(cot: any): string | null { return this.getDescPorRol(cot, 'c2'); }
+  getDescC3(cot: any): string | null { return this.getDescPorRol(cot, 'c3'); }
+  getDescD1(cot: any): string | null { return this.getDescPorRol(cot, 'd1'); }
+  getDescD2(cot: any): string | null { return this.getDescPorRol(cot, 'd2'); }
+  getDescD3(cot: any): string | null { return this.getDescPorRol(cot, 'd3'); }
+  getDescD4(cot: any): string | null { return this.getDescPorRol(cot, 'd4'); }
 
-/** C (auto) o B (moto). Si el adapter no cargó B/B1, caerá en C/C1 por como lo construimos. */
-getDescC_B(cot: any): string | null {
-  // Si querés distinguir estrictamente por tipo, podés consultar this.esMoto
-  // pero como el adapter ya resolvió rol->código, alcanza con pedir 'c'.
-  return this.getDescPorRol(cot, 'c');
-}
-
-/** C1 (auto) o B1 (moto) */
-getDescC1_B1(cot: any): string | null {
-  return this.getDescPorRol(cot, 'c1');
-}
-
-/** D1 con fallback a TD3 si el adapter asignó TR por franquicia */
-getDescD1(cot: any): string | null {
-  return this.getDescPorRol(cot, 'd1') || null;
-}
-
-/** D2 con fallback a TD3 */
-getDescD2(cot: any): string | null {
-  return this.getDescPorRol(cot, 'd2') || null;
-}
-
-/** D3 con fallback a TD3 */
-getDescD3(cot: any): string | null {
-  return this.getDescPorRol(cot, 'd3') || null;
-}
-
-
-
-  /** ATM */
-
-
-
-  /** Devuelve la primera cobertura que coincida con los códigos dados */
   getCoberturaATM(codigos: string[]): CotizacionATM | undefined {
     if (!this.coberturasATM?.length) return undefined;
     for (const code of codigos) {
@@ -311,7 +255,6 @@ getDescD3(cot: any): string | null {
     return undefined;
   }
 
-  /** Devuelve el texto final del tooltip (multi-línea) */
   tooltipATM(codigos: string[]): string {
     const c = this.getCoberturaATM(codigos);
     if (!c) return 'Sin detalle';
@@ -319,7 +262,47 @@ getDescD3(cot: any): string | null {
     return `${t.title}\n${t.lines.join('\n')}`;
   }
 
+
+
+
+  async descargarPDF() {
+    if (!this.tablaCotizaciones) {
+      this.s_toast.error('No se encontró la tabla', 'Error al exportar');
+      return;
+    }
+
+    const tabla = this.tablaCotizaciones.nativeElement as HTMLElement;
+
+    const canvas = await html2canvas(tabla, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const imgWidth = pageWidth - 20;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    const nro = this.cotizaciones?.nroCotizacion ?? 'SIN_NUMERO';
+    const apellido = this.user?.apellido ?? 'APELLIDO';
+    const nombre = this.user?.nombre ?? 'NOMBRE';
+    const fecha = new Date().toLocaleDateString('es-AR');
+
+    // Encabezado centrado
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    const titulo = `Cotización Nº ${nro}`;
+    const textWidth = pdf.getTextWidth(titulo);
+    pdf.text(titulo, (pageWidth - textWidth) / 2, 20);
+
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Productor: ${apellido}, ${nombre}`, 14, 30);
+    pdf.text(`Fecha: ${fecha}`, pageWidth - 60, 30);
+
+    pdf.addImage(imgData, 'PNG', 10, 40, imgWidth, imgHeight);
+
+    const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`
+      .replace(/\s+/g, '_');
+    pdf.save(nombreArchivo);
+  }
+
 }
-
-
-

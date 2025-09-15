@@ -202,10 +202,33 @@
 
 
     <!-- Vigencia Desde -->
-    <div class="mb-3">
+    <div class="mb-0">
       <label for="vigenciaDesde" class="form-label">Vigencia Desde</label>
       <input type="date" id="vigenciaDesde" class="form-control" formControlName="vigenciaDesde">
     </div>
+
+    <!-- Filtro de Coberturas -->
+    <div class="m-4">
+      <label class="form-label">Coberturas a elegir</label>
+      <div class="d-flex flex-wrap gap-3">
+        <div *ngFor="let opcion of opcionesCobertura" class="form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [id]="'cobertura-' + opcion.id"
+            [value]="opcion.id"
+            (change)="onCoberturaChange($event)"
+            [checked]="cotizacionForm.value.coberturasSeleccionadas?.includes(opcion.id)"
+          />
+          <label class="form-check-label" [for]="'cobertura-' + opcion.id">
+            {{ opcion.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+
+
 
     <!-- Botón Cotizar -->
     <div class="d-grid gap-2 mb-4">
