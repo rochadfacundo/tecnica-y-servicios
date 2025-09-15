@@ -22,11 +22,7 @@
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
               placement="top">
-            {{ cot.rc | currency:'$' }}
-            <div class="text-muted small" *ngIf="tieneCuotas(cot.compania, cot.rc)">
-              {{ getCuotasDe(cot.compania) }} cuotas:
-              {{ calcularImportePorCuota(cot.compania, cot.rc) | currency:'$' }}
-            </div>
+            {{ getTextoImporte(cot.compania, cot.rc) }}
           </td>
         </tr>
 
@@ -40,7 +36,7 @@
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
                 placement="top">
-              {{ cot.b1 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.b1) }}
             </td>
           </tr>
           <tr>
@@ -50,7 +46,7 @@
                   ? tooltipATM(['B0','B2'])
                   : (getDescB2(cot) || '')"
                 placement="top">
-              {{ cot.b2 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.b2) }}
             </td>
           </tr>
         </ng-container>
@@ -65,7 +61,7 @@
                   ? tooltipATM(['C2','C3-BÁSICA','B2'])
                   : (getDescC(cot) || '')"
                 placement="top">
-              {{ cot.c | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c) }}
             </td>
           </tr>
           <tr>
@@ -75,7 +71,7 @@
                   ? tooltipATM(['C3','C2-MEDIA'])
                   : (getDescC1(cot) || '')"
                 placement="top">
-              {{ cot.c1 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c1) }}
             </td>
           </tr>
           <tr>
@@ -85,7 +81,7 @@
                   ? tooltipATM(['C4','C2-MEDIA'])
                   : (getDescC2(cot) || '')"
                 placement="top">
-              {{ cot.c2 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c2) }}
             </td>
           </tr>
           <tr>
@@ -95,7 +91,7 @@
                   ? tooltipATM(['C0'])
                   : (getDescC3(cot) || '')"
                 placement="top">
-              {{ cot.c3 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c3) }}
             </td>
           </tr>
         </ng-container>
@@ -110,7 +106,7 @@
                   ? tooltipATM(['D1','D2','C'])
                   : (getDescD1(cot) || '')"
                 placement="top">
-              {{ cot.d1 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.d1) }}
             </td>
           </tr>
           <tr>
@@ -120,7 +116,7 @@
                   ? tooltipATM(['D3'])
                   : (getDescD2(cot) || '')"
                 placement="top">
-              {{ cot.d2 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.d2) }}
             </td>
           </tr>
           <tr>
@@ -130,7 +126,7 @@
                   ? tooltipATM(['D4'])
                   : (getDescD3(cot) || '')"
                 placement="top">
-              {{ cot.d3 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.d3) }}
             </td>
           </tr>
           <tr>
@@ -140,7 +136,7 @@
                   ? tooltipATM(['D5'])
                   : (getDescD4(cot) || '')"
                 placement="top">
-              {{ cot.d4 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.d4) }}
             </td>
           </tr>
         </ng-container>
@@ -158,7 +154,7 @@
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
               placement="top">
-            {{ cot.rc | currency:'$' }}
+            {{ getTextoImporte(cot.compania, cot.rc) }}
           </td>
         </tr>
 
@@ -172,7 +168,7 @@
                   ? tooltipATM(['B0','B2'])
                   : (getDescB2(cot) || '')"
                 placement="top">
-              {{ cot.b2 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.b2) }}
             </td>
           </tr>
           <tr>
@@ -182,7 +178,7 @@
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
                 placement="top">
-              {{ cot.b1 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.b1) }}
             </td>
           </tr>
         </ng-container>
@@ -197,7 +193,7 @@
                   ? tooltipATM(['C3','C2-MEDIA'])
                   : (getDescC1(cot) || '')"
                 placement="top">
-              {{ cot.c1 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c1) }}
             </td>
           </tr>
           <tr>
@@ -207,7 +203,7 @@
                   ? tooltipATM(['C4','C2-MEDIA'])
                   : (getDescC2(cot) || '')"
                 placement="top">
-              {{ cot.c2 | currency:'$' }}
+              {{ getTextoImporte(cot.compania, cot.c2) }}
             </td>
           </tr>
         </ng-container>

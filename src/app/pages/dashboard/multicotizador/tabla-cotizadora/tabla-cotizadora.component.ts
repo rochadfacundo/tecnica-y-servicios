@@ -105,6 +105,7 @@ export class TablaCotizadoraComponent implements OnInit {
   }
 
 
+
   private norm(s: Maybe<string>): string {
     return (s ?? '')
       .normalize('NFD')
@@ -264,6 +265,18 @@ export class TablaCotizadoraComponent implements OnInit {
   }
 
 
+  //Para las cuotas
+  getTextoImporte(compania: string, importe: any): string {
+    const q = this.getCuotasDe(compania);
+    const val = Number(importe);
+
+    if (!!q && q > 1 && isFinite(val) && val > 0) {
+      const porCuota = val / q;
+      return `${q} cuotas de $${porCuota.toLocaleString('es-AR')}`;
+    }
+
+    return this.formatCurrency(val);
+  }
 
 
   async downloadPDF() {
@@ -271,16 +284,7 @@ export class TablaCotizadoraComponent implements OnInit {
       this.s_toast.error('No hay cotizaciones cargadas', 'Error al exportar');
       return;
     }
-    const tabla = this.tablaCotizaciones.nativeElement as HTMLElement;
-    // 🚀 Clonar tabla con clase extra
-    const clone = tabla.cloneNode(true) as HTMLElement;
-    clone.classList.add('pdf-export');
-    document.body.appendChild(clone);
 
-    const canvas = await html2canvas(clone, { scale: 2 });
-    document.body.removeChild(clone);
-
-    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('l', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
 
@@ -304,36 +308,72 @@ export class TablaCotizadoraComponent implements OnInit {
     // ---- Construcción de la tabla ----
     const body: (string | CellDef)[][] = [];
 
+    // Helper inline
+    const getTextoCelda = (cot: any, rol: 'rc'|'b1'|'b2'|'c'|'c1'|'c2'|'c3'|'d1'|'d2'|'d3'|'d4', compania: string, importe: any): string => {
+      // Importe/cuotas
+      const importeTxt = this.getTextoImporte(compania, importe);
+
+      // Descripción
+      let desc: string | null = null;
+      if (this.canonCompania(compania) === 'ATM') {
+        switch (rol) {
+          case 'rc':  desc = this.tooltipATM(['A0']); break;
+          case 'b1':  desc = this.tooltipATM(['B1']); break;
+          case 'b2':  desc = this.tooltipATM(['B0','B2']); break;
+          case 'c':   desc = this.tooltipATM(['C2','C3-BÁSICA','B2']); break;
+          case 'c1':  desc = this.tooltipATM(['C3','C2-MEDIA']); break;
+          case 'c2':  desc = this.tooltipATM(['C4','C2-MEDIA']); break;
+          case 'c3':  desc = this.tooltipATM(['C0']); break;
+          case 'd1':  desc = this.tooltipATM(['D1','D2','C']); break;
+          case 'd2':  desc = this.tooltipATM(['D3']); break;
+          case 'd3':  desc = this.tooltipATM(['D4']); break;
+          case 'd4':  desc = this.tooltipATM(['D5']); break;
+        }
+      } else {
+        desc = this.getDescPorRol(cot, rol);
+      }
+
+      return desc ? `${importeTxt}\n${desc}` : importeTxt;
+    };
+
     // RC
-    body.push([
-      { content: 'Responsabilidad Civil', rowSpan: 1, styles: { valign: 'middle' } },
-      ...this.companiasConDatos().map(c => this.formatCurrency(c.rc))
-    ]);
+    if (this.mostrarRC()) {
+      body.push([
+        { content: 'Responsabilidad Civil', rowSpan: 1, styles: { valign: 'middle' } },
+        ...this.companiasConDatos().map(c => getTextoCelda(c, 'rc', c.compania, c.rc))
+      ]);
+    }
 
     // Robo
-    body.push([
-      { content: 'Robo', rowSpan: 2, styles: { valign: 'middle' } },
-      ...this.companiasConDatos().map(c => this.formatCurrency(c.b1))
-    ]);
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.b2)));
+    if (this.mostrarRobo()) {
+      body.push([
+        { content: 'Robo', rowSpan: 2, styles: { valign: 'middle' } },
+        ...this.companiasConDatos().map(c => getTextoCelda(c, 'b1', c.compania, c.b1))
+      ]);
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'b2', c.compania, c.b2)));
+    }
 
     // Terceros
-    body.push([
-      { content: 'Terceros', rowSpan: 4, styles: { valign: 'middle' } },
-      ...this.companiasConDatos().map(c => this.formatCurrency(c.c))
-    ]);
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c1)));
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c2)));
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c3)));
+    if (this.mostrarTerceros()) {
+      body.push([
+        { content: 'Terceros', rowSpan: 4, styles: { valign: 'middle' } },
+        ...this.companiasConDatos().map(c => getTextoCelda(c, 'c', c.compania, c.c))
+      ]);
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c1', c.compania, c.c1)));
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c2', c.compania, c.c2)));
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c3', c.compania, c.c3)));
+    }
 
     // Todo Riesgo
-    body.push([
-      { content: 'Todo Riesgo', rowSpan: 4, styles: { valign: 'middle' } },
-      ...this.companiasConDatos().map(c => this.formatCurrency(c.d1))
-    ]);
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d2)));
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d3)));
-    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d4)));
+    if (this.mostrarTodoRiesgo()) {
+      body.push([
+        { content: 'Todo Riesgo', rowSpan: 4, styles: { valign: 'middle' } },
+        ...this.companiasConDatos().map(c => getTextoCelda(c, 'd1', c.compania, c.d1))
+      ]);
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'd2', c.compania, c.d2)));
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'd3', c.compania, c.d3)));
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'd4', c.compania, c.d4)));
+    }
 
     autoTable(pdf, {
       head: [
@@ -341,27 +381,28 @@ export class TablaCotizadoraComponent implements OnInit {
       ],
       body,
       startY: 40,
-      theme: 'grid', // borde
+      theme: 'grid',
       styles: {
         halign: 'center',
         valign: 'middle',
-        lineWidth: 0.2, // grosor
-        lineColor: [0, 0, 0] //negro
+        lineWidth: 0.2,
+        lineColor: [0, 0, 0],
+        fontSize: 9, // más chico para que entren tooltip + importe
       },
       headStyles: {
-        fillColor: [0, 0, 0],   // fondo negro
-        textColor: [255, 255, 255], // letras blancas
+        fillColor: [0, 0, 0],
+        textColor: [255, 255, 255],
         lineWidth: 0.2,
-        lineColor: [0, 0, 0],   // borde negro
+        lineColor: [0, 0, 0],
       },
     });
-
-
 
     const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`
       .replace(/\s+/g, '_');
     pdf.save(nombreArchivo);
   }
+
+
 
 
   private formatCurrency(val: any): string {
