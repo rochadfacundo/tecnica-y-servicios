@@ -1,0 +1,11 @@
+.table-light {
+  background-color: #ffffff !important; /* Fondo blanco */
+  color: #000000 !important;           /* Letras negras */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.pdf-export .table-light {
+  background-color: #000000 !important; /* Fondo negro */
+  color: #ffffff !important;           /* Letras blancas */
+}

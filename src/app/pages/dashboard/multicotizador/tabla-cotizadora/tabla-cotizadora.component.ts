@@ -13,6 +13,7 @@ import { ECobertura } from '../../../../enums/Ecobertura';
 
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import autoTable, { CellDef } from 'jspdf-autotable';
 
 type Maybe<T> = T | null | undefined;
 
@@ -266,20 +267,22 @@ export class TablaCotizadoraComponent implements OnInit {
 
 
   async downloadPDF() {
-    if (!this.tablaCotizaciones) {
-      this.s_toast.error('No se encontró la tabla', 'Error al exportar');
+    if (!this.cotizaciones) {
+      this.s_toast.error('No hay cotizaciones cargadas', 'Error al exportar');
       return;
     }
-
     const tabla = this.tablaCotizaciones.nativeElement as HTMLElement;
+    // 🚀 Clonar tabla con clase extra
+    const clone = tabla.cloneNode(true) as HTMLElement;
+    clone.classList.add('pdf-export');
+    document.body.appendChild(clone);
 
-    const canvas = await html2canvas(tabla, { scale: 2 });
+    const canvas = await html2canvas(clone, { scale: 2 });
+    document.body.removeChild(clone);
+
     const imgData = canvas.toDataURL('image/png');
-
     const pdf = new jsPDF('l', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pageWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     const nro = this.cotizaciones?.nroCotizacion ?? 'SIN_NUMERO';
     const apellido = this.user?.apellido ?? 'APELLIDO';
@@ -298,11 +301,71 @@ export class TablaCotizadoraComponent implements OnInit {
     pdf.text(`Productor: ${apellido}, ${nombre}`, 14, 30);
     pdf.text(`Fecha: ${fecha}`, pageWidth - 60, 30);
 
-    pdf.addImage(imgData, 'PNG', 10, 40, imgWidth, imgHeight);
+    // ---- Construcción de la tabla ----
+    const body: (string | CellDef)[][] = [];
+
+    // RC
+    body.push([
+      { content: 'Responsabilidad Civil', rowSpan: 1, styles: { valign: 'middle' } },
+      ...this.companiasConDatos().map(c => this.formatCurrency(c.rc))
+    ]);
+
+    // Robo
+    body.push([
+      { content: 'Robo', rowSpan: 2, styles: { valign: 'middle' } },
+      ...this.companiasConDatos().map(c => this.formatCurrency(c.b1))
+    ]);
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.b2)));
+
+    // Terceros
+    body.push([
+      { content: 'Terceros', rowSpan: 4, styles: { valign: 'middle' } },
+      ...this.companiasConDatos().map(c => this.formatCurrency(c.c))
+    ]);
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c1)));
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c2)));
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.c3)));
+
+    // Todo Riesgo
+    body.push([
+      { content: 'Todo Riesgo', rowSpan: 4, styles: { valign: 'middle' } },
+      ...this.companiasConDatos().map(c => this.formatCurrency(c.d1))
+    ]);
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d2)));
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d3)));
+    body.push(this.companiasConDatos().map(c => this.formatCurrency(c.d4)));
+
+    autoTable(pdf, {
+      head: [
+        ['Cobertura', ...this.companiasConDatos().map(c => c.compania)]
+      ],
+      body,
+      startY: 40,
+      theme: 'grid', // borde
+      styles: {
+        halign: 'center',
+        valign: 'middle',
+        lineWidth: 0.2, // grosor
+        lineColor: [0, 0, 0] //negro
+      },
+      headStyles: {
+        fillColor: [0, 0, 0],   // fondo negro
+        textColor: [255, 255, 255], // letras blancas
+        lineWidth: 0.2,
+        lineColor: [0, 0, 0],   // borde negro
+      },
+    });
+
+
 
     const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`
       .replace(/\s+/g, '_');
     pdf.save(nombreArchivo);
+  }
+
+
+  private formatCurrency(val: any): string {
+    return val ? `$ ${Number(val).toLocaleString('es-AR')}` : '-';
   }
 
 }
