@@ -39,6 +39,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
 import { ECobertura } from '../../../enums/Ecobertura';
+import { Vehiculo } from '../../../interfaces/vehiculo';
 
 @Component({
   selector: 'app-multicotizador',
@@ -717,7 +718,15 @@ export class MulticotizadorComponent implements OnInit {
         cotizaciones: this.cotizaciones,
         tipoVehiculo: this.getTipoVehiculo(),
         coberturasATM: this.coberturasATM,
-        coberturasSeleccionadas: this.form.coberturasSeleccionadas
+        coberturasSeleccionadas: this.form.coberturasSeleccionadas,
+
+        // Datos del vehiculo
+        vehiculo: {
+          marca: this.marcas.find(m => m.id === this.form.marca)?.name || '',
+          modelo: this.grupos.find(g => g.id === this.form.modelo)?.name || '',
+          version: this.modelos.find(v => v.codia === this.form.version)?.description || '',
+          anio: this.form.anio
+        } as Vehiculo
       }
     });
   }

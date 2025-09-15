@@ -4,7 +4,7 @@ import { Cotizacion, CotizacionATM } from "../../../../interfaces/cotizacion";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
 import { CodigosPersoneria, getRandomNumber, getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
-import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
+import { CompaniaCotizada, RolCobertura, CoberturaDet } from "../../../../interfaces/companiaCotizada";
 
 export function buildATMRequest(
   form: CotizacionFormValue,
@@ -113,12 +113,13 @@ export function parsearXML(res: string): CotizacionATM[] {
   return resultado;
 }
 
+
 export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
-  const buscarPremio = (...codigos: string[]): number | undefined => {
+  const buscarCobertura = (...codigos: string[]) => {
     for (const codigo of codigos) {
       const cobertura = coberturas.find((c) => c.codigo === codigo);
-      if (cobertura?.premio) {
-        return cobertura.premio;
+      if (cobertura) {
+        return cobertura;
       }
     }
     return undefined;
@@ -126,28 +127,57 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
 
   const companiaCotizada: CompaniaCotizada = {
     compania: "ATM",
-    rc: buscarPremio("A0"),
-    b1:buscarPremio("B1"),
-    b2:buscarPremio("B0"),
-    c: buscarPremio("C2", "C3-BÁSICA", "B2"), // B2 PARA MOTO
-    c1: buscarPremio("C3", "C2-MEDIA"),
-    c2:buscarPremio("C4", "C2-MEDIA"),
-    c3: buscarPremio("C0"),
-    d1: buscarPremio("D1", "D2", "C"), // C PARA MOTO
-    d2: buscarPremio("D3"), //3%
-    d3: buscarPremio("D4"), //6%
+    rc: buscarCobertura("A0")?.premio,
+    b1: buscarCobertura("B1")?.premio,
+    b2: buscarCobertura("B0")?.premio,
+    c: buscarCobertura("C0", "C0-BASICA", "B2")?.premio,
+    c1: buscarCobertura("C3", "C3-MEDIA")?.premio,
+    c2: buscarCobertura("C2", "C2-MEDIA")?.premio,
+    c3: buscarCobertura("C4", "C4-MEDIA")?.premio,
+    d1: buscarCobertura("D1", "D2", "C")?.premio,
+    d2: buscarCobertura("D3")?.premio,
+    d3: buscarCobertura("D4")?.premio,
+    d4: buscarCobertura("D5")?.premio,
+
+    rol2codigo: {},
+    detallesPorCodigo: {},
+    rol2tooltip: {},
+    detalles: {}
   };
+
+  // Mapeo estricto de roles (tipado a RolCobertura)
+  const mapping: Record<RolCobertura, string[]> = {
+    rc: ["A0"],
+    b1: ["B1"],
+    b2: ["B0"],
+    c: ["C0", "C0-BASICA", "B2"],
+    c1: ["C3", "C3-MEDIA"],
+    c2: ["C2", "C2-MEDIA"],
+    c3: ["C4", "C4-MEDIA"],
+    d1: ["D1", "D2", "C"],
+    d2: ["D3"],
+    d3: ["D4"],
+    d4: ["D5"]
+  };
+
+  // Poblar rol2codigo y detallesPorCodigo
+  (Object.keys(mapping) as RolCobertura[]).forEach((rol) => {
+    const codes = mapping[rol];
+    const cobertura = buscarCobertura(...codes);
+    if (cobertura) {
+      companiaCotizada.rol2codigo![rol] = cobertura.codigo;
+      companiaCotizada.detallesPorCodigo![cobertura.codigo] = {
+        codigo: cobertura.codigo,
+        descripcion: cobertura.descripcion ?? cobertura.codigo
+      } as CoberturaDet;
+    }
+  });
 
   return companiaCotizada;
 }
 
-/* ---------------- Tooltip Helpers ---------------- */
 
-const moneyAR = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "ARS",
-  minimumFractionDigits: 2,
-});
+
 
 /** Extrae "3%" / "6%" de descripciones TR tipo:
  * "TODO RIESGO C/FCIA.VARIABLE 6% SUMA ASEGURADA"

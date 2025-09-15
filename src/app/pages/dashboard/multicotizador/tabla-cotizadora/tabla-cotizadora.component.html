@@ -22,7 +22,7 @@
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
               placement="top">
-            {{ getTextoImporte(cot.compania, cot.rc) }}
+            {{ getMontoConCodigo(cot, 'rc') }}
           </td>
         </tr>
 
@@ -36,7 +36,7 @@
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.b1) }}
+              {{ getMontoConCodigo(cot, 'b1') }}
             </td>
           </tr>
           <tr>
@@ -46,7 +46,7 @@
                   ? tooltipATM(['B0','B2'])
                   : (getDescB2(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.b2) }}
+              {{ getMontoConCodigo(cot, 'b2') }}
             </td>
           </tr>
         </ng-container>
@@ -61,7 +61,7 @@
                   ? tooltipATM(['C2','C3-BÁSICA','B2'])
                   : (getDescC(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c) }}
+              {{ getMontoConCodigo(cot, 'c') }}
             </td>
           </tr>
           <tr>
@@ -71,7 +71,7 @@
                   ? tooltipATM(['C3','C2-MEDIA'])
                   : (getDescC1(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c1) }}
+              {{ getMontoConCodigo(cot, 'c1') }}
             </td>
           </tr>
           <tr>
@@ -81,7 +81,7 @@
                   ? tooltipATM(['C4','C2-MEDIA'])
                   : (getDescC2(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c2) }}
+              {{ getMontoConCodigo(cot, 'c2') }}
             </td>
           </tr>
           <tr>
@@ -91,7 +91,7 @@
                   ? tooltipATM(['C0'])
                   : (getDescC3(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c3) }}
+              {{ getMontoConCodigo(cot, 'c3') }}
             </td>
           </tr>
         </ng-container>
@@ -106,7 +106,7 @@
                   ? tooltipATM(['D1','D2','C'])
                   : (getDescD1(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.d1) }}
+              {{ getMontoConCodigo(cot, 'd1') }}
             </td>
           </tr>
           <tr>
@@ -116,7 +116,7 @@
                   ? tooltipATM(['D3'])
                   : (getDescD2(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.d2) }}
+              {{ getMontoConCodigo(cot, 'd2') }}
             </td>
           </tr>
           <tr>
@@ -126,7 +126,7 @@
                   ? tooltipATM(['D4'])
                   : (getDescD3(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.d3) }}
+              {{ getMontoConCodigo(cot, 'd3') }}
             </td>
           </tr>
           <tr>
@@ -136,7 +136,7 @@
                   ? tooltipATM(['D5'])
                   : (getDescD4(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.d4) }}
+              {{ getMontoConCodigo(cot, 'd4') }}
             </td>
           </tr>
         </ng-container>
@@ -154,7 +154,7 @@
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
               placement="top">
-            {{ getTextoImporte(cot.compania, cot.rc) }}
+            {{ getMontoConCodigo(cot, 'rc') }}
           </td>
         </tr>
 
@@ -168,7 +168,7 @@
                   ? tooltipATM(['B0','B2'])
                   : (getDescB2(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.b2) }}
+              {{ getMontoConCodigo(cot, 'b2') }}
             </td>
           </tr>
           <tr>
@@ -178,7 +178,7 @@
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.b1) }}
+              {{ getMontoConCodigo(cot, 'b1') }}
             </td>
           </tr>
         </ng-container>
@@ -193,7 +193,7 @@
                   ? tooltipATM(['C3','C2-MEDIA'])
                   : (getDescC1(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c1) }}
+              {{ getMontoConCodigo(cot, 'c1') }}
             </td>
           </tr>
           <tr>
@@ -203,7 +203,7 @@
                   ? tooltipATM(['C4','C2-MEDIA'])
                   : (getDescC2(cot) || '')"
                 placement="top">
-              {{ getTextoImporte(cot.compania, cot.c2) }}
+              {{ getMontoConCodigo(cot, 'c2') }}
             </td>
           </tr>
         </ng-container>
@@ -211,6 +211,19 @@
       </ng-template>
     </tbody>
   </table>
+
+    <!-- Card con datos del vehículo -->
+    <div *ngIf="vehiculo" class="card shadow-sm mt-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Datos del Vehículo</h5>
+      </div>
+      <div class="card-body">
+        <p class="mb-1"><strong>Marca:</strong> {{ vehiculo.marca }}</p>
+        <p class="mb-1"><strong>Modelo:</strong> {{ vehiculo.modelo }}</p>
+        <p class="mb-1"><strong>Versión:</strong> {{ vehiculo.version }}</p>
+        <p class="mb-0"><strong>Año:</strong> {{ vehiculo.anio }}</p>
+      </div>
+    </div>
 
   <div class="text-center mt-3 d-flex justify-content-center gap-2">
     <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>

@@ -14,6 +14,7 @@ import { ECobertura } from '../../../../enums/Ecobertura';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import autoTable, { CellDef } from 'jspdf-autotable';
+import { Vehiculo } from '../../../../interfaces/vehiculo';
 
 type Maybe<T> = T | null | undefined;
 
@@ -38,6 +39,7 @@ export class TablaCotizadoraComponent implements OnInit {
   @ViewChild('tablaCotizaciones') tablaCotizaciones!: ElementRef;
 
   cotizaciones!: Cotizacion;
+  vehiculo: Vehiculo | null = null;
   tipoVehiculo!: ETipoVehiculo;
   user!: Productor | null;
   coberturasATM: CotizacionATM[] = [];
@@ -61,6 +63,7 @@ export class TablaCotizadoraComponent implements OnInit {
       tipoVehiculo?: ETipoVehiculo;
       coberturasATM?: CotizacionATM[];
       coberturasSeleccionadas?: ECobertura[];
+      vehiculo?: Vehiculo;
     };
 
     if (state?.cotizaciones && state?.tipoVehiculo) {
@@ -68,6 +71,7 @@ export class TablaCotizadoraComponent implements OnInit {
       this.tipoVehiculo = state.tipoVehiculo;
       this.coberturasATM = Array.isArray(state.coberturasATM) ? state.coberturasATM : [];
       this.coberturasSeleccionadas = state.coberturasSeleccionadas ?? [];
+      this.vehiculo = state.vehiculo ?? null;
       this.construirMapaCuotas();
     } else {
       console.warn('⚠️ No se encontraron cotizaciones en el estado');
@@ -397,6 +401,23 @@ export class TablaCotizadoraComponent implements OnInit {
       },
     });
 
+
+    //Agrego el vehiculo al pdf
+    if (this.vehiculo) {
+      const startY = (pdf as any).lastAutoTable.finalY + 10;
+
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Datos del Vehículo', 14, startY);
+
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Marca: ${this.vehiculo.marca}`, 14, startY + 8);
+      pdf.text(`Modelo: ${this.vehiculo.modelo}`, 14, startY + 16);
+      pdf.text(`Versión: ${this.vehiculo.version}`, 14, startY + 24);
+      pdf.text(`Año: ${this.vehiculo.anio}`, 14, startY + 32);
+    }
+
     const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`
       .replace(/\s+/g, '_');
     pdf.save(nombreArchivo);
@@ -408,5 +429,14 @@ export class TablaCotizadoraComponent implements OnInit {
   private formatCurrency(val: any): string {
     return val ? `$ ${Number(val).toLocaleString('es-AR')}` : '-';
   }
+
+  //para mostrar montos con codigo
+  getMontoConCodigo(cot: any, rol: string): string {
+    const monto = cot[rol]; // el valor numérico
+    const codigo = cot.rol2codigo?.[rol]; // el código (ej: "S0", "B", "MX")
+    if (monto == null) return '';
+    return `$${monto.toLocaleString('es-AR')} ${codigo ? '(' + codigo + ')' : ''}`;
+  }
+
 
 }
