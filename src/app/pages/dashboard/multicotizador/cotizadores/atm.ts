@@ -130,10 +130,10 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
     rc: buscarCobertura("A0")?.premio,
     b1: buscarCobertura("B1")?.premio,
     b2: buscarCobertura("B0")?.premio,
-    c: buscarCobertura("C0", "C0-BASICA", "B2")?.premio,
-    c1: buscarCobertura("C3", "C3-MEDIA")?.premio,
-    c2: buscarCobertura("C2", "C2-MEDIA")?.premio,
-    c3: buscarCobertura("C4", "C4-MEDIA")?.premio,
+    c1:  buscarCobertura("C0", "C0-BASICA", "B2")?.premio,
+    c2: buscarCobertura("C3", "C3-MEDIA")?.premio,
+    c3: buscarCobertura("C2", "C2-MEDIA")?.premio,   // 👈 ahora busca C2
+    c4: buscarCobertura("C4", "C4-MEDIA")?.premio,   // 👈 busca C4
     d1: buscarCobertura("D1", "D2", "C")?.premio,
     d2: buscarCobertura("D3")?.premio,
     d3: buscarCobertura("D4")?.premio,
@@ -145,20 +145,21 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
     detalles: {}
   };
 
-  // Mapeo estricto de roles (tipado a RolCobertura)
   const mapping: Record<RolCobertura, string[]> = {
     rc: ["A0"],
     b1: ["B1"],
     b2: ["B0"],
-    c: ["C0", "C0-BASICA", "B2"],
-    c1: ["C3", "C3-MEDIA"],
-    c2: ["C2", "C2-MEDIA"],
-    c3: ["C4", "C4-MEDIA"],
+    c:  [], // ya no se usa
+    c1: ["C0", "C0-BASICA", "B2"],   // ✅ c1 es C0
+    c2: ["C3", "C3-MEDIA"],          // ✅ c2 es C3
+    c3: ["C2", "C2-MEDIA"],          // ✅ c3 es C2
+    c4: ["C4", "C4-MEDIA"],          // ✅ c4 es C4
     d1: ["D1", "D2", "C"],
     d2: ["D3"],
     d3: ["D4"],
     d4: ["D5"]
   };
+
 
   // Poblar rol2codigo y detallesPorCodigo
   (Object.keys(mapping) as RolCobertura[]).forEach((rol) => {
@@ -175,6 +176,7 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
 
   return companiaCotizada;
 }
+
 
 
 

@@ -8,6 +8,7 @@ export type RolCobertura =
   | 'b2'
   | 'c2'
   | 'c3'
+  | 'c4'
   | 'd1'
   | 'd2'
   | 'd3'

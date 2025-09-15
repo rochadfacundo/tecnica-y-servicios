@@ -89,6 +89,13 @@ export function construirCotizacionFederacion(
   tipoVehiculo?: 'VEHICULO' | 'MOTOVEHICULO' | string,
   ajusteAutomatico?: number
 ): Partial<CompaniaCotizada> {
+
+  console.log('🧩 [Federación] Planes recibidos:', planes.map(p => ({
+    codigo: p.codigo,
+    descripcion: p.descripcion,
+    premio: p.premio_total
+  })));
+
   const isMoto = (tipoVehiculo ?? '').toUpperCase() === 'MOTOVEHICULO';
 
   const norm = (s?: string) => (s ?? '').toUpperCase().trim();
@@ -168,19 +175,24 @@ export function construirCotizacionFederacion(
 
   // C / C1 (auto) + B / B1
   if (isMoto) {
-    rol2codigo.c  = pick('B', 'C');
-    rol2codigo.c1 = pick('B1', 'C1');
+    rol2codigo.c2 = pick('B', 'C');
+    rol2codigo.c3 = pick('B1', 'C1');
   } else {
-    rol2codigo.c  = pick('C');
-    rol2codigo.c1 = pick('CF');
+    rol2codigo.c2 = pick('C');
+    rol2codigo.c3 = pick('CF', 'CFULL', 'C FULL');
     rol2codigo.b1 = pick('B1');
     rol2codigo.b2 = pick('B');
   }
 
+
   if (rol2codigo.c)   rol2tooltip.c  = tipFor(rol2codigo.c);
   if (rol2codigo.c1)  rol2tooltip.c1 = tipFor(rol2codigo.c1);
+  if (rol2codigo.c2)  rol2tooltip.c2 = tipFor(rol2codigo.c2);
+  if (rol2codigo.c3)  rol2tooltip.c3 = tipFor(rol2codigo.c3);
   if (rol2codigo.b1)  rol2tooltip.b1 = tipFor(rol2codigo.b1);
   if (rol2codigo.b2)  rol2tooltip.b2 = tipFor(rol2codigo.b2);
+
+
 
   // TR (franquicias)
   const td3 = pick('TD3');
@@ -205,17 +217,33 @@ export function construirCotizacionFederacion(
 
   // ✅ Corregido: aceptar cualquier rol string, no solo keyof
   const premio = (rol?: string): number | undefined => {
-    const code = rol ? (rol2codigo as any)[rol] : undefined;
-    return code ? detallesPorCodigo[code]?.premio : undefined;
+    if (!rol) return undefined;
+    const codeRaw = (rol2codigo as any)[rol] as string | undefined;
+    if (!codeRaw) return undefined;
+    const code = norm(codeRaw);
+    const det = detallesPorCodigo[code];
+    if (det?.premio != null && Number.isFinite(det.premio as number)) {
+      return det.premio as number;
+    }
+    // Fallback ultra defensivo si el premio quedó como string raro:
+    const fromDesc = toNum((det as any)?.premio);
+    return fromDesc;
   };
+
+
+  console.log('💰 Premio de C:', premio('c2'), 'con código', rol2codigo.c2);
+  console.log('💰 Premio de CF:', premio('c3'), 'con código', rol2codigo.c3);
 
   const parcial: Partial<CompaniaCotizada> = {
     compania: 'Federación Patronal',
     rc: premio('rc'),
     b1: premio('b1'),
     b2: premio('b2'),
-    c:  premio('c'),
-    c1: premio('c1'),
+    c: undefined,
+    c1: undefined,
+    c2: premio('c2'), //  Terceros
+    c3: premio('c3'), //  Terceros Full
+    c4: undefined,
     d1: premio('d1'),
     d2: premio('d2'),
     d3: premio('d3'),
@@ -225,13 +253,16 @@ export function construirCotizacionFederacion(
     rol2tooltip,
   };
 
-    // 🔍 Log detallado para debug
+
+
     console.log("⚡ [Federación Patronal] CompaniaCotizada construida:", {
       rc: parcial.rc,
       b1: parcial.b1,
       b2: parcial.b2,
       c: parcial.c,
       c1: parcial.c1,
+      c2: parcial.c2,
+      c3: parcial.c3,
       d1: parcial.d1,
       d2: parcial.d2,
       d3: parcial.d3,

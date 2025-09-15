@@ -11,8 +11,9 @@ import { ToolTipDirective } from '../../../../directives/tool-tip.directive';
 import { buildTooltipATM } from '../cotizadores/atm';
 import { ECobertura } from '../../../../enums/Ecobertura';
 
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 import autoTable, { CellDef } from 'jspdf-autotable';
 import { Vehiculo } from '../../../../interfaces/vehiculo';
 
@@ -22,10 +23,10 @@ interface ProdCompania {
   compania: string;
   cuotasMoto?: number | string | null;
   cuotasAuto?: number | string | null;
-  cantidadCuotas?: string | null;   // Rivadavia
-  cuotas?: string | null;           // Mercantil Andina
-  refacturaciones?: string | null;  // Federación Patronal
-  plan?: string | null;             // ATM
+  cantidadCuotas?: string | null;
+  cuotas?: string | null;
+  refacturaciones?: string | null;
+  plan?: string | null;
 }
 
 @Component({
@@ -51,7 +52,8 @@ export class TablaCotizadoraComponent implements OnInit {
   constructor(
     @Inject(Router) private router: Router,
     @Inject(AuthService) private s_auth: AuthService,
-    @Inject(ToastrService) private s_toast: ToastrService
+    @Inject(ToastrService) private s_toast: ToastrService,
+    private sanitizer: DomSanitizer
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -74,12 +76,10 @@ export class TablaCotizadoraComponent implements OnInit {
       this.vehiculo = state.vehiculo ?? null;
       this.construirMapaCuotas();
     } else {
-      console.warn('⚠️ No se encontraron cotizaciones en el estado');
       this.router.navigate(['/dashboard']);
     }
   }
 
-  // ====== FILTROS con ENUM ======
   mostrarRC(): boolean {
     return this.coberturasSeleccionadas.includes(ECobertura.RC);
   }
@@ -96,19 +96,18 @@ export class TablaCotizadoraComponent implements OnInit {
     return this.coberturasSeleccionadas.includes(ECobertura.TODO_RIESGO);
   }
 
-
   companiasConDatos(): any[] {
     if (!this.cotizaciones?.companiasCotizadas) return [];
     return this.cotizaciones.companiasCotizadas.filter(cot => {
       const importes = [
-        cot.rc, cot.b1, cot.b2, cot.c, cot.c1, cot.c2, cot.c3,
+        cot.rc, cot.b1, cot.b2, cot.c, cot.c1, cot.c2, cot.c3,cot.c4,
         cot.d1, cot.d2, cot.d3, cot.d4
       ];
+
+
       return importes.some(val => val != null && Number(val) > 0);
     });
   }
-
-
 
   private norm(s: Maybe<string>): string {
     return (s ?? '')
@@ -195,25 +194,18 @@ export class TablaCotizadoraComponent implements OnInit {
 
   async guardarCotizaciones() {
     if (!this.user || !this.cotizaciones) return;
-
     const yaExiste = this.user.cotizaciones?.some(
       c => c.nroCotizacion === this.cotizaciones.nroCotizacion
     );
-
     if (!yaExiste) {
       this.user.cotizaciones = this.user.cotizaciones || [];
       this.user.cotizaciones.push(this.cotizaciones);
-
       try {
         await this.s_auth.updateUser(this.user);
         this.s_toast.success('Cotizacion guardada exitosamente', 'Cotizacion guardada');
-        console.log('✅ Cotización guardada');
       } catch (error) {
         this.s_toast.error('Error al guardar la cotizacion', 'No se guardo la cotizacion');
-        console.error('❌ Error al guardar cotización:', error);
       }
-    } else {
-      console.log('⚠️ La cotización ya fue guardada');
     }
   }
 
@@ -224,29 +216,39 @@ export class TablaCotizadoraComponent implements OnInit {
     return val / q;
   }
 
-  getDescPorRol(cot: any, rol: 'rc'|'b1'|'b2'|'c'|'c1'|'c2'|'c3'|'d1'|'d2'|'d3'|'d4'): string | null {
+  getDescPorRol(cot: any, rol: string): string | null {
     const tip = cot?.rol2tooltip?.[rol];
-    if (typeof tip === 'string' && tip.trim()) return tip.trim();
 
+    if (typeof tip === 'string' && /\b(plan|rcl|todo|robo|inc|acc|responsabilidad|riesgo)\b/i.test(tip)) {
+      return tip.trim();
+    }
+
+    // Si no, se intenta reconstruir desde detallesPorCodigo
     const code: string | undefined = cot?.rol2codigo?.[rol];
     if (!code) return null;
 
     const raw = cot?.detallesPorCodigo?.[code]?.descripcion ?? '';
     const toSentence = (s?: string) => {
-      const t = (s ?? '').trim().toLowerCase();
+      const t = (s ?? '').trim();
       return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
     };
     const human = toSentence(raw || code);
     return `${code}: ${human}`.trim();
   }
 
+
+
   getDescRC(cot: any): string | null { return this.getDescPorRol(cot, 'rc'); }
   getDescB1(cot: any): string | null { return this.getDescPorRol(cot, 'b1'); }
+
   getDescB2(cot: any): string | null { return this.getDescPorRol(cot, 'b2'); }
   getDescC(cot: any): string | null { return this.getDescPorRol(cot, 'c'); }
   getDescC1(cot: any): string | null { return this.getDescPorRol(cot, 'c1'); }
+
   getDescC2(cot: any): string | null { return this.getDescPorRol(cot, 'c2'); }
   getDescC3(cot: any): string | null { return this.getDescPorRol(cot, 'c3'); }
+  getDescC4(cot: any): string | null { return this.getDescPorRol(cot, 'c4'); }
+
   getDescD1(cot: any): string | null { return this.getDescPorRol(cot, 'd1'); }
   getDescD2(cot: any): string | null { return this.getDescPorRol(cot, 'd2'); }
   getDescD3(cot: any): string | null { return this.getDescPorRol(cot, 'd3'); }
@@ -268,66 +270,67 @@ export class TablaCotizadoraComponent implements OnInit {
     return `${t.title}\n${t.lines.join('\n')}`;
   }
 
+  getTextoImporteHTML(compania: string, importe: any, rol: string, cot: any): SafeHtml {
 
-  //Para las cuotas
-  getTextoImporte(compania: string, importe: any): string {
     const q = this.getCuotasDe(compania);
     const val = Number(importe);
-
+    const codigo = cot?.rol2codigo?.[rol] ? ` (${cot.rol2codigo[rol]})` : '';
     if (!!q && q > 1 && isFinite(val) && val > 0) {
       const porCuota = val / q;
-      return `${q} cuotas de $${porCuota.toLocaleString('es-AR')}`;
+      return this.sanitizer.bypassSecurityTrustHtml(
+        `<span class="cuotas-label">${q} cuotas de</span> $${porCuota.toLocaleString('es-AR')}${codigo}`
+      );
     }
-
-    return this.formatCurrency(val);
+    return this.sanitizer.bypassSecurityTrustHtml(
+      val > 0 ? `$${val.toLocaleString('es-AR')}${codigo}` : ''
+    );
   }
 
+  getTextoImportePDF(compania: string, importe: any, rol: string, cot: any): string {
+    const q = this.getCuotasDe(compania);
+    const val = Number(importe);
+    const codigo = cot?.rol2codigo?.[rol] ? ` (${cot.rol2codigo[rol]})` : '';
+    if (!!q && q > 1 && isFinite(val) && val > 0) {
+      const porCuota = val / q;
+      return `${q} cuotas de $${porCuota.toLocaleString('es-AR')}${codigo}`;
+    }
+    return val > 0 ? `$${val.toLocaleString('es-AR')}${codigo}` : '';
+  }
 
   async downloadPDF() {
     if (!this.cotizaciones) {
       this.s_toast.error('No hay cotizaciones cargadas', 'Error al exportar');
       return;
     }
-
     const pdf = new jsPDF('l', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
-
     const nro = this.cotizaciones?.nroCotizacion ?? 'SIN_NUMERO';
     const apellido = this.user?.apellido ?? 'APELLIDO';
     const nombre = this.user?.nombre ?? 'NOMBRE';
     const fecha = new Date().toLocaleDateString('es-AR');
-
-    // Encabezado centrado
     pdf.setFontSize(18);
     pdf.setFont('helvetica', 'bold');
     const titulo = `Cotización Nº ${nro}`;
     const textWidth = pdf.getTextWidth(titulo);
     pdf.text(titulo, (pageWidth - textWidth) / 2, 20);
-
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
     pdf.text(`Productor: ${apellido}, ${nombre}`, 14, 30);
     pdf.text(`Fecha: ${fecha}`, pageWidth - 60, 30);
 
-    // ---- Construcción de la tabla ----
     const body: (string | CellDef)[][] = [];
-
-    // Helper inline
-    const getTextoCelda = (cot: any, rol: 'rc'|'b1'|'b2'|'c'|'c1'|'c2'|'c3'|'d1'|'d2'|'d3'|'d4', compania: string, importe: any): string => {
-      // Importe/cuotas
-      const importeTxt = this.getTextoImporte(compania, importe);
-
-      // Descripción
+    const getTextoCelda = (cot: any, rol: 'rc'|'b1'|'b2'|'c1'|'c2'|'c3'|'c4'|'d1'|'d2'|'d3'|'d4', compania: string, importe: any): string => {
+      const importeTxt = this.getTextoImportePDF(compania, importe, rol, cot);
       let desc: string | null = null;
       if (this.canonCompania(compania) === 'ATM') {
         switch (rol) {
           case 'rc':  desc = this.tooltipATM(['A0']); break;
           case 'b1':  desc = this.tooltipATM(['B1']); break;
           case 'b2':  desc = this.tooltipATM(['B0','B2']); break;
-          case 'c':   desc = this.tooltipATM(['C2','C3-BÁSICA','B2']); break;
-          case 'c1':  desc = this.tooltipATM(['C3','C2-MEDIA']); break;
-          case 'c2':  desc = this.tooltipATM(['C4','C2-MEDIA']); break;
-          case 'c3':  desc = this.tooltipATM(['C0']); break;
+          case 'c1':  desc = this.tooltipATM(['C0','C0-BASICA','B2']); break; // ✅ C0
+          case 'c2':  desc = this.tooltipATM(['C3','C3-MEDIA']); break;       // ✅ C3
+          case 'c3':  desc = this.tooltipATM(['C2','C2-MEDIA']); break;       // ✅ C2
+          case 'c4':  desc = this.tooltipATM(['C4','C4-MEDIA']); break;       // ✅ C4
           case 'd1':  desc = this.tooltipATM(['D1','D2','C']); break;
           case 'd2':  desc = this.tooltipATM(['D3']); break;
           case 'd3':  desc = this.tooltipATM(['D4']); break;
@@ -336,19 +339,15 @@ export class TablaCotizadoraComponent implements OnInit {
       } else {
         desc = this.getDescPorRol(cot, rol);
       }
-
       return desc ? `${importeTxt}\n${desc}` : importeTxt;
     };
 
-    // RC
     if (this.mostrarRC()) {
       body.push([
         { content: 'Responsabilidad Civil', rowSpan: 1, styles: { valign: 'middle' } },
         ...this.companiasConDatos().map(c => getTextoCelda(c, 'rc', c.compania, c.rc))
       ]);
     }
-
-    // Robo
     if (this.mostrarRobo()) {
       body.push([
         { content: 'Robo', rowSpan: 2, styles: { valign: 'middle' } },
@@ -356,19 +355,15 @@ export class TablaCotizadoraComponent implements OnInit {
       ]);
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'b2', c.compania, c.b2)));
     }
-
-    // Terceros
     if (this.mostrarTerceros()) {
       body.push([
         { content: 'Terceros', rowSpan: 4, styles: { valign: 'middle' } },
-        ...this.companiasConDatos().map(c => getTextoCelda(c, 'c', c.compania, c.c))
+        ...this.companiasConDatos().map(c => getTextoCelda(c, 'c1', c.compania, c.c1))
       ]);
-      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c1', c.compania, c.c1)));
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c2', c.compania, c.c2)));
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c3', c.compania, c.c3)));
+      body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c4', c.compania, c.c4)));
     }
-
-    // Todo Riesgo
     if (this.mostrarTodoRiesgo()) {
       body.push([
         { content: 'Todo Riesgo', rowSpan: 4, styles: { valign: 'middle' } },
@@ -380,9 +375,7 @@ export class TablaCotizadoraComponent implements OnInit {
     }
 
     autoTable(pdf, {
-      head: [
-        ['Cobertura', ...this.companiasConDatos().map(c => c.compania)]
-      ],
+      head: [['Cobertura', ...this.companiasConDatos().map(c => c.compania)]],
       body,
       startY: 40,
       theme: 'grid',
@@ -391,7 +384,7 @@ export class TablaCotizadoraComponent implements OnInit {
         valign: 'middle',
         lineWidth: 0.2,
         lineColor: [0, 0, 0],
-        fontSize: 9, // más chico para que entren tooltip + importe
+        fontSize: 9,
       },
       headStyles: {
         fillColor: [0, 0, 0],
@@ -401,15 +394,11 @@ export class TablaCotizadoraComponent implements OnInit {
       },
     });
 
-
-    //Agrego el vehiculo al pdf
     if (this.vehiculo) {
       const startY = (pdf as any).lastAutoTable.finalY + 10;
-
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'bold');
       pdf.text('Datos del Vehículo', 14, startY);
-
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'normal');
       pdf.text(`Marca: ${this.vehiculo.marca}`, 14, startY + 8);
@@ -418,11 +407,9 @@ export class TablaCotizadoraComponent implements OnInit {
       pdf.text(`Año: ${this.vehiculo.anio}`, 14, startY + 32);
     }
 
-    const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`
-      .replace(/\s+/g, '_');
+    const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`.replace(/\s+/g, '_');
     pdf.save(nombreArchivo);
   }
-
 
 
 
@@ -430,13 +417,10 @@ export class TablaCotizadoraComponent implements OnInit {
     return val ? `$ ${Number(val).toLocaleString('es-AR')}` : '-';
   }
 
-  //para mostrar montos con codigo
   getMontoConCodigo(cot: any, rol: string): string {
-    const monto = cot[rol]; // el valor numérico
-    const codigo = cot.rol2codigo?.[rol]; // el código (ej: "S0", "B", "MX")
+    const monto = cot[rol];
+    const codigo = cot.rol2codigo?.[rol];
     if (monto == null) return '';
     return `$${monto.toLocaleString('es-AR')} ${codigo ? '(' + codigo + ')' : ''}`;
   }
-
-
 }

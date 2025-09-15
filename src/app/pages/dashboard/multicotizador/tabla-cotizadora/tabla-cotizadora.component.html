@@ -1,4 +1,18 @@
 <div class="p-4">
+
+  <!-- Card con datos del vehículo -->
+  <div *ngIf="vehiculo" class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Datos del Vehículo</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-1"><strong>Marca:</strong> {{ vehiculo.marca }}</p>
+      <p class="mb-1"><strong>Modelo:</strong> {{ vehiculo.modelo }}</p>
+      <p class="mb-1"><strong>Versión:</strong> {{ vehiculo.version }}</p>
+      <p class="mb-0"><strong>Año:</strong> {{ vehiculo.anio }}</p>
+    </div>
+  </div>
+
   <table #tablaCotizaciones id="tabla-cotizaciones" class="table table-bordered table-striped">
     <thead class="table-light text-center fs-4">
       <tr>
@@ -21,8 +35,8 @@
               [appTooltip]="canonCompania(cot.compania) === 'ATM'
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
-              placement="top">
-            {{ getMontoConCodigo(cot, 'rc') }}
+              placement="top"
+              [innerHTML]="getTextoImporteHTML(cot.compania, cot.rc, 'rc', cot)">
           </td>
         </tr>
 
@@ -35,18 +49,18 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'b1') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.b1, 'b1', cot)">
             </td>
           </tr>
           <tr>
             <!-- B2 -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['B0','B2'])
+                  ? tooltipATM(['B0'])
                   : (getDescB2(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'b2') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.b2, 'b2', cot)">
             </td>
           </tr>
         </ng-container>
@@ -54,46 +68,60 @@
         <!-- Grupo Terceros -->
         <ng-container *ngIf="mostrarTerceros()">
           <tr>
-            <td rowspan="4" class="align-middle">Terceros</td>
+            <td rowspan="5" class="align-middle">Terceros</td>
             <!-- C -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C2','C3-BÁSICA','B2'])
+                  ? tooltipATM(['C0','C0-BASICA','B2'])
                   : (getDescC(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.c, 'c', cot)">
             </td>
           </tr>
           <tr>
             <!-- C1 -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C3','C2-MEDIA'])
+                  ? tooltipATM(['C3','C3-MEDIA'])
                   : (getDescC1(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c1') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.c1, 'c1', cot)">
             </td>
           </tr>
           <tr>
             <!-- C2 -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C4','C2-MEDIA'])
+                  ? tooltipATM(['C2','C2-MEDIA'])
                   : (getDescC2(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c2') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.c2, 'c2', cot)">
+
             </td>
           </tr>
           <tr>
             <!-- C3 -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C0'])
+                  ? tooltipATM(['C2','C2-MEDIA'])
                   : (getDescC3(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c3') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.c3, 'c3', cot)">
+
             </td>
           </tr>
+
+          <tr>
+            <!-- C4 -->
+            <td *ngFor="let cot of companiasConDatos()"
+                [appTooltip]="canonCompania(cot.compania) === 'ATM'
+                  ? tooltipATM(['C4','C4-MEDIA'])
+                  : (getDescC4(cot) || '')"
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.c4, 'c4', cot)">
+            </td>
+          </tr>
+
         </ng-container>
 
         <!-- Grupo Todo Riesgo -->
@@ -105,8 +133,8 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['D1','D2','C'])
                   : (getDescD1(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'd1') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.d1, 'd1', cot)">
             </td>
           </tr>
           <tr>
@@ -115,8 +143,8 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['D3'])
                   : (getDescD2(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'd2') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.d2, 'd2', cot)">
             </td>
           </tr>
           <tr>
@@ -125,8 +153,8 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['D4'])
                   : (getDescD3(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'd3') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.d3, 'd3', cot)">
             </td>
           </tr>
           <tr>
@@ -135,8 +163,8 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['D5'])
                   : (getDescD4(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'd4') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.d4, 'd4', cot)">
             </td>
           </tr>
         </ng-container>
@@ -153,8 +181,8 @@
               [appTooltip]="canonCompania(cot.compania) === 'ATM'
                 ? tooltipATM(['A0'])
                 : (getDescRC(cot) || '')"
-              placement="top">
-            {{ getMontoConCodigo(cot, 'rc') }}
+              placement="top"
+              [innerHTML]="getTextoImporteHTML(cot.compania, cot.rc, 'rc', cot)">
           </td>
         </tr>
 
@@ -162,13 +190,13 @@
         <ng-container *ngIf="mostrarRobo()">
           <tr>
             <td rowspan="2" class="align-middle">Robo</td>
-            <!-- B -->
+            <!-- B2 -->
             <td *ngFor="let cot of companiasConDatos()"
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['B0','B2'])
+                  ? tooltipATM(['B0'])
                   : (getDescB2(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'b2') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.b2, 'b2', cot)">
             </td>
           </tr>
           <tr>
@@ -177,53 +205,64 @@
                 [appTooltip]="canonCompania(cot.compania) === 'ATM'
                   ? tooltipATM(['B1'])
                   : (getDescB1(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'b1') }}
+                placement="top"
+                [innerHTML]="getTextoImporteHTML(cot.compania, cot.b1, 'b1', cot)">
             </td>
           </tr>
         </ng-container>
 
         <!-- Grupo Terceros -->
-        <ng-container *ngIf="mostrarTerceros()">
-          <tr>
-            <td rowspan="2" class="align-middle">Terceros</td>
-            <!-- C1 -->
-            <td *ngFor="let cot of companiasConDatos()"
-                [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C3','C2-MEDIA'])
-                  : (getDescC1(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c1') }}
-            </td>
-          </tr>
-          <tr>
-            <!-- C2 -->
-            <td *ngFor="let cot of companiasConDatos()"
-                [appTooltip]="canonCompania(cot.compania) === 'ATM'
-                  ? tooltipATM(['C4','C2-MEDIA'])
-                  : (getDescC2(cot) || '')"
-                placement="top">
-              {{ getMontoConCodigo(cot, 'c2') }}
-            </td>
-          </tr>
-        </ng-container>
+<ng-container *ngIf="mostrarTerceros()">
+  <tr>
+    <td rowspan="4" class="align-middle">Terceros</td>
+
+    <!-- C1 - (C0) -->
+    <td *ngFor="let cot of companiasConDatos()"
+        [appTooltip]="canonCompania(cot.compania) === 'ATM'
+          ? tooltipATM(['C0','C0-BASICA','B2'])
+          : (getDescC1(cot) || '')"
+        placement="top"
+        [innerHTML]="getTextoImporteHTML(cot.compania, cot.c1, 'c1', cot)">
+    </td>
+  </tr>
+  <tr>
+    <!-- C2 - (C3) -->
+    <td *ngFor="let cot of companiasConDatos()"
+        [appTooltip]="canonCompania(cot.compania) === 'ATM'
+          ? tooltipATM(['C3','C3-MEDIA'])
+          : (getDescC2(cot) || '')"
+        placement="top"
+        [innerHTML]="getTextoImporteHTML(cot.compania, cot.c2, 'c2', cot)">
+    </td>
+  </tr>
+  <tr>
+    <!-- C3 - (C2) -->
+    <td *ngFor="let cot of companiasConDatos()"
+        [appTooltip]="canonCompania(cot.compania) === 'ATM'
+          ? tooltipATM(['C2','C2-MEDIA'])
+          : (getDescC3(cot) || '')"
+        placement="top"
+        [innerHTML]="getTextoImporteHTML(cot.compania, cot.c3, 'c3', cot)">
+    </td>
+  </tr>
+  <tr>
+    <!-- C4 - (C4) -->
+    <td *ngFor="let cot of companiasConDatos()"
+        [appTooltip]="canonCompania(cot.compania) === 'ATM'
+          ? tooltipATM(['C4','C4-MEDIA'])
+          : (getDescC4(cot) || '')"
+        placement="top"
+        [innerHTML]="getTextoImporteHTML(cot.compania, cot.c4, 'c4', cot)">
+    </td>
+  </tr>
+</ng-container>
+
+
+
 
       </ng-template>
     </tbody>
   </table>
-
-    <!-- Card con datos del vehículo -->
-    <div *ngIf="vehiculo" class="card shadow-sm mt-4">
-      <div class="card-header bg-light">
-        <h5 class="mb-0">Datos del Vehículo</h5>
-      </div>
-      <div class="card-body">
-        <p class="mb-1"><strong>Marca:</strong> {{ vehiculo.marca }}</p>
-        <p class="mb-1"><strong>Modelo:</strong> {{ vehiculo.modelo }}</p>
-        <p class="mb-1"><strong>Versión:</strong> {{ vehiculo.version }}</p>
-        <p class="mb-0"><strong>Año:</strong> {{ vehiculo.anio }}</p>
-      </div>
-    </div>
 
   <div class="text-center mt-3 d-flex justify-content-center gap-2">
     <button class="btn btn-primary" (click)="guardarCotizaciones()">Guardar Cotizaciones</button>

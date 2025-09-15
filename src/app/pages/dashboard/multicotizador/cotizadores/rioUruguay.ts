@@ -192,8 +192,8 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     setIf('rc',  norm(rcIt?.codigoRC), rcIt);
     setIf('b1',  'B1-80', b1It);
     setIf('b2',  'B-80', b2It);
-    setIf('c',   'C3-80', cIt);
-    setIf('c1',  norm(c1It?.codigoCasco), c1It);
+    setIf('c2', 'C3-80', cIt);
+    setIf('c3', norm(c1It?.codigoCasco), c1It);
     setIf('d1',  'T34', d1It);
     setIf('d2',  'T32', d2It);
     setIf('d3',  'T31', d3It);
@@ -217,8 +217,8 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
       rc:  premio(rcIt),
       b1:  premio(b1It),
       b2:  premio(b2It),
-      c:   premio(cIt),
-      c1:  premio(c1It),
+      c2:   premio(cIt),
+      c3:  premio(c1It),
       d1:  premio(d1It),
       d2:  premio(d2It),
       d3:  premio(d3It),

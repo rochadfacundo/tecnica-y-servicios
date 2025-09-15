@@ -1,45 +1,63 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+// Angular
+import { Component, EventEmitter, Inject, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RioUruguayService } from '../../../services/rio-uruguay.service';
-import { RusCotizado } from '../../../interfaces/cotizacionRioUruguay';
-import { MercantilAndinaService } from '../../../services/mercantil-andina.service';
-import { TipoDeUso } from '../../../enums/tiposDeUso';
-import { ChangeDetectorRef } from '@angular/core';
-import { InfoautoService } from '../../../services/infoauto.service';
-import { Brand, Group, Model } from '../../../classes/infoauto';
-import { RivadaviaService } from '../../../services/rivadavia.service';
-import {  DatosCotizacionRivadavia} from '../../../interfaces/cotizacionRivadavia';
-import { FederacionService } from '../../../services/federacion.service';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
+// RxJS
+import { firstValueFrom } from 'rxjs';
+
+// Terceros
+import { ToastrService } from 'ngx-toastr';
+import { NgSelectModule } from '@ng-select/ng-select';
+
+// Servicios
+import { RioUruguayService } from '../../../services/rio-uruguay.service';
+import { MercantilAndinaService } from '../../../services/mercantil-andina.service';
+import { InfoautoService } from '../../../services/infoauto.service';
+import { RivadaviaService } from '../../../services/rivadavia.service';
+import { FederacionService } from '../../../services/federacion.service';
 import { AtmService } from '../../../services/atm.service';
+import { AuthService } from '../../../services/auth.service';
+import { SpinnerService } from '../../../services/spinner.service';
+import { DignaService } from '../../../services/digna.service';
+
+// Interfaces & Models
+import { RusCotizado } from '../../../interfaces/cotizacionRioUruguay';
+import { DatosCotizacionRivadavia } from '../../../interfaces/cotizacionRivadavia';
+import { Cotizacion, CotizacionATM } from '../../../interfaces/cotizacion';
 import { CotizacionFormValue } from '../../../interfaces/cotizacionFormValue';
 import { Tipo, TipoId, TipoPersoneria, TipoVehiculo } from '../../../interfaces/tipos';
 import { Cobertura } from '../../../interfaces/cobertura';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { downloadJSON, filterCars, formatDateSinceDay, formatDateSinceYear, getRandomNumber, opcionesDeCobertura } from '../../../utils/utils';
+import { Provincia } from '../../../interfaces/provincia';
+import { Year } from '../../../interfaces/year';
+import { Productor } from '../../../models/productor.model';
+import { Vehiculo } from '../../../interfaces/vehiculo';
+import { Brand, Group, Model } from '../../../classes/infoauto';
+
+// Enums
+import { TipoDeUso } from '../../../enums/tiposDeUso';
+import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
+import { ECobertura } from '../../../enums/Ecobertura';
+import { ESpinner } from '../../../enums/ESpinner';
+
+// Utils
+import {
+  downloadJSON, filterCars, formatDateSinceYear,
+  getRandomNumber, opcionesDeCobertura
+} from '../../../utils/utils';
+import { filtrarModelosPorAnio, OPCIONES_SI_NO } from '../../../utils/formOptions';
+
+// Builders
 import { buildATMRequest, buildTooltipATM, construirCotizacionATM, parsearXML } from './cotizadores/atm';
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
-import { Cotizacion, CotizacionATM } from '../../../interfaces/cotizacion';
 import { buildFederacionRequest, construirCotizacionFederacion, franquiciaUnPorCiento, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
-import { filtrarModelosPorAnio, OPCIONES_SI_NO } from '../../../utils/formOptions';
-import { Provincia } from '../../../interfaces/provincia';
-import { Year } from '../../../interfaces/year';
-import { AuthService } from '../../../services/auth.service';
-import { Productor } from '../../../models/productor.model';
-import { Router } from '@angular/router';
-import { ESpinner } from '../../../enums/ESpinner';
-import { SpinnerService } from '../../../services/spinner.service';
-import { firstValueFrom } from 'rxjs';
-import { DignaService } from '../../../services/digna.service';
-import { HttpClient } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
-import { ETipoVehiculo } from '../../../enums/tipoVehiculos';
-import { ECobertura } from '../../../enums/Ecobertura';
-import { Vehiculo } from '../../../interfaces/vehiculo';
+
+
 
 @Component({
   selector: 'app-multicotizador',
@@ -55,48 +73,47 @@ export class MulticotizadorComponent implements OnInit {
   form!: CotizacionFormValue;
 
   marcas: Brand[] = [];
-  brand_idSelected:number=0;
-  group_idSelected:number=0;
+  brand_idSelected = 0;
+  group_idSelected = 0;
   anios: Year[] = [];
-  //fed
+
+  // fed
   tipoPersona!: TipoPersoneria;
-  tiposId:TipoId[]=[];
-  tiposDeRastreadores:Tipo[]=[];
+  tiposId: TipoId[] = [];
+  tiposDeRastreadores: Tipo[] = [];
 
-  mediosPago:Tipo[]=[];
-  coberturas:Cobertura[]=[];
-  franquicias:Tipo[]=[];
+  mediosPago: Tipo[] = [];
+  coberturas: Cobertura[] = [];
+  franquicias: Tipo[] = [];
 
-  //riv
-  provincias:Provincia[]=[];
+  // riv
+  provincias: Provincia[] = [];
   grupos: Group[] = [];
   modelos: Model[] = [];
   modelosTodos: Model[] = [];
-  codigosUso: any[] = [];
-  anio:number=0;
-  codigoInfoAuto:number=0;
-  codigoRivadavia:string="";
-  sumaRivadavia:string="";
+  codigosUso: any[] = []; // ⚠️ podría tiparse
+  anio = 0;
+  codigoInfoAuto = 0;
+  codigoRivadavia = '';
+  sumaRivadavia = '';
 
-  codigoPostalFederacion:number=0;
+  codigoPostalFederacion = 0;
 
   public readonly opcionesSiNo = OPCIONES_SI_NO;
-
-  public tiposVehiculo:TipoVehiculo[] = [];
+  public tiposVehiculo: TipoVehiculo[] = [];
 
   cotizacionesRus: RusCotizado[] = [];
-  cotizacion:boolean=true;
-  tiposDeUso: TipoDeUso[]= [];
-  productorLog!: Productor|null;
-  cotizaciones: Cotizacion;
-  animar:boolean = false;
+  cotizacion = true;
+  tiposDeUso: TipoDeUso[] = [];
+  productorLog!: Productor | null;
+  cotizaciones: Cotizacion = { companiasCotizadas: [], nroCotizacion: 0 };
+  animar = false;
 
   public coberturasATM: CotizacionATM[] = [];
-  public buildTooltipATM = buildTooltipATM; // para usarlo en el template
+  public buildTooltipATM = buildTooltipATM; // usado en template
 
-  //filtro
+  // filtro
   opcionesCobertura = opcionesDeCobertura;
-
 
   constructor(
     @Inject(RioUruguayService) private s_rus: RioUruguayService,
@@ -113,169 +130,60 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(HttpClient) private s_http: HttpClient,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef
-  ){
-    this.cotizaciones={companiasCotizadas:[],nroCotizacion:0};
-  }
+  ) {}
 
   async ngOnInit() {
     this.initForm();
     this.setupValueChanges();
 
-    setTimeout(() => {
-      this.animar = true;
-
-    }, 5);
-    this.productorLog= await this.s_auth.obtenerProductorLogueado();
+    setTimeout(() => (this.animar = true), 5);
+    this.productorLog = await this.s_auth.obtenerProductorLogueado();
   }
 
-
+  // ===== Form =====
   private initForm(): void {
     this.cotizacionForm = this.fb.group({
       alarma: [true],
       anio: [{ value: null, disabled: true }, Validators.required],
-      apellido: [""],
-      cascoConosur:false,
+      apellido: [''],
+      cascoConosur: false,
       clausulaAjuste: [{ value: { codigo: 10, descripcion: '10%' }, disabled: true }],
-      condicionFiscal: [{id: 0, descripcion: ''}, Validators.required],
+      condicionFiscal: [{ id: 0, descripcion: '' }, Validators.required],
       controlSatelital: false,
       cpLocalidadGuarda: [{ value: null }, Validators.required],
-      descuentoComision:0,
-      franquicia:[],
-      tieneGnc:false,
+      descuentoComision: 0,
+      franquicia: [],
+      tieneGnc: false,
       gnc: 0,
-      grua:false,
+      grua: false,
       marca: [{ value: null, disabled: true }, Validators.required],
-      medioPago:false,
+      medioPago: false,
       modelo: [{ value: null, disabled: true }, Validators.required],
-      nombre: [""],
-      nroId: [""],
+      nombre: [''],
+      nroId: [''],
       provincia: null,
       rastreador: false,
-      tallerExclusivo:false,
-      tieneRastreador:false,
-      tipoId: "DNI",
-      tipoRefacturacion:[],
+      tallerExclusivo: false,
+      tieneRastreador: false,
+      tipoId: 'DNI',
+      tipoRefacturacion: [],
       tipoVigencia: [{ value: null }, Validators.required],
-      tipoVehiculo: [{ value: null}, Validators.required],
+      tipoVehiculo: [{ value: null }, Validators.required],
       version: [{ value: null, disabled: true }, Validators.required],
       vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
       coberturasSeleccionadas: [[] as ECobertura[]]
     });
 
-    this.s_http.get<Tipo[]>('assets/mediosPago.json').subscribe(data => {
-      this.mediosPago = data;
-    });
-
-    this.s_http.get<any[]>('assets/tipoId.json').subscribe(data => {
-      this.tiposId = data;
-    });
-
-
-    this.s_http.get<Provincia[]>('assets/provincias.json').subscribe(data => {
-      this.provincias = data;
-    });
-
-    this.s_http.get<TipoVehiculo[]>('assets/tiposVehiculo.json').subscribe(data => {
-      this.tiposVehiculo = data;
-    });
-
+    this.s_http.get<Tipo[]>('assets/mediosPago.json').subscribe(d => (this.mediosPago = d));
+    this.s_http.get<TipoId[]>('assets/tipoId.json').subscribe(d => (this.tiposId = d));
+    this.s_http.get<Provincia[]>('assets/provincias.json').subscribe(d => (this.provincias = d));
+    this.s_http.get<TipoVehiculo[]>('assets/tiposVehiculo.json').subscribe(d => (this.tiposVehiculo = d));
   }
 
-      //COmparar clausulas para dar una por defecto.
-     compararClausula(op1: Tipo, op2: Tipo): boolean {
-        return op1?.codigo === op2?.codigo;
-      }
-
-
-
-
-      getMarcasInfoAuto() {
-        getMarcas(this.s_infoauto, this.getTipoVehiculo()).subscribe({
-          next: async (response: Brand[]) => {
-
-            this.marcas = await filterCars(this.s_http,response);
-            this.cdr.detectChanges();
-          },
-          error: (error) => {
-            console.error('Error:', error);
-          },
-        });
-      }
-
-      getGruposPorMarca(brandId: number) {
-        getGrupos(this.s_infoauto, brandId, this.getTipoVehiculo()).subscribe({
-          next: (response) => {
-            console.log(response);
-          this.grupos = response;
-          this.cotizacionForm.get('modelo')?.enable();
-
-          setTimeout(() => this.cdr.detectChanges(), 0);
-
-          },
-          error: (error) => {
-            console.error('Error:', error);
-          },
-        });
-      }
-
-  getModelosPorGrupoYMarca(brandId: number, groupId: number) {
-
-  getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
-    next: (response) => {
-
-      this.modelosTodos = response;
-      console.log(this.modelosTodos);
-      // Extraer años únicos desde los modelos (desde prices_from hasta prices_to)
-      const añosUnicos = new Set<number>();
-
-      response.forEach((modelo:Model) => {
-        const desde = modelo.prices_from ?? 0;
-        const hasta = modelo.prices_to ?? new Date().getFullYear();
-        for (let y = desde; y <= hasta; y++) {
-          añosUnicos.add(y);
-        }
-      });
-
-      this.anios = Array.from(añosUnicos)
-        .sort((a, b) => b - a)
-        .map(year => ({ year } as Year));
-
-      if(this.anios.length>2000){
-        var anios=this.anios.length;
-
-        this.anios=[];
-        //Si no tiene rangos validos le pongo 34 ultimos anios
-        for (let index = 1; index < 34; index++) {
-          var anio :Year = {year:anios};
-          anios--;
-          this.anios.push(anio);
-
-        }
-      }
-      this.cotizacionForm.get('anio')?.enable();
-      this.cotizacionForm.get('version')?.disable();
-      this.modelos = [];
-      this.cotizacionForm.get('version')?.setValue(null);
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('❌ Error modelos por grupo:', error);
-      this.anios = [];
-      this.cotizacionForm.get('anio')?.disable();
-    },
-  });
-}
-
-
-  //subscripciones a form
   private setupValueChanges(): void {
-
-    this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe((tipo) => {
-
-
+    this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe(tipo => {
       if (tipo) {
-
         this.getMarcasInfoAuto();
         this.cotizacionForm.get('uso')?.enable();
         this.cotizacionForm.get('marca')?.enable();
@@ -286,18 +194,17 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
 
-    this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca:number) => {
+    this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca: number) => {
       this.cotizacionForm.get('modelo')?.setValue(null);
       if (idMarca) {
-        this.brand_idSelected=idMarca;
+        this.brand_idSelected = idMarca;
         this.getGruposPorMarca(this.brand_idSelected);
       } else {
         this.cotizacionForm.get('modelo')?.disable();
       }
     });
 
-
-   this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
+    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
       this.cotizacionForm.get('anio')?.setValue(null);
       this.cotizacionForm.get('version')?.disable();
       this.anios = [];
@@ -310,62 +217,117 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
 
+    this.cotizacionForm.get('anio')?.valueChanges.subscribe(anio => {
+      this.cotizacionForm.get('version')?.setValue(null);
 
- this.cotizacionForm.get('anio')?.valueChanges.subscribe((anio) => {
-  this.cotizacionForm.get('version')?.setValue(null);
-
-  if (anio && this.modelosTodos.length > 0) {
-    this.anio = anio;
-
-    this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
-
-
-    this.cotizacionForm.get('version')?.enable();
-  } else {
-    this.modelos = [];
-    this.cotizacionForm.get('version')?.disable();
-  }
-
-  this.cdr.detectChanges();
-});
-
-
-
-    //Para traer codigo de Rivadavia y franquicia federacion.
-    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia:number) =>
-    {
-
-      if (codia) {
-
-      console.log(codia);
-      this.codigoInfoAuto=codia;
-      }
-    });
-
-    this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe((zipCode) => {
-      if (zipCode) {
-        const zipCodeString=String(zipCode);
-        if(zipCodeString.length>=4)
-        this.codigoPostalFederacion=zipCode;
-
-      }
-    });
-
-    this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe((rastreador) => {
-
-      if (rastreador) {
-        this.s_fedPat.getRastreadores().subscribe((rastreadores) => {
-          if (rastreadores) {
-            this.tiposDeRastreadores=rastreadores;
-          }
-        });
+      if (anio && this.modelosTodos.length > 0) {
+        this.anio = anio;
+        this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
+        this.cotizacionForm.get('version')?.enable();
       } else {
+        this.modelos = [];
+        this.cotizacionForm.get('version')?.disable();
+      }
 
+      this.cdr.detectChanges();
+    });
+
+    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia: number) => {
+      if (codia) this.codigoInfoAuto = codia;
+    });
+
+    this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe(zipCode => {
+      if (zipCode && String(zipCode).length >= 4) {
+        this.codigoPostalFederacion = zipCode;
       }
     });
 
+    this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe(r => {
+      if (r) {
+        this.s_fedPat.getRastreadores().subscribe(rastreadores => {
+          if (rastreadores) this.tiposDeRastreadores = rastreadores;
+        });
+      }
+    });
   }
 
+  // ===== Infoauto =====
+  private getMarcasInfoAuto() {
+    getMarcas(this.s_infoauto, this.getTipoVehiculo()).subscribe({
+      next: async (response: Brand[]) => {
+        this.marcas = await filterCars(this.s_http, response);
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Error:', err)
+    });
+  }
+
+  private getGruposPorMarca(brandId: number) {
+    getGrupos(this.s_infoauto, brandId, this.getTipoVehiculo()).subscribe({
+      next: response => {
+        this.grupos = response;
+        this.cotizacionForm.get('modelo')?.enable();
+        setTimeout(() => this.cdr.detectChanges(), 0);
+      },
+      error: err => console.error('Error:', err)
+    });
+  }
+
+  private getModelosPorGrupoYMarca(brandId: number, groupId: number) {
+    getModelos(this.s_infoauto, brandId, groupId, this.getTipoVehiculo()).subscribe({
+      next: response => {
+        this.modelosTodos = response;
+
+        // calcular años
+        const añosUnicos = new Set<number>();
+        response.forEach((m: Model) => {
+          const desde = m.prices_from ?? 0;
+          const hasta = m.prices_to ?? new Date().getFullYear();
+          for (let y = desde; y <= hasta; y++) añosUnicos.add(y);
+        });
+
+        this.anios = Array.from(añosUnicos)
+          .sort((a, b) => b - a)
+          .map(year => ({ year } as Year));
+
+        if (this.anios.length > 2000) {
+          let anios = this.anios.length;
+          this.anios = [];
+          for (let i = 1; i < 34; i++) {
+            this.anios.push({ year: anios } as Year);
+            anios--;
+          }
+        }
+
+        this.cotizacionForm.get('anio')?.enable();
+        this.cotizacionForm.get('version')?.disable();
+        this.modelos = [];
+        this.cotizacionForm.get('version')?.setValue(null);
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error('❌ Error modelos por grupo:', err);
+        this.anios = [];
+        this.cotizacionForm.get('anio')?.disable();
+      }
+    });
+  }
+
+  // ===== Utils =====
+  compararClausula(op1: Tipo, op2: Tipo): boolean {
+    return op1?.codigo === op2?.codigo;
+  }
+
+  private getForm() {
+    return this.cotizacionForm.getRawValue();
+  }
+
+  private getTipoVehiculo() {
+    const form: CotizacionFormValue = this.getForm();
+    return form.tipoVehiculo.nombre;
+  }
+
+  // ===== Cotizaciones =====
   //RIO URUGUAY
     async cotizarRUS() {
       if (!this.productorLog) {
@@ -536,7 +498,7 @@ export class MulticotizadorComponent implements OnInit {
         fila = {
           compania: 'Federación Patronal',
           rc: undefined, b1: undefined, b2: undefined,
-          c: undefined, c1: undefined,
+          c: undefined, c1: undefined,c2:undefined, c3:undefined,
           d1: undefined, d2: undefined, d3: undefined, d4: undefined,
           detallesPorCodigo: {},
           rol2codigo: {},
@@ -570,6 +532,8 @@ export class MulticotizadorComponent implements OnInit {
       if (fila.b2 === undefined && parcial.b2 !== undefined) fila.b2 = parcial.b2;
       if (fila.c  === undefined && parcial.c  !== undefined) fila.c  = parcial.c;
       if (fila.c1 === undefined && parcial.c1 !== undefined) fila.c1 = parcial.c1;
+      if (fila.c2 === undefined && parcial.c2 !== undefined) fila.c2 = parcial.c2;
+      if (fila.c3 === undefined && parcial.c3 !== undefined) fila.c3 = parcial.c3;
 
       // 🔑 3) Guardar todas las variantes de Todo Riesgo
       if (parcial.d1 !== undefined) fila.d1 = parcial.d1;
@@ -644,53 +608,36 @@ export class MulticotizadorComponent implements OnInit {
   }
 
 
-  //Filtros
+  // ===== Filtros =====
   onCoberturaChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const selected = this.cotizacionForm.get('coberturasSeleccionadas')?.value || [];
-
-    if (input.checked) {
-      this.cotizacionForm.patchValue({
-        coberturasSeleccionadas: [...selected, input.value]
-      });
-    } else {
-      this.cotizacionForm.patchValue({
-        coberturasSeleccionadas: selected.filter((id: string) => id !== input.value)
-      });
-    }
+    this.cotizacionForm.patchValue({
+      coberturasSeleccionadas: input.checked
+        ? [...selected, input.value]
+        : selected.filter((id: string) => id !== input.value)
+    });
   }
 
-
-
-  getForm()
-  {
-
-    return this.cotizacionForm.getRawValue();
+  private delay(ms: number): Promise<void> {
+    return new Promise(res => setTimeout(res, ms));
   }
 
-  getTipoVehiculo(){
-    const form:CotizacionFormValue=this.getForm();
-    return form.tipoVehiculo.nombre;
-  }
-
-
+  // ===== Ejecutar cotización =====
   async cotizar() {
     this.form = this.getForm();
-
     const esMoto = this.getTipoVehiculo() == ETipoVehiculo.MOTOVEHICULO;
 
-    // 👉 Federación: secuencial para autos, única para moto
     const tareaFederacion = async () => {
       if (esMoto) {
-        // una sola llamada (el parámetro se ignora para motos)
         await this.cotizarFederacion(sinFranquicia);
       } else {
         await this.cotizarFederacion(franquiciaUnPorCiento);
-        await new Promise(r => setTimeout(r, 200));
+        await this.delay(200);
         await this.cotizarFederacion(franquiciaDosPorCiento);
-        await new Promise(r => setTimeout(r, 200));
+        await this.delay(200);
         await this.cotizarFederacion(franquiciaCuatroPorCiento);
-        await new Promise(r => setTimeout(r, 200));
+        await this.delay(200);
         await this.cotizarFederacion(franquiciaSeisPorCiento);
       }
     };
@@ -701,13 +648,12 @@ export class MulticotizadorComponent implements OnInit {
       () => this.cotizarRUS(),
       () => this.cotizarMercantil(),
       () => this.cotizarATM(),
-      () => this.cotizarDigna(),
+      () => this.cotizarDigna()
     ];
 
     this.s_spinner.show(ESpinner.Rebote);
     try {
-      const promesas = tareas.map(fn => fn());
-      await Promise.allSettled(promesas);
+      await Promise.allSettled(tareas.map(fn => fn()));
       this.cotizaciones.nroCotizacion = getRandomNumber();
     } finally {
       this.s_spinner.hide(ESpinner.Rebote);
@@ -719,8 +665,6 @@ export class MulticotizadorComponent implements OnInit {
         tipoVehiculo: this.getTipoVehiculo(),
         coberturasATM: this.coberturasATM,
         coberturasSeleccionadas: this.form.coberturasSeleccionadas,
-
-        // Datos del vehiculo
         vehiculo: {
           marca: this.marcas.find(m => m.id === this.form.marca)?.name || '',
           modelo: this.grupos.find(g => g.id === this.form.modelo)?.name || '',
@@ -730,6 +674,4 @@ export class MulticotizadorComponent implements OnInit {
       }
     });
   }
-
-
 }
