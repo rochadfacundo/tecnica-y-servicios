@@ -142,9 +142,14 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
     const humanDesc = (item: any): string => {
       if (!item) return '';
-      const raw = stripHtml(item?.descripcionComercial ?? item?.descripcionCasco ?? item?.detalleCoberturaRC ?? '');
-      return `${item?.codigoCasco || item?.codigoRC}: ${raw}`;
+      let raw = stripHtml(item?.descripcionComercial ?? item?.descripcionCasco ?? item?.detalleCoberturaRC ?? '');
+
+      // 🧹 eliminar repeticiones tipo "(T31)" o "(T32)" que ya están en el código
+      raw = raw.replace(/\([A-Z0-9\-]+\)$/i, '').trim();
+
+      return raw;
     };
+
 
     const tipFor = (item?: any) => item ? `${humanDesc(item)} - Ajuste ${item?.ajusteAutomatico || 'N/D'}` : '';
 
@@ -159,9 +164,17 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     }
 
     // helpers
-    const getRC = () => rcItems.find(it =>
-      ['RCA', 'RCA C/GRUA', 'RCA S/GRUA', 'RCM'].includes(norm(it?.codigoRC))
-    );
+    const getRC = () => {
+      // 👉 prioridad a RCA C/GRUA
+      const conGrua = rcItems.find(it => norm(it?.codigoRC) === 'RCA C/GRUA');
+      if (conGrua) return conGrua;
+
+      // fallback a RCA o RCA S/GRUA
+      return rcItems.find(it =>
+        ['RCA','RCA S/GRUA','RCM'].includes(norm(it?.codigoRC))
+      );
+    };
+
     const get = (code: string) => byCode[norm(code)];
 
     // === Roles ===
@@ -176,7 +189,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     const d2It = get('T32'); // 3%
     const d3It = get('T31'); // 5%
     const d4It = get('T37'); // 7%
-    // ❌ T44 ignorado
+    // T44 ignorado
 
     // === mapas ===
     const rol2codigo: Record<string, string> = {};
@@ -217,7 +230,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
       rc:  premio(rcIt),
       b1:  premio(b1It),
       b2:  premio(b2It),
-      c2:   premio(cIt),
+      c2:  premio(cIt),
       c3:  premio(c1It),
       d1:  premio(d1It),
       d2:  premio(d2It),

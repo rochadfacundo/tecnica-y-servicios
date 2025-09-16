@@ -90,11 +90,6 @@ export function construirCotizacionFederacion(
   ajusteAutomatico?: number
 ): Partial<CompaniaCotizada> {
 
-  console.log('🧩 [Federación] Planes recibidos:', planes.map(p => ({
-    codigo: p.codigo,
-    descripcion: p.descripcion,
-    premio: p.premio_total
-  })));
 
   const isMoto = (tipoVehiculo ?? '').toUpperCase() === 'MOTOVEHICULO';
 
@@ -230,10 +225,6 @@ export function construirCotizacionFederacion(
     return fromDesc;
   };
 
-
-  console.log('💰 Premio de C:', premio('c2'), 'con código', rol2codigo.c2);
-  console.log('💰 Premio de CF:', premio('c3'), 'con código', rol2codigo.c3);
-
   const parcial: Partial<CompaniaCotizada> = {
     compania: 'Federación Patronal',
     rc: premio('rc'),
@@ -252,25 +243,6 @@ export function construirCotizacionFederacion(
     rol2codigo,
     rol2tooltip,
   };
-
-
-
-    console.log("⚡ [Federación Patronal] CompaniaCotizada construida:", {
-      rc: parcial.rc,
-      b1: parcial.b1,
-      b2: parcial.b2,
-      c: parcial.c,
-      c1: parcial.c1,
-      c2: parcial.c2,
-      c3: parcial.c3,
-      d1: parcial.d1,
-      d2: parcial.d2,
-      d3: parcial.d3,
-      d4: parcial.d4,
-      rol2codigo,
-      rol2tooltip,
-      detallesPorCodigo
-    });
 
 
   return parcial;

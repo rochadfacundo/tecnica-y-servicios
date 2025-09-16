@@ -223,18 +223,24 @@ export class TablaCotizadoraComponent implements OnInit {
       return tip.trim();
     }
 
-    // Si no, se intenta reconstruir desde detallesPorCodigo
     const code: string | undefined = cot?.rol2codigo?.[rol];
     if (!code) return null;
 
-    const raw = cot?.detallesPorCodigo?.[code]?.descripcion ?? '';
+    let raw = cot?.detallesPorCodigo?.[code]?.descripcion ?? '';
+
+    // 🧹 si la descripción arranca con el mismo código, lo sacamos
+    const regex = new RegExp(`^${code}\\b[:\\s-]*`, 'i');
+    raw = raw.replace(regex, '').trim();
+
     const toSentence = (s?: string) => {
       const t = (s ?? '').trim();
       return t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
     };
+
     const human = toSentence(raw || code);
     return `${code}: ${human}`.trim();
   }
+
 
 
 
