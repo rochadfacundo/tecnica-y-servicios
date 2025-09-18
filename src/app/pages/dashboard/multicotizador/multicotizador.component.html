@@ -184,21 +184,69 @@
  25 MERCANTIL       rio 20
  -->
 
-    <!-- Provincia -->
+      <!-- Provincia -->
     <div class="mb-3">
       <label for="provincia" class="form-label">Provincia</label>
       <select id="provincia" class="form-select" formControlName="provincia">
         <option *ngFor="let provincia of provincias" [ngValue]="provincia">
-         {{ provincia.descripcion }}
+          {{ provincia.descripcion }}
         </option>
       </select>
+    </div>
+
+    <!-- Barrios (solo CABA) -->
+    <div class="mb-3" *ngIf="barrios.length > 0">
+      <label for="barrio" class="form-label">Barrio de CABA</label>
+      <select id="barrio" class="form-select" formControlName="barrio">
+        <option *ngFor="let barrio of barrios" [value]="barrio">{{ barrio }}</option>
+      </select>
+    </div>
+
+    <!-- Zona (solo Buenos Aires) -->
+    <div class="mb-3" *ngIf="cotizacionForm.get('provincia')?.value?.descripcion === 'Buenos Aires'">
+      <label for="zona" class="form-label">Zona</label>
+      <select id="zona" class="form-select" formControlName="zona">
+        <option *ngFor="let zona of zonas" [value]="zona">{{ zona }}</option>
+      </select>
+    </div>
+
+    <!-- Partidos (solo si zona es distinta de Fuera de AMBA) -->
+    <div class="mb-3" *ngIf="partidos.length > 0">
+      <label for="partido" class="form-label">Partido</label>
+      <select id="partido" class="form-select" formControlName="partido">
+        <option *ngFor="let partido of partidos" [value]="partido">{{ partido }}</option>
+      </select>
+    </div>
+
+    <!-- Localidades -->
+    <div class="mb-3" *ngIf="localidades.length > 0">
+      <label for="localidad" class="form-label">Localidad</label>
+      <select id="localidad" class="form-select" formControlName="localidad">
+        <option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}</option>
+      </select>
+    </div>
+
+  <!-- Código Postal -->
+  <div class="mb-3" *ngIf="cpOpciones.length <= 1; else cpSelect">
+    <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
+    <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda" [readonly]="true">
   </div>
 
-    <!-- Código Postal -->
+  <!-- Si hay varias opciones, mostrar select -->
+  <ng-template #cpSelect>
     <div class="mb-3">
-      <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
-      <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda">
+      <select
+      id="cpLocalidadSelect"
+      class="form-select"
+      (change)="onSelectCp($event)">
+      <option *ngFor="let cp of cpOpciones" [value]="cp.cp">
+        {{ cp.cp }} - {{ cp.nombre }}
+      </option>
+    </select>
+
+
     </div>
+  </ng-template>
 
 
     <!-- Vigencia Desde -->
@@ -209,7 +257,7 @@
 
     <!-- Filtro de Coberturas -->
     <div class="m-4">
-      <label class="form-label">Coberturas a elegir</label>
+      <label class="form-label">Coberturas a cotizar</label>
       <div class="d-flex flex-wrap gap-3">
         <div *ngFor="let opcion of opcionesCobertura" class="form-check">
           <input

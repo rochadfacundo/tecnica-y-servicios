@@ -10,7 +10,8 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
   const configMA = productor.companias?.find(c => c.compania === 'MERCANTIL ANDINA');
   const LOCALIDAD:CotizacionLocalidad = {
     codigo_postal: Number(form.cpLocalidadGuarda),
-    provincia: form.provincia.descripcion
+    provincia: form.provincia.descripcion,
+    id: Number(form.inderLocalidad)
   };
   const RASTREADOR=form.rastreador ? 1 : 0;
   const AJUSTE=0;

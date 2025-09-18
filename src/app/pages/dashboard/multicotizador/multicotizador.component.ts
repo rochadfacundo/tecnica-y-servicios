@@ -56,6 +56,9 @@ import { buildFederacionRequest, construirCotizacionFederacion, franquiciaUnPorC
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
 import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
+import { Localidad, Zona } from '../../../interfaces/zonas';
+import { ZonasUtils } from '../../../utils/zonas-utils';
+import { ZonasService } from '../../../services/zonas.service';
 
 
 
@@ -87,7 +90,7 @@ export class MulticotizadorComponent implements OnInit {
   franquicias: Tipo[] = [];
 
   // riv
-  provincias: Provincia[] = [];
+
   grupos: Group[] = [];
   modelos: Model[] = [];
   modelosTodos: Model[] = [];
@@ -112,6 +115,20 @@ export class MulticotizadorComponent implements OnInit {
   public coberturasATM: CotizacionATM[] = [];
   public buildTooltipATM = buildTooltipATM; // usado en template
 
+  //zonas
+  provincias: Provincia[] = [];
+  selectedProvincia: Provincia | null = null;
+  barrios: string[] = [];
+  zonas: string[] = ['Zona Norte', 'Zona Sur', 'Zona Oeste', 'Fuera de AMBA'];
+  localidades: string[] = [];
+  partidos: string[] = [];
+  private zonasUtils: ZonasUtils;
+  cpOpciones: Localidad[] = [];
+
+  //para spinner cp
+  loadingCP = false;
+
+
   // filtro
   opcionesCobertura = opcionesDeCobertura;
 
@@ -129,8 +146,12 @@ export class MulticotizadorComponent implements OnInit {
     @Inject(ToastrService) private s_toast: ToastrService,
     @Inject(HttpClient) private s_http: HttpClient,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private zonasService: ZonasService,
+  ) {
+    this.zonasUtils = new ZonasUtils(zonasService);
+
+  }
 
   async ngOnInit() {
     this.initForm();
@@ -172,84 +193,228 @@ export class MulticotizadorComponent implements OnInit {
       version: [{ value: null, disabled: true }, Validators.required],
       vigenciaDesde: [formatDateSinceYear(new Date()), Validators.required],
       vigenciaHasta: [{ value: null }],
-      coberturasSeleccionadas: [[] as ECobertura[]]
+      coberturasSeleccionadas: [[] as ECobertura[]],
+      zona:"",
+      partido:"",
+      barrio:"",
+      localidad:"",
+      //mercantil
+      inderLocalidad: [''],
+
     });
 
     this.s_http.get<Tipo[]>('assets/mediosPago.json').subscribe(d => (this.mediosPago = d));
     this.s_http.get<TipoId[]>('assets/tipoId.json').subscribe(d => (this.tiposId = d));
     this.s_http.get<Provincia[]>('assets/provincias.json').subscribe(d => (this.provincias = d));
+
+    this.cotizacionForm.get('cpLocalidadGuarda')?.disable();
     this.s_http.get<TipoVehiculo[]>('assets/tiposVehiculo.json').subscribe(d => (this.tiposVehiculo = d));
   }
 
   private setupValueChanges(): void {
-    this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe(tipo => {
-      if (tipo) {
-        this.getMarcasInfoAuto();
-        this.cotizacionForm.get('uso')?.enable();
-        this.cotizacionForm.get('marca')?.enable();
-      } else {
-        this.marcas = [];
-        this.cotizacionForm.get('marca')?.disable();
-        this.cotizacionForm.get('uso')?.disable();
-      }
-    });
+        this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe(tipo => {
+          if (tipo) {
+            this.getMarcasInfoAuto();
+            this.cotizacionForm.get('uso')?.enable();
+            this.cotizacionForm.get('marca')?.enable();
+          } else {
+            this.marcas = [];
+            this.cotizacionForm.get('marca')?.disable();
+            this.cotizacionForm.get('uso')?.disable();
+          }
+        });
 
-    this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca: number) => {
-      this.cotizacionForm.get('modelo')?.setValue(null);
-      if (idMarca) {
-        this.brand_idSelected = idMarca;
-        this.getGruposPorMarca(this.brand_idSelected);
-      } else {
-        this.cotizacionForm.get('modelo')?.disable();
-      }
-    });
+        this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca: number) => {
+          this.cotizacionForm.get('modelo')?.setValue(null);
+          if (idMarca) {
+            this.brand_idSelected = idMarca;
+            this.getGruposPorMarca(this.brand_idSelected);
+          } else {
+            this.cotizacionForm.get('modelo')?.disable();
+          }
+        });
 
-    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
-      this.cotizacionForm.get('anio')?.setValue(null);
-      this.cotizacionForm.get('version')?.disable();
-      this.anios = [];
-      if (idModelo) {
-        this.group_idSelected = idModelo;
-        this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
-      } else {
-        this.modelos = [];
-        this.cotizacionForm.get('anio')?.disable();
-      }
-    });
+        this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
+          this.cotizacionForm.get('anio')?.setValue(null);
+          this.cotizacionForm.get('version')?.disable();
+          this.anios = [];
+          if (idModelo) {
+            this.group_idSelected = idModelo;
+            this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
+          } else {
+            this.modelos = [];
+            this.cotizacionForm.get('anio')?.disable();
+          }
+        });
 
-    this.cotizacionForm.get('anio')?.valueChanges.subscribe(anio => {
-      this.cotizacionForm.get('version')?.setValue(null);
+        this.cotizacionForm.get('anio')?.valueChanges.subscribe(anio => {
+          this.cotizacionForm.get('version')?.setValue(null);
 
-      if (anio && this.modelosTodos.length > 0) {
-        this.anio = anio;
-        this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
-        this.cotizacionForm.get('version')?.enable();
-      } else {
-        this.modelos = [];
-        this.cotizacionForm.get('version')?.disable();
-      }
+          if (anio && this.modelosTodos.length > 0) {
+            this.anio = anio;
+            this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
 
-      this.cdr.detectChanges();
-    });
+            this.cotizacionForm.get('version')?.enable();
+          } else {
+            this.modelos = [];
+            this.cotizacionForm.get('version')?.disable();
+          }
 
-    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia: number) => {
-      if (codia) this.codigoInfoAuto = codia;
-    });
+          this.cdr.detectChanges();
+        });
 
-    this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe(zipCode => {
-      if (zipCode && String(zipCode).length >= 4) {
-        this.codigoPostalFederacion = zipCode;
-      }
-    });
+        this.cotizacionForm.get('version')?.valueChanges.subscribe((codia: number) => {
+          if (codia) this.codigoInfoAuto = codia;
+        });
 
-    this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe(r => {
-      if (r) {
-        this.s_fedPat.getRastreadores().subscribe(rastreadores => {
-          if (rastreadores) this.tiposDeRastreadores = rastreadores;
+        this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe(zipCode => {
+          if (zipCode && String(zipCode).length >= 4) {
+            this.codigoPostalFederacion = zipCode;
+          }
+        });
+
+        this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe(r => {
+          if (r) {
+            this.s_fedPat.getRastreadores().subscribe(rastreadores => {
+              if (rastreadores) this.tiposDeRastreadores = rastreadores;
+            });
+          }
+        });
+
+        // 🔹 Provincia
+        this.cotizacionForm.get('provincia')?.valueChanges.subscribe((prov: Provincia) => {
+          this.barrios = [];
+          this.partidos = [];
+          this.localidades = [];
+
+          // guardamos la provincia seleccionada (con descripcion y enum)
+          this.selectedProvincia = prov ?? null;
+
+          if (prov.descripcion === 'Capital Federal') {
+            this.zonasUtils.getBarriosIfCABA(prov).subscribe(b => this.barrios = b);
+          }
+        });
+      // Cuando cambia la ZONA (Norte/Sur/Oeste)
+      this.cotizacionForm.get('zona')?.valueChanges.subscribe((zonaKey: string) => {
+        this.partidos = [];
+        this.localidades = [];
+
+        if (zonaKey) {
+          this.zonasService.getPartidosByZona(zonaKey as any)
+            .subscribe(p => this.partidos = p);
+        }
+      });
+
+
+      const MSG_CP = 'Obteniendo código postal...';
+
+      //Partidos y fuera del amba
+      this.cotizacionForm.get('partido')?.valueChanges.subscribe(partido => {
+        this.localidades = [];
+
+        if (!partido) return;
+
+        this.zonasUtils.getLocalidadesByZona(partido)
+          .subscribe(localidades => {
+            this.localidades = localidades;
+
+            // 🔹 Si NO hay localidades en el JSON → es Fuera de AMBA → consultamos Mercantil
+            if (this.localidades.length === 0 && this.selectedProvincia?.descripcion === 'Buenos Aires') {
+              this.s_spinner.runWithSpinner(
+                firstValueFrom(
+                  this.s_ma.obtenerLocalidadPorNombre(
+                    partido,
+                    this.selectedProvincia.provinciaRiv
+                  )
+                ),
+                ESpinner.Vaiven,
+                MSG_CP
+              ).then((data: Localidad[] | undefined) => {
+                if (!data) return;
+
+                this.cpOpciones = data;
+
+                if (this.cpOpciones.length === 1) {
+                  this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+                  this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+                } else {
+                  this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+                  this.cotizacionForm.get('inderLocalidad')?.reset();
+                }
+              });
+            }
+          });
+      });
+
+
+    // Barrio (CABA)
+    this.cotizacionForm.get('barrio')?.valueChanges.subscribe(barrio => {
+      if (barrio && this.selectedProvincia) {
+        this.s_spinner.runWithSpinner(
+          firstValueFrom(
+            this.s_ma.obtenerLocalidadPorNombre(
+              `CABA ${barrio}`,
+              this.selectedProvincia.provinciaRiv
+            )
+          ),
+          ESpinner.Vaiven,
+          MSG_CP
+        ).then((data: Localidad[] | undefined) => {
+          if (!data) return;
+
+          this.cpOpciones = data;
+
+          if (this.cpOpciones.length === 1) {
+            this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+            this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+          } else {
+            this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+            this.cotizacionForm.get('inderLocalidad')?.reset();
+          }
         });
       }
     });
+
+    // Localidad (Bs As u otra)
+    this.cotizacionForm.get('localidad')?.valueChanges.subscribe(localidad => {
+      if (localidad && this.selectedProvincia) {
+        this.s_spinner.runWithSpinner(
+          firstValueFrom(
+            this.s_ma.obtenerLocalidadPorNombre(
+              localidad,
+              this.selectedProvincia.provinciaRiv
+            )
+          ),
+          ESpinner.Vaiven,
+          MSG_CP
+        ).then((data: Localidad[] | undefined) => {
+          if (!data) return;
+
+          this.cpOpciones = data;
+
+          if (this.cpOpciones.length === 1) {
+            this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+            this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+          } else {
+            this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+            this.cotizacionForm.get('inderLocalidad')?.reset();
+          }
+        });
+      }
+    });
+
+
   }
+
+  onSelectCp(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    const match = this.cpOpciones.find(c => String(c.cp) === String(value));
+    if (match) {
+      this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(match.cp);
+      this.cotizacionForm.get('inderLocalidad')?.setValue(match.id);
+    }
+  }
+
 
   // ===== Infoauto =====
   private getMarcasInfoAuto() {
@@ -360,13 +525,15 @@ export class MulticotizadorComponent implements OnInit {
       return;
     }
 
-    const cotizacionData = buildMercantilRequest(
-      this.form,
-      this.codigoInfoAuto,
-      this.productorLog
-    );
 
-    try {
+  try {
+      const cotizacionData = buildMercantilRequest(
+        this.form,
+        this.codigoInfoAuto,
+        this.productorLog
+      );
+
+
       const observable$ = this.s_ma.cotizar(cotizacionData);
       const respuesta = await firstValueFrom(observable$);
 
@@ -587,7 +754,7 @@ export class MulticotizadorComponent implements OnInit {
 
     try {
       const respuesta = await firstValueFrom(this.s_ATM.cotizarATM(xmlAtm, this.productorLog));
-      console.log(respuesta);
+      //console.log(respuesta);  //en crudo
       console.log('✅ Cotización exitosa ATM');
 
       const resultado = parsearXML(respuesta);

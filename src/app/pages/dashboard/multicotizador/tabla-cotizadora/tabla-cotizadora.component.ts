@@ -228,7 +228,7 @@ export class TablaCotizadoraComponent implements OnInit {
 
     let raw = cot?.detallesPorCodigo?.[code]?.descripcion ?? '';
 
-    // 🧹 si la descripción arranca con el mismo código, lo sacamos
+    // 🧹 si la descripción arranca con el mismo código, lo saco
     const regex = new RegExp(`^${code}\\b[:\\s-]*`, 'i');
     raw = raw.replace(regex, '').trim();
 

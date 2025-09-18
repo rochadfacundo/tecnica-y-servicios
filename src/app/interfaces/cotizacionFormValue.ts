@@ -24,6 +24,9 @@ export interface CotizacionFormValue {
   tallerExclusivo?:boolean;
   grua?:boolean;
 
+  //mercantil
+  inderLocalidad: number;
+
   //rivadavia
   provincia:Provincia;
   tipoVehiculo: TipoVehiculo;
