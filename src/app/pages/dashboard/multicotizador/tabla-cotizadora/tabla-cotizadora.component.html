@@ -25,6 +25,15 @@
 
     <tbody class="fs-5">
 
+      <!-- Fila Suma Asegurada -->
+      <tr  class="suma-asegurada-row">
+        <td class="fw-bold">Suma Asegurada</td>
+        <td *ngFor="let cot of companiasConDatos()">
+          {{ cot.sumaAsegurada ? ('$' + cot.sumaAsegurada.toLocaleString('es-AR')) : '-' }}
+        </td>
+      </tr>
+
+
       <!-- ====== AUTOS ====== -->
       <ng-container *ngIf="tipoVehiculo === 'VEHICULO'; else cuerpoMoto">
 

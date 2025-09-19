@@ -11,6 +11,8 @@ import { Productor } from "../../../../models/productor.model";
 import { CodigosPersoneria } from "../../../../utils/utils";
 import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 import { ETipoVehiculo } from "../../../../enums/tipoVehiculos";
+import { ECompania } from "../../../../enums/Ecompania";
+import { Compania } from "../../../../interfaces/compania";
 
 /** Cache en memoria de códigos->descripción de planes Rivadavia (assets/planesRivadavia.json) */
 let __planesRivadaviaCache: Record<string, string> | null = null;
@@ -18,6 +20,13 @@ let __planesRivadaviaCache: Record<string, string> | null = null;
 type PlanJson = { codigo: string; descripcion: string };
 
 const norm = (s?: string) => (s ?? "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toUpperCase().trim();
+
+
+export function getCompaniaRivadavia(productor: Productor): Compania | undefined {
+  return productor?.companias?.find(
+    (c) => c.compania === ECompania.RIVADAVIA
+  );
+}
 
 /** Carga y cachea el mapa { CODIGO_NORMALIZADO -> descripcion } desde assets */
 async function loadPlanesRivadaviaMap(): Promise<Record<string, string>> {
@@ -126,7 +135,7 @@ function calcularFechaHastaPorTipoFacturacion(desde: string, tipoFacturacion?: s
  */
 export async function construirCotizacionRivadavia(
   planes: any[],
-  _tipoVehiculo?: ETipoVehiculo // reservado por si más adelante lo usás
+  sumaAsegurada?:number
 ): Promise<CompaniaCotizada> {
   const descMap = await loadPlanesRivadaviaMap();
 
@@ -207,7 +216,7 @@ export async function construirCotizacionRivadavia(
   const fila: CompaniaCotizada = {
     compania: "Rivadavia",
     rc, b1, b2, c, c1, c2, c3,
-    d1, d2, d3,
+    d1, d2, d3,sumaAsegurada
   };
 
   // === rol -> código real que devolvió la compañía ===
@@ -254,3 +263,4 @@ export async function construirCotizacionRivadavia(
 
   return fila;
 }
+

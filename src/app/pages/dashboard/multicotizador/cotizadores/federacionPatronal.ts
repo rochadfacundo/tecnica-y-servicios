@@ -88,7 +88,7 @@ export function construirCotizacionFederacion(
   franquicia?: number,
   tipoVehiculo?: 'VEHICULO' | 'MOTOVEHICULO' | string,
   ajusteAutomatico?: number,
-  sumaAsegurada?: number
+  suma?: number
 ): Partial<CompaniaCotizada> {
 
 
@@ -228,7 +228,7 @@ export function construirCotizacionFederacion(
 
   const parcial: Partial<CompaniaCotizada> = {
     compania: 'Federación Patronal',
-    sumaAsegurada: sumaAsegurada,
+    sumaAsegurada: suma,
     rc: premio('rc'),
     b1: premio('b1'),
     b2: premio('b2'),

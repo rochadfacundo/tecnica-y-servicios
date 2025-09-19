@@ -10,5 +10,17 @@
   color: #ffffff !important;           /* Letras blancas */
 }
 
+/* Estilo especial para la fila de Suma Asegurada */
+.suma-asegurada-row td {
+  background-color: #f8f9fa !important; /* gris clarito */
+  font-weight: 500; /* semi-bold */
+  font-size: 0.95em; /* apenas más chico */
+  color: #333; /* gris oscuro */
+}
+.suma-asegurada-row td:first-child {
+  font-weight: 600; /* más fuerte en la primera celda */
+  color: #222;
+}
+
 
 

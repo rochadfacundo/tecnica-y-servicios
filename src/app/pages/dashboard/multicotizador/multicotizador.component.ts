@@ -56,11 +56,12 @@ import { buildATMRequest, buildTooltipATM, construirCotizacionATM, parsearXML } 
 import { buildRusRequest, construirCotizacionRus } from './cotizadores/rioUruguay';
 import { buildFederacionRequest, construirCotizacionFederacion, franquiciaUnPorCiento, franquiciaCuatroPorCiento, franquiciaDosPorCiento, franquiciaSeisPorCiento, sinFranquicia } from './cotizadores/federacionPatronal';
 import { buildMercantilRequest, construirCotizacionMercantil } from './cotizadores/mercantilAndina';
-import { buildRivadaviaRequest, construirCotizacionRivadavia } from './cotizadores/rivadavia';
+import { buildRivadaviaRequest, construirCotizacionRivadavia, getCompaniaRivadavia } from './cotizadores/rivadavia';
 import { getGrupos, getMarcas, getModelos } from './cotizadores/infoauto';
 import { Localidad, Zona } from '../../../interfaces/zonas';
 import { ZonasUtils } from '../../../utils/zonas-utils';
 import { ZonasService } from '../../../services/zonas.service';
+import { ECompania } from '../../../enums/Ecompania';
 
 
 
@@ -641,42 +642,52 @@ export class MulticotizadorComponent implements OnInit {
       return;
     }
 
-
-    const cotizacion: DatosCotizacionRivadavia = buildRivadaviaRequest(
-      this.form,
-      this.codigoInfoAuto,
-      this.productorLog,
-      this.getCodigoPostal()
-    );
+    // 👉 Buscar la compañía RIVADAVIA en el productor logueado
+    const companiaRiv = getCompaniaRivadavia(this.productorLog);
+    if (!companiaRiv) {
+      console.error('❌ El productor no tiene datos para RIVADAVIA');
+      return;
+    }
 
     try {
-      const observable$ = this.s_riv.cotizarRivadavia(cotizacion,this.getTipoVehiculo());
+      // 👉 Construir request de cotización
+      const cotizacion: DatosCotizacionRivadavia = buildRivadaviaRequest(
+        this.form,
+        this.codigoInfoAuto,
+        this.productorLog,
+        this.getCodigoPostal()
+      );
+
+      // 👉 Llamar a servicio de cotización
+      const observable$ = this.s_riv.cotizarRivadavia(cotizacion, this.getTipoVehiculo());
       const respuesta = await firstValueFrom(observable$);
 
       console.log('✅ Cotización exitosa Rivadavia:', respuesta);
-      const cotizacionRivadavia = await construirCotizacionRivadavia(respuesta.coberturas);
-      console.log(cotizacionRivadavia);
+
+      // 👉 Construir compañía cotizada (con suma asegurada incluida)
+      const cotizacionRivadavia = await construirCotizacionRivadavia(
+        respuesta.resultado.coberturas,
+        respuesta.resultado.sumaAsegurada
+      );
+
+
+      // 👉 Guardar en la lista de compañías cotizadas
       this.cotizaciones.companiasCotizadas.push(cotizacionRivadavia);
 
     } catch (error: any) {
-      console.log('❌ Rivadavia error bruto:', error);
+      console.error('❌ Rivadavia error bruto:', error);
 
       // El backend envía: { message: { code, message, fieldErrors[] } }
       const mObj = error?.error?.message;
-
       let msg: string;
 
       if (mObj && typeof mObj === 'object') {
         const base = mObj.message || 'Error de validación';
         const detalles = Array.isArray(mObj.fieldErrors)
-          ? mObj.fieldErrors
-              .map((e: any) => `${e.field}: ${e.message}`)
-              .join(' · ')
+          ? mObj.fieldErrors.map((e: any) => `${e.field}: ${e.message}`).join(' · ')
           : '';
-
         msg = detalles ? `${base}: ${detalles}` : base;
       } else {
-        // otros casos (string o HttpErrorResponse.message)
         msg =
           (typeof mObj === 'string' && mObj) ||
           error?.message ||
@@ -686,10 +697,8 @@ export class MulticotizadorComponent implements OnInit {
       this.s_toast.error(msg, 'Error al cotizar en Rivadavia');
       console.error('❌ Error principal:', msg);
     }
-
-
-
   }
+
 
   //Federacion patronal
 
@@ -747,7 +756,7 @@ export class MulticotizadorComponent implements OnInit {
         fila = {
           compania: 'Federación Patronal',
           rc: undefined, b1: undefined, b2: undefined,
-          c: undefined, c1: undefined,c2:undefined, c3:undefined,
+          c: undefined, c1: undefined, c2: undefined, c3: undefined,
           d1: undefined, d2: undefined, d3: undefined, d4: undefined,
           detallesPorCodigo: {},
           rol2codigo: {},
@@ -775,7 +784,7 @@ export class MulticotizadorComponent implements OnInit {
         ...(parcial.detalles || {})
       };
 
-      // 🔑 2) Solo completar comunes si aún no están
+      // 🔑 2b) Solo completar comunes si aún no están
       if (fila.rc === undefined && parcial.rc !== undefined) fila.rc = parcial.rc;
       if (fila.b1 === undefined && parcial.b1 !== undefined) fila.b1 = parcial.b1;
       if (fila.b2 === undefined && parcial.b2 !== undefined) fila.b2 = parcial.b2;
@@ -789,6 +798,11 @@ export class MulticotizadorComponent implements OnInit {
       if (parcial.d2 !== undefined) fila.d2 = parcial.d2;
       if (parcial.d3 !== undefined) fila.d3 = parcial.d3;
       if (parcial.d4 !== undefined) fila.d4 = parcial.d4;
+
+      // 🔑 4) Guardar suma asegurada
+      if (parcial.sumaAsegurada !== undefined) {
+        fila.sumaAsegurada = parcial.sumaAsegurada;
+      }
 
     } catch (error: any) {
       console.error('❌ Error en cotización Federación:', error);
@@ -816,6 +830,7 @@ export class MulticotizadorComponent implements OnInit {
       console.error('❌ Error principal:', msg);
     }
   }
+
 
 
 
@@ -873,7 +888,7 @@ export class MulticotizadorComponent implements OnInit {
     return new Promise(res => setTimeout(res, ms));
   }
 
-  // ===== Ejecutar cotización =====
+  // ===== Ejecutar cotizaciones =====
   async cotizar() {
     this.form = this.getForm();
     const esMoto = this.getTipoVehiculo() == ETipoVehiculo.MOTOVEHICULO;
@@ -886,9 +901,6 @@ export class MulticotizadorComponent implements OnInit {
 
 
     this.codigoPostalFederacion = cp;
-
-    console.log(this.codigoPostalFederacion);
-
 
     const tareaFederacion = async () => {
       if (esMoto) {

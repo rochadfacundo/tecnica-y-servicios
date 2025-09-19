@@ -308,35 +308,55 @@ export class TablaCotizadoraComponent implements OnInit {
       this.s_toast.error('No hay cotizaciones cargadas', 'Error al exportar');
       return;
     }
+
     const pdf = new jsPDF('l', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const nro = this.cotizaciones?.nroCotizacion ?? 'SIN_NUMERO';
     const apellido = this.user?.apellido ?? 'APELLIDO';
     const nombre = this.user?.nombre ?? 'NOMBRE';
     const fecha = new Date().toLocaleDateString('es-AR');
+
+    // === Encabezado ===
     pdf.setFontSize(18);
     pdf.setFont('helvetica', 'bold');
     const titulo = `Cotización Nº ${nro}`;
     const textWidth = pdf.getTextWidth(titulo);
     pdf.text(titulo, (pageWidth - textWidth) / 2, 20);
+
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
     pdf.text(`Productor: ${apellido}, ${nombre}`, 14, 30);
     pdf.text(`Fecha: ${fecha}`, pageWidth - 60, 30);
 
+    // === Cuerpo de la tabla ===
     const body: (string | CellDef)[][] = [];
-    const getTextoCelda = (cot: any, rol: 'rc'|'b1'|'b2'|'c1'|'c2'|'c3'|'c4'|'d1'|'d2'|'d3'|'d4', compania: string, importe: any): string => {
+
+    // 👉 Fila de suma asegurada
+    body.push([
+      { content: 'Suma Asegurada', rowSpan: 1, styles: { valign: 'middle', fontStyle: 'bold' } },
+      ...this.companiasConDatos().map(c =>
+        c.sumaAsegurada ? `$${c.sumaAsegurada.toLocaleString('es-AR')}` : '-'
+      )
+    ]);
+
+    const getTextoCelda = (
+      cot: any,
+      rol: 'rc'|'b1'|'b2'|'c1'|'c2'|'c3'|'c4'|'d1'|'d2'|'d3'|'d4',
+      compania: string,
+      importe: any
+    ): string => {
       const importeTxt = this.getTextoImportePDF(compania, importe, rol, cot);
       let desc: string | null = null;
+
       if (this.canonCompania(compania) === 'ATM') {
         switch (rol) {
           case 'rc':  desc = this.tooltipATM(['A0']); break;
           case 'b1':  desc = this.tooltipATM(['B1']); break;
           case 'b2':  desc = this.tooltipATM(['B0','B2']); break;
-          case 'c1':  desc = this.tooltipATM(['C0','C0-BASICA','B2']); break; // ✅ C0
-          case 'c2':  desc = this.tooltipATM(['C3','C3-MEDIA']); break;       // ✅ C3
-          case 'c3':  desc = this.tooltipATM(['C2','C2-MEDIA']); break;       // ✅ C2
-          case 'c4':  desc = this.tooltipATM(['C4','C4-MEDIA']); break;       // ✅ C4
+          case 'c1':  desc = this.tooltipATM(['C0','C0-BASICA','B2']); break;
+          case 'c2':  desc = this.tooltipATM(['C3','C3-MEDIA']); break;
+          case 'c3':  desc = this.tooltipATM(['C2','C2-MEDIA']); break;
+          case 'c4':  desc = this.tooltipATM(['C4','C4-MEDIA']); break;
           case 'd1':  desc = this.tooltipATM(['D1','D2','C']); break;
           case 'd2':  desc = this.tooltipATM(['D3']); break;
           case 'd3':  desc = this.tooltipATM(['D4']); break;
@@ -348,12 +368,14 @@ export class TablaCotizadoraComponent implements OnInit {
       return desc ? `${importeTxt}\n${desc}` : importeTxt;
     };
 
+    // === Resto de filas ===
     if (this.mostrarRC()) {
       body.push([
         { content: 'Responsabilidad Civil', rowSpan: 1, styles: { valign: 'middle' } },
         ...this.companiasConDatos().map(c => getTextoCelda(c, 'rc', c.compania, c.rc))
       ]);
     }
+
     if (this.mostrarRobo()) {
       body.push([
         { content: 'Robo', rowSpan: 2, styles: { valign: 'middle' } },
@@ -361,6 +383,7 @@ export class TablaCotizadoraComponent implements OnInit {
       ]);
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'b2', c.compania, c.b2)));
     }
+
     if (this.mostrarTerceros()) {
       body.push([
         { content: 'Terceros', rowSpan: 4, styles: { valign: 'middle' } },
@@ -370,6 +393,7 @@ export class TablaCotizadoraComponent implements OnInit {
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c3', c.compania, c.c3)));
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'c4', c.compania, c.c4)));
     }
+
     if (this.mostrarTodoRiesgo()) {
       body.push([
         { content: 'Todo Riesgo', rowSpan: 4, styles: { valign: 'middle' } },
@@ -380,6 +404,7 @@ export class TablaCotizadoraComponent implements OnInit {
       body.push(this.companiasConDatos().map(c => getTextoCelda(c, 'd4', c.compania, c.d4)));
     }
 
+    // === Render de tabla ===
     autoTable(pdf, {
       head: [['Cobertura', ...this.companiasConDatos().map(c => c.compania)]],
       body,
@@ -400,6 +425,7 @@ export class TablaCotizadoraComponent implements OnInit {
       },
     });
 
+    // === Datos del vehículo ===
     if (this.vehiculo) {
       const startY = (pdf as any).lastAutoTable.finalY + 10;
       pdf.setFontSize(12);
@@ -416,6 +442,7 @@ export class TablaCotizadoraComponent implements OnInit {
     const nombreArchivo = `Cotizacion_${nro}_${apellido}_${nombre}.pdf`.replace(/\s+/g, '_');
     pdf.save(nombreArchivo);
   }
+
 
 
 
