@@ -42,6 +42,9 @@ export class MercantilAndinaService {
     });
   }
 
+  obtenerLocalidadPorCp(cp: number): Observable<any> {
+    return this.http.get(`${this.API_URL}/localidades/cp/${cp}`);
+  }
 
   cotizar(data: CotizacionMercantil): Observable<any> {
  console.log("📩 Enviando a la API MA: ", JSON.stringify(data, null, 2));

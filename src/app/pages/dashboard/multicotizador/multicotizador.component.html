@@ -194,6 +194,7 @@
       </select>
     </div>
 
+
     <!-- Barrios (solo CABA) -->
     <div class="mb-3" *ngIf="barrios.length > 0">
       <label for="barrio" class="form-label">Barrio de CABA</label>
@@ -225,28 +226,39 @@
         <option *ngFor="let localidad of localidades" [value]="localidad">{{ localidad }}</option>
       </select>
     </div>
+      <!-- Código Postal -->
+      <!-- Código Postal (Capital Federal o Buenos Aires) -->
+      <div *ngIf="selectedProvincia?.descripcion === 'Capital Federal'
+              || selectedProvincia?.descripcion === 'Buenos Aires'">
 
-  <!-- Código Postal -->
-  <div class="mb-3" *ngIf="cpOpciones.length <= 1; else cpSelect">
-    <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
-    <input type="number" id="cpLocalidadGuarda" class="form-control" formControlName="cpLocalidadGuarda" [readonly]="true">
-  </div>
+        <!-- Si hay una sola opción -->
+        <div class="mb-3" *ngIf="cpOpciones.length <= 1; else cpSelect">
+          <label for="cpLocalidadGuarda" class="form-label">Código Postal</label>
+          <input type="number" id="cpLocalidadGuarda" class="form-control"
+                formControlName="cpLocalidadGuarda" [readonly]="true">
+        </div>
 
-  <!-- Si hay varias opciones, mostrar select -->
-  <ng-template #cpSelect>
-    <div class="mb-3">
-      <select
-      id="cpLocalidadSelect"
-      class="form-select"
-      (change)="onSelectCp($event)">
-      <option *ngFor="let cp of cpOpciones" [value]="cp.cp">
-        {{ cp.cp }} - {{ cp.nombre }}
-      </option>
-    </select>
+        <!-- Si hay varias opciones -->
+        <ng-template #cpSelect>
+          <div class="mb-3">
+            <label for="cpLocalidadSelect" class="form-label">Código Postal</label>
+            <select id="cpLocalidadSelect" class="form-select" (change)="onSelectCp($event)">
+              <option *ngFor="let cp of cpOpciones" [value]="cp.cp">
+                {{ cp.cp }} - {{ cp.nombre }}
+              </option>
+            </select>
+          </div>
+        </ng-template>
+      </div>
 
-
-    </div>
-  </ng-template>
+      <!-- Código Postal manual (otras provincias) -->
+      <div class="mb-3"
+          *ngIf="selectedProvincia
+                  && selectedProvincia.descripcion !== 'Buenos Aires'
+                  && selectedProvincia.descripcion !== 'Capital Federal'">
+        <label for="cpManual" class="form-label">Código Postal</label>
+        <input type="number" id="cpManual" class="form-control" formControlName="cpManual">
+      </div>
 
 
     <!-- Vigencia Desde -->

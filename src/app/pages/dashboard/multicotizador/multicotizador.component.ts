@@ -45,7 +45,9 @@ import { ESpinner } from '../../../enums/ESpinner';
 // Utils
 import {
   downloadJSON, filterCars, formatDateSinceYear,
-  getRandomNumber, opcionesDeCobertura
+  getRandomNumber, opcionesDeCobertura,
+  ordenarPorNombre,
+  ordenarStrings
 } from '../../../utils/utils';
 import { filtrarModelosPorAnio, OPCIONES_SI_NO } from '../../../utils/formOptions';
 
@@ -171,7 +173,6 @@ export class MulticotizadorComponent implements OnInit {
       clausulaAjuste: [{ value: { codigo: 10, descripcion: '10%' }, disabled: true }],
       condicionFiscal: [{ id: 0, descripcion: '' }, Validators.required],
       controlSatelital: false,
-      cpLocalidadGuarda: [{ value: null }, Validators.required],
       descuentoComision: 0,
       franquicia: [],
       tieneGnc: false,
@@ -200,6 +201,8 @@ export class MulticotizadorComponent implements OnInit {
       localidad:"",
       //mercantil
       inderLocalidad: [''],
+      cpManual: [null],
+      cpLocalidadGuarda: [{ value: null}],
 
     });
 
@@ -207,204 +210,266 @@ export class MulticotizadorComponent implements OnInit {
     this.s_http.get<TipoId[]>('assets/tipoId.json').subscribe(d => (this.tiposId = d));
     this.s_http.get<Provincia[]>('assets/provincias.json').subscribe(d => (this.provincias = d));
 
-    this.cotizacionForm.get('cpLocalidadGuarda')?.disable();
+    //this.cotizacionForm.get('cpLocalidadGuarda')?.disable();
     this.s_http.get<TipoVehiculo[]>('assets/tiposVehiculo.json').subscribe(d => (this.tiposVehiculo = d));
   }
 
   private setupValueChanges(): void {
-        this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe(tipo => {
-          if (tipo) {
-            this.getMarcasInfoAuto();
-            this.cotizacionForm.get('uso')?.enable();
-            this.cotizacionForm.get('marca')?.enable();
-          } else {
-            this.marcas = [];
-            this.cotizacionForm.get('marca')?.disable();
-            this.cotizacionForm.get('uso')?.disable();
-          }
-        });
+    this.cotizacionForm.get('tipoVehiculo')?.valueChanges.subscribe(tipo => {
+      if (tipo) {
+        this.getMarcasInfoAuto();
+        this.cotizacionForm.get('uso')?.enable();
+        this.cotizacionForm.get('marca')?.enable();
+      } else {
+        this.marcas = [];
+        this.cotizacionForm.get('marca')?.disable();
+        this.cotizacionForm.get('uso')?.disable();
+      }
+    });
 
-        this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca: number) => {
-          this.cotizacionForm.get('modelo')?.setValue(null);
-          if (idMarca) {
-            this.brand_idSelected = idMarca;
-            this.getGruposPorMarca(this.brand_idSelected);
-          } else {
-            this.cotizacionForm.get('modelo')?.disable();
-          }
-        });
+    this.cotizacionForm.get('marca')?.valueChanges.subscribe((idMarca: number) => {
+      this.cotizacionForm.get('modelo')?.setValue(null);
+      if (idMarca) {
+        this.brand_idSelected = idMarca;
+        this.getGruposPorMarca(this.brand_idSelected);
+      } else {
+        this.cotizacionForm.get('modelo')?.disable();
+      }
+    });
 
-        this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
-          this.cotizacionForm.get('anio')?.setValue(null);
-          this.cotizacionForm.get('version')?.disable();
-          this.anios = [];
-          if (idModelo) {
-            this.group_idSelected = idModelo;
-            this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
-          } else {
-            this.modelos = [];
-            this.cotizacionForm.get('anio')?.disable();
-          }
-        });
+    this.cotizacionForm.get('modelo')?.valueChanges.subscribe((idModelo: number) => {
+      this.cotizacionForm.get('anio')?.setValue(null);
+      this.cotizacionForm.get('version')?.disable();
+      this.anios = [];
+      if (idModelo) {
+        this.group_idSelected = idModelo;
+        this.getModelosPorGrupoYMarca(this.brand_idSelected, this.group_idSelected);
+      } else {
+        this.modelos = [];
+        this.cotizacionForm.get('anio')?.disable();
+      }
+    });
 
-        this.cotizacionForm.get('anio')?.valueChanges.subscribe(anio => {
-          this.cotizacionForm.get('version')?.setValue(null);
+    this.cotizacionForm.get('anio')?.valueChanges.subscribe(anio => {
+      this.cotizacionForm.get('version')?.setValue(null);
 
-          if (anio && this.modelosTodos.length > 0) {
-            this.anio = anio;
-            this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
+      if (anio && this.modelosTodos.length > 0) {
+        this.anio = anio;
+        this.modelos = filtrarModelosPorAnio(this.modelosTodos, this.anio);
 
-            this.cotizacionForm.get('version')?.enable();
-          } else {
-            this.modelos = [];
-            this.cotizacionForm.get('version')?.disable();
-          }
+        this.cotizacionForm.get('version')?.enable();
+      } else {
+        this.modelos = [];
+        this.cotizacionForm.get('version')?.disable();
+      }
 
-          this.cdr.detectChanges();
-        });
+      this.cdr.detectChanges();
+    });
 
-        this.cotizacionForm.get('version')?.valueChanges.subscribe((codia: number) => {
-          if (codia) this.codigoInfoAuto = codia;
-        });
+    this.cotizacionForm.get('version')?.valueChanges.subscribe((codia: number) => {
+      if (codia) this.codigoInfoAuto = codia;
+    });
 
-        this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe(zipCode => {
-          if (zipCode && String(zipCode).length >= 4) {
-            this.codigoPostalFederacion = zipCode;
-          }
-        });
+    this.cotizacionForm.get('cpLocalidadGuarda')?.valueChanges.subscribe(zipCode => {
+      if (zipCode && String(zipCode).length >= 4) {
+        this.codigoPostalFederacion = zipCode;
+      }
+    });
 
-        this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe(r => {
-          if (r) {
-            this.s_fedPat.getRastreadores().subscribe(rastreadores => {
-              if (rastreadores) this.tiposDeRastreadores = rastreadores;
-            });
-          }
-        });
-
-        // 🔹 Provincia
-        this.cotizacionForm.get('provincia')?.valueChanges.subscribe((prov: Provincia) => {
-          this.barrios = [];
-          this.partidos = [];
-          this.localidades = [];
-
-          // guardamos la provincia seleccionada (con descripcion y enum)
-          this.selectedProvincia = prov ?? null;
-
-          if (prov.descripcion === 'Capital Federal') {
-            this.zonasUtils.getBarriosIfCABA(prov).subscribe(b => this.barrios = b);
-          }
-        });
-      // Cuando cambia la ZONA (Norte/Sur/Oeste)
-      this.cotizacionForm.get('zona')?.valueChanges.subscribe((zonaKey: string) => {
-        this.partidos = [];
-        this.localidades = [];
-
-        if (zonaKey) {
-          this.zonasService.getPartidosByZona(zonaKey as any)
-            .subscribe(p => this.partidos = p);
-        }
-      });
-
-
-      const MSG_CP = 'Obteniendo código postal...';
-
-      //Partidos y fuera del amba
-      this.cotizacionForm.get('partido')?.valueChanges.subscribe(partido => {
-        this.localidades = [];
-
-        if (!partido) return;
-
-        this.zonasUtils.getLocalidadesByZona(partido)
-          .subscribe(localidades => {
-            this.localidades = localidades;
-
-            // 🔹 Si NO hay localidades en el JSON → es Fuera de AMBA → consultamos Mercantil
-            if (this.localidades.length === 0 && this.selectedProvincia?.descripcion === 'Buenos Aires') {
-              this.s_spinner.runWithSpinner(
-                firstValueFrom(
-                  this.s_ma.obtenerLocalidadPorNombre(
-                    partido,
-                    this.selectedProvincia.provinciaRiv
-                  )
-                ),
-                ESpinner.Vaiven,
-                MSG_CP
-              ).then((data: Localidad[] | undefined) => {
-                if (!data) return;
-
-                this.cpOpciones = data;
-
-                if (this.cpOpciones.length === 1) {
-                  this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
-                  this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
-                } else {
-                  this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
-                  this.cotizacionForm.get('inderLocalidad')?.reset();
-                }
-              });
-            }
-          });
-      });
-
-
-    // Barrio (CABA)
-    this.cotizacionForm.get('barrio')?.valueChanges.subscribe(barrio => {
-      if (barrio && this.selectedProvincia) {
-        this.s_spinner.runWithSpinner(
-          firstValueFrom(
-            this.s_ma.obtenerLocalidadPorNombre(
-              `CABA ${barrio}`,
-              this.selectedProvincia.provinciaRiv
-            )
-          ),
-          ESpinner.Vaiven,
-          MSG_CP
-        ).then((data: Localidad[] | undefined) => {
-          if (!data) return;
-
-          this.cpOpciones = data;
-
-          if (this.cpOpciones.length === 1) {
-            this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
-            this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
-          } else {
-            this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
-            this.cotizacionForm.get('inderLocalidad')?.reset();
-          }
+    this.cotizacionForm.get('tieneRastreador')?.valueChanges.subscribe(r => {
+      if (r) {
+        this.s_fedPat.getRastreadores().subscribe(rastreadores => {
+          if (rastreadores) this.tiposDeRastreadores = rastreadores;
         });
       }
     });
 
-    // Localidad (Bs As u otra)
+    // 🔹 Provincia
+    this.cotizacionForm.get('provincia')?.valueChanges.subscribe((prov: Provincia) => {
+      this.barrios = [];
+      this.partidos = [];
+      this.localidades = [];
+      this.cpOpciones = [];
+      this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+      this.cotizacionForm.get('inderLocalidad')?.reset();
+      this.cotizacionForm.get('cpManual')?.reset();
+
+      this.selectedProvincia = prov ?? null;
+
+      if (prov?.descripcion === 'Capital Federal') {
+        this.zonasUtils.getBarriosIfCABA(prov).subscribe(b => (this.barrios = b));
+      }
+
+      const cpManualCtrl = this.cotizacionForm.get('cpManual');
+      const cpLocalidadCtrl = this.cotizacionForm.get('cpLocalidadGuarda');
+
+      if (prov?.descripcion === 'Buenos Aires' || prov?.descripcion === 'Capital Federal') {
+        // 👉 solo se usa cpLocalidadGuarda
+        cpLocalidadCtrl?.setValidators([Validators.required]);
+        cpLocalidadCtrl?.disable();
+        cpManualCtrl?.clearValidators();
+        cpManualCtrl?.disable();
+      } else {
+        // 👉 solo se usa cpManual
+        cpManualCtrl?.setValidators([Validators.required]);
+        cpManualCtrl?.enable();
+        cpLocalidadCtrl?.clearValidators();
+        cpLocalidadCtrl?.disable();
+      }
+
+      cpManualCtrl?.updateValueAndValidity();
+      cpLocalidadCtrl?.updateValueAndValidity();
+    });
+
+    // Cuando cambia la ZONA (Norte/Sur/Oeste)
+    this.cotizacionForm.get('zona')?.valueChanges.subscribe((zonaKey: string) => {
+      this.partidos = [];
+      this.localidades = [];
+
+      if (zonaKey) {
+        this.zonasService.getPartidosByZona(zonaKey as any).subscribe(p => (this.partidos = p));
+      }
+    });
+
+    const MSG_CP = 'Obteniendo código postal...';
+
+    // ================== PARTIDO ==================
+    this.cotizacionForm.get('partido')?.valueChanges.subscribe(partido => {
+      this.localidades = [];
+      if (!partido) return;
+
+      this.zonasUtils.getLocalidadesByZona(partido).subscribe(localidades => {
+        this.localidades = ordenarStrings(localidades);
+
+        if (
+          this.localidades.length === 0 &&
+          this.selectedProvincia?.descripcion === 'Buenos Aires'
+        ) {
+          this.s_spinner
+            .runWithSpinner(
+              firstValueFrom(
+                this.s_ma.obtenerLocalidadPorNombre(
+                  partido,
+                  this.selectedProvincia.provinciaRiv
+                )
+              ),
+              ESpinner.Vaiven,
+              MSG_CP
+            )
+            .then((data: Localidad[] | undefined) => {
+              if (!data) return;
+              this.cpOpciones = ordenarPorNombre(data);
+
+              if (this.cpOpciones.length === 1) {
+                this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+                this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+              } else {
+                this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+                this.cotizacionForm.get('inderLocalidad')?.reset();
+              }
+            });
+        }
+      });
+    });
+
+    // ================== BARRIO (CABA) ==================
+    this.cotizacionForm.get('barrio')?.valueChanges.subscribe(barrio => {
+      if (barrio && this.selectedProvincia) {
+        this.s_spinner
+          .runWithSpinner(
+            firstValueFrom(
+              this.s_ma.obtenerLocalidadPorNombre(
+                `CABA ${barrio}`,
+                this.selectedProvincia.provinciaRiv
+              )
+            ),
+            ESpinner.Vaiven,
+            MSG_CP
+          )
+          .then((data: Localidad[] | undefined) => {
+            if (!data) return;
+            this.cpOpciones = ordenarPorNombre(data);
+
+            if (this.cpOpciones.length === 1) {
+              this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+              this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+            } else {
+              this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+              this.cotizacionForm.get('inderLocalidad')?.reset();
+            }
+          });
+      }
+    });
+
+    // ================== LOCALIDAD (Bs As u otra) ==================
     this.cotizacionForm.get('localidad')?.valueChanges.subscribe(localidad => {
       if (localidad && this.selectedProvincia) {
-        this.s_spinner.runWithSpinner(
-          firstValueFrom(
-            this.s_ma.obtenerLocalidadPorNombre(
-              localidad,
-              this.selectedProvincia.provinciaRiv
-            )
-          ),
-          ESpinner.Vaiven,
-          MSG_CP
-        ).then((data: Localidad[] | undefined) => {
-          if (!data) return;
+        this.s_spinner
+          .runWithSpinner(
+            firstValueFrom(
+              this.s_ma.obtenerLocalidadPorNombre(
+                localidad,
+                this.selectedProvincia.provinciaRiv
+              )
+            ),
+            ESpinner.Vaiven,
+            MSG_CP
+          )
+          .then((data: Localidad[] | undefined) => {
+            if (!data) return;
+            this.cpOpciones = ordenarPorNombre(data);
 
-          this.cpOpciones = data;
+            if (this.cpOpciones.length === 1) {
+              this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+              this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+            } else {
+              this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
+              this.cotizacionForm.get('inderLocalidad')?.reset();
+            }
+          });
+      }
+    });
 
-          if (this.cpOpciones.length === 1) {
-            this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
-            this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
-          } else {
+    // 🔹 Código Postal manual (para provincias distintas de Bs As o CABA)
+    this.cotizacionForm.get('cpManual')?.valueChanges.subscribe(cp => {
+      if (cp && String(cp).length >= 4) {
+        this.s_spinner
+          .runWithSpinner(
+            firstValueFrom(
+              this.s_ma.obtenerLocalidadPorCp(Number(cp))
+            ),
+            ESpinner.Vaiven,
+            'Validando código postal...'
+          )
+          .then((data: any[] | undefined) => {
+            if (!data || data.length === 0) return;
+
+            const item = data[0];
+            const cp = item.cp ?? null;
+            const inder = item.id ?? null;
+
+            if (cp && inder) {
+               // emitEvent: evita que se vuelva a llamar en bucle.
+              this.cotizacionForm.get('cpManual')?.setValue(cp, { emitEvent: false });
+              this.cotizacionForm.get('inderLocalidad')?.setValue(inder);
+            } else {
+              this.cotizacionForm.get('cpManual')?.reset({ emitEvent: false });
+              this.cotizacionForm.get('inderLocalidad')?.reset();
+            }
+
+          })
+
+          .catch(err => {
+            console.error("❌ Error validando CP manual:", err);
             this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
             this.cotizacionForm.get('inderLocalidad')?.reset();
-          }
-        });
+          });
       }
     });
 
 
   }
+
 
   onSelectCp(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
@@ -492,6 +557,16 @@ export class MulticotizadorComponent implements OnInit {
     return form.tipoVehiculo.nombre;
   }
 
+  private getCodigoPostal(): number {
+    const prov = this.selectedProvincia?.descripcion;
+    if (prov === 'Buenos Aires' || prov === 'Capital Federal') {
+      return this.cotizacionForm.get('cpLocalidadGuarda')?.value;
+    } else {
+      return this.cotizacionForm.get('cpManual')?.value;
+    }
+  }
+
+
   // ===== Cotizaciones =====
   //RIO URUGUAY
     async cotizarRUS() {
@@ -499,7 +574,13 @@ export class MulticotizadorComponent implements OnInit {
         console.error('❌ No hay productor logueado');
         return;
       }
-      const cotizacionData=buildRusRequest(this.form,this.codigoInfoAuto,this.productorLog,this.getTipoVehiculo());
+      const cotizacionData=buildRusRequest(
+        this.form,
+        this.codigoInfoAuto,
+        this.productorLog,
+        this.getTipoVehiculo(),
+        this.getCodigoPostal()
+      );
       try {
         const observable$ = this.s_rus.cotizar(cotizacionData);
         const respuesta = await firstValueFrom(observable$);
@@ -530,7 +611,8 @@ export class MulticotizadorComponent implements OnInit {
       const cotizacionData = buildMercantilRequest(
         this.form,
         this.codigoInfoAuto,
-        this.productorLog
+        this.productorLog,
+        this.getCodigoPostal()
       );
 
 
@@ -565,7 +647,8 @@ export class MulticotizadorComponent implements OnInit {
     const cotizacion: DatosCotizacionRivadavia = buildRivadaviaRequest(
       this.form,
       this.codigoInfoAuto,
-      this.productorLog
+      this.productorLog,
+      this.getCodigoPostal()
     );
 
     try {
@@ -749,7 +832,8 @@ export class MulticotizadorComponent implements OnInit {
       this.form,
       String(this.codigoInfoAuto),
       this.productorLog,
-      this.getTipoVehiculo()
+      this.getTipoVehiculo(),
+      this.getCodigoPostal()
     );
 
     try {
@@ -794,6 +878,15 @@ export class MulticotizadorComponent implements OnInit {
   async cotizar() {
     this.form = this.getForm();
     const esMoto = this.getTipoVehiculo() == ETipoVehiculo.MOTOVEHICULO;
+
+     //Elegir CP según provincia
+      const cp = this.selectedProvincia?.descripcion === 'Buenos Aires'
+      || this.selectedProvincia?.descripcion === 'Capital Federal'
+    ? this.cotizacionForm.get('cpLocalidadGuarda')?.value
+    : this.cotizacionForm.get('cpManual')?.value;
+
+
+    this.codigoPostalFederacion = cp;
 
     const tareaFederacion = async () => {
       if (esMoto) {

@@ -40,7 +40,7 @@ type VigenciasPorRamo = { [ramo: string]: Vigencia[] };
 
 const vigenciasPorRamo: VigenciasPorRamo = rawData;
 
-  export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor,tipo:string):CotizacionRioUruguay{
+  export function buildRusRequest(form: CotizacionFormValue,infoauto:number,productor:Productor,tipo:string,cp:number):CotizacionRioUruguay{
        //si id es 1 son 6 meses
       // si id es 3 son 3
       // si id es 65 son 3
@@ -71,7 +71,7 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
         const vehiculo: VehiculosRus[]=[{
             anio: String(form.anio),
             controlSatelital: getYesNo(form.controlSatelital,yes,no),
-            cpLocalidadGuarda:Number(form.cpLocalidadGuarda),
+            cpLocalidadGuarda:Number(cp),
             gnc: getYesNo(form.tieneGnc,yes,no),
             codia:infoauto,
             sumaAseguradaGnc:form.gnc,

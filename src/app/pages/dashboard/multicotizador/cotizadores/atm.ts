@@ -10,7 +10,8 @@ export function buildATMRequest(
   form: CotizacionFormValue,
   infoAuto: string,
   productor: Productor,
-  tipo: string
+  tipo: string,
+  cp:number
 ): string {
   const today = form.vigenciaDesde;
   const [year, month, day] = today.split("-");
@@ -61,7 +62,7 @@ export function buildATMRequest(
             <micrograbado>${micrograbado}</micrograbado>
             <alarma>${alarma}</alarma>
             <ajuste>${ajuste}</ajuste>
-            <codpostal>${form.cpLocalidadGuarda}</codpostal>
+            <codpostal>${cp}</codpostal>
             <cod_infoauto>${infoAuto}</cod_infoauto>
             <anofab>${form.anio}</anofab>
             <seccion>${seccionAuto}</seccion>

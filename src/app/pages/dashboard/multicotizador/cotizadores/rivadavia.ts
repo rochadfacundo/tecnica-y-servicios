@@ -39,7 +39,8 @@ async function loadPlanesRivadaviaMap(): Promise<Record<string, string>> {
 export function buildRivadaviaRequest(
   form: CotizacionFormValue,
   codigoInfoAuto: number,
-  productor: Productor
+  productor: Productor,
+  cp:number
 ) {
   const gnc = form.tieneGnc ? EstadoGNC.POSEE_GNC_ASEGURA : EstadoGNC.NO_POSEE_GNC;
   const valorGnc = form.gnc ? form.gnc : 0;
@@ -82,7 +83,7 @@ export function buildRivadaviaRequest(
         cantidadCuotas: configRiv.cantidadCuotas,
         tipoFacturacion: configRiv.tipoFacturacion,
         provincia: form.provincia.provinciaRiv,
-        codigoPostal: form.cpLocalidadGuarda,
+        codigoPostal: String(cp),
         sumaAseguradaAccesorios: valorGnc,
         sumaAseguradaEquipaje: 0,
         gnc: gnc,

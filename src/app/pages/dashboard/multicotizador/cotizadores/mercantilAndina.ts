@@ -3,13 +3,13 @@ import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue"
 import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../../interfaces/cotizacionMercantil";
 import { Productor } from "../../../../models/productor.model";
 
-export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor):CotizacionMercantil{
+export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor,cp:number):CotizacionMercantil{
   const TIPO_VEHICULO = form.tipoVehiculo.nombre;
   const ANIO = Number(form.anio);
   const codigoParticular=1;
   const configMA = productor.companias?.find(c => c.compania === 'MERCANTIL ANDINA');
   const LOCALIDAD:CotizacionLocalidad = {
-    codigo_postal: Number(form.cpLocalidadGuarda),
+    codigo_postal: Number(cp),
     provincia: form.provincia.descripcion,
     id: Number(form.inderLocalidad)
   };

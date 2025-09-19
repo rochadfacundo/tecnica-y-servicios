@@ -20,6 +20,21 @@ export async function filterCars(http: HttpClient, marcasOriginales: Brand[]): P
   });
 }
 
+// Para string[]
+export function ordenarStrings(arr: string[]): string[] {
+  return arr.slice().sort((a, b) =>
+    a.localeCompare(b, 'es', { sensitivity: 'base' })
+  );
+}
+
+// Para objetos con { nombre }
+export function ordenarPorNombre<T extends { nombre: string }>(arr: T[]): T[] {
+  return arr.slice().sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+  );
+}
+
+
 export const opcionesDeCobertura = [
   { id: ECobertura.RC, label: 'Responsabilidad Civil' },
   { id: ECobertura.ROBO, label: 'Robo' },
