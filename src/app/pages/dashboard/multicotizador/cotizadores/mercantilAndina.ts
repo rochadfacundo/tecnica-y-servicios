@@ -1,6 +1,6 @@
 import { CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
-import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, ProductorMercantil } from "../../../../interfaces/cotizacionMercantil";
+import { CotizacionLocalidad, CotizacionMercantil, CotizacionVehiculo, CotizacionVehiculoMoto, MercantilCotizado, ProductorMercantil, Resultado } from "../../../../interfaces/cotizacionMercantil";
 import { Productor } from "../../../../models/productor.model";
 
 export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,productor:Productor,cp:number):CotizacionMercantil{
@@ -58,9 +58,10 @@ export function buildMercantilRequest(form:CotizacionFormValue,infoauto:number,p
   return cotizacionData;
 }
 
-export function construirCotizacionMercantil(input: any): CompaniaCotizada {
-  const coberturas: any[] = Array.isArray(input) ? input : (input?.resultado ?? []);
-  const ajusteSuma: number = Array.isArray(input) ? 0 : Number(input?.ajuste_suma ?? 0);
+export function construirCotizacionMercantil(input: MercantilCotizado): CompaniaCotizada {
+  const coberturas = input.resultado;
+  const ajusteSuma: number = Number(input.ajuste_suma ?? 0);
+  const sumaAsegurada: number = Number(input.suma_asegurada ?? 0);
 
   const toNum = (v: any): number | undefined => {
     const n = Number(v);
@@ -75,16 +76,16 @@ export function construirCotizacionMercantil(input: any): CompaniaCotizada {
     return undefined;
   };
 
-  const premioDe = (cob?: any): number | undefined =>
+  const premioDe = (cob?: Resultado): number | undefined =>
     cob?.desglose?.total?.premio != null ? toNum(cob.desglose.total.premio) : undefined;
 
-  const humanDesc = (cob?: any): string => {
+  const humanDesc = (cob?: Resultado): string => {
     const raw = String(cob?.descripcion ?? cob?.texto ?? '').trim();
-    return "Plan "+raw.replace(/\s-\s/, ': ');
+    return "Plan " + raw.replace(/\s-\s/, ': ');
   };
 
   const ajusteStr = ajusteSuma === 0 ? 'Sin ajuste' : `Ajuste ${ajusteSuma}%`;
-  const tip = (cob?: any) => (cob ? `${humanDesc(cob)} - ${ajusteStr}` : '');
+  const tip = (cob?: Resultado) => (cob ? `${humanDesc(cob)} - ${ajusteStr}` : '');
 
   // === Picks por rol ===
   const rcCob  = buscar('A');
@@ -94,17 +95,18 @@ export function construirCotizacionMercantil(input: any): CompaniaCotizada {
   const c1Cob  = buscar('M PLUS', 'M PLUS+');
 
   // TR fijos
-  const d1Cob = buscar('D2 0020'); // 2%
-  const d2Cob = buscar('D2 0030'); // 3%
-  const d3Cob = buscar('D2 0040'); // 4%
-  const d4Cob = buscar('D2 0050'); // 5%
+  const d1Cob = buscar('D2 0020');
+  const d2Cob = buscar('D2 0030');
+  const d3Cob = buscar('D2 0040');
+  const d4Cob = buscar('D2 0050');
 
   const fila: CompaniaCotizada = {
     compania: 'Mercantil Andina',
+    sumaAsegurada,   // 👈 tomado directo de MercantilCotizado
     rc:  premioDe(rcCob),
     b1:  premioDe(b1Cob),
     b2:  premioDe(b2Cob),
-    c2:   premioDe(cCob),
+    c2:  premioDe(cCob),
     c3:  premioDe(c1Cob),
     d1:  premioDe(d1Cob),
     d2:  premioDe(d2Cob),
@@ -134,7 +136,7 @@ export function construirCotizacionMercantil(input: any): CompaniaCotizada {
       d4:  tip(d4Cob),
     },
     detallesPorCodigo: Object.fromEntries(
-      coberturas.map((c: any) => [
+      coberturas.map((c: Resultado) => [
         String(c.producto).toUpperCase(),
         {
           codigo: c.producto,

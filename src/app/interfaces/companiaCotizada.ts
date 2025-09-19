@@ -40,15 +40,16 @@ export interface CoberturaDet {
 
 /**
  * Modelo de una fila de la tabla para una compañía.
- * Conserva tus campos clásicos (rc/c/c1/d1/d2/d3) y agrega:
- * - detalles:    acceso por claves "genéricas" (CoberturaKey) si te sirve
+ * Conserva los campos clásicos (rc/c/c1/d1/d2/d3) y agrega:
+ * - detalles:    acceso por claves "genéricas" (CoberturaKey)
  * - detallesPorCodigo: acceso por código real de la compañía (A4/C/TD3/…)
- * - rol2codigo:  mapea cada rol de TU tabla al código real de la compañía
+ * - rol2codigo:  mapea cada rol de la tabla al código real de la compañía
  */
 export interface CompaniaCotizada {
   compania: string;
 
-  // Mismos campos que ya usabas para dibujar la tabla:
+  //Campos de la tabla
+  sumaAsegurada?: number;
   rc?: number;
   c?: number;
   c1?: number;
@@ -62,14 +63,14 @@ export interface CompaniaCotizada {
   d3?: number;
   d4?: number;
 
-  /** (Opcional) Detalles indexados por claves genéricas (si los querés usar) */
+  /** Detalles indexados por claves genéricas */
   detalles?: Partial<Record<CoberturaKey, CoberturaDet>>;
 
-  /** (Opcional) Detalles indexados por CÓDIGO real de la compañía (recomendado) */
+  /** Detalles indexados por CÓDIGO real de la compañía  */
   detallesPorCodigo?: Record<string, CoberturaDet>;
 
   /**
-   * (Opcional) Mapa de rol -> código real de la compañía.
+   * Mapa de rol -> código real de la compañía.
    * Ej Federación: { rc:'A4', c:'C', c1:'C1', d2:'TD3' } si la franquicia mapea a D2
    */
   rol2codigo?: Partial<Record<RolCobertura, string>>;

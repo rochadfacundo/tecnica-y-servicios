@@ -85,34 +85,50 @@ export function parsearXML(res: string): CotizacionATM[] {
   const parsed = parser.parse(res);
 
   // Acceso al nodo principal
-  const coberturas =
-  parsed["SOAP-ENV:Envelope"]
-  ["SOAP-ENV:Body"]
-  ["ns1:AUTOS_CotizarResponse"]
-  ["ns1:AUTOS_CotizarResult"].auto.cotizacion.cobertura;
+  const autoNode =
+    parsed["SOAP-ENV:Envelope"]
+          ["SOAP-ENV:Body"]
+          ["ns1:AUTOS_CotizarResponse"]
+          ["ns1:AUTOS_CotizarResult"].auto;
+
+  const coberturas = autoNode.cotizacion.cobertura;
+  const datosCotiz = autoNode.datos_cotiz;   // suma asegurada
 
   const toNum = (v: any) => Number.parseFloat(String(v));
+  const sumaAsegurada = datosCotiz?.suma ? toNum(datosCotiz.suma) : null;
 
-  const resultado: CotizacionATM[] = Array.isArray(coberturas)
-    ? coberturas.map((c: any) => ({
-        codigo: c.codigo,
-        descripcion: c.descripcion,
-        prima: toNum(c.prima),
-        premio: toNum(c.premio),
-        cuotas: Number.parseInt(c.cuotas),
-        impcuotas: toNum(c.impcuotas),
-        ajuste: c.ajuste,
-        formapago: c.formapago,
-        plan_cot: c.plan_cot,
-        solicitud_glm: c.solicitud_glm,
-        comision: c.comision != null ? toNum(c.comision) : undefined,
-      }))
-    : [];
+  let resultado: CotizacionATM[] = [];
 
+  try {
+    if (!sumaAsegurada) {
+      throw new Error("No se pudo obtener la suma asegurada de la cotización ATM.");
+    }
 
-    console.log(resultado);
+    resultado = Array.isArray(coberturas)
+      ? coberturas.map((c: any) => ({
+          codigo: c.codigo,
+          descripcion: c.descripcion,
+          prima: toNum(c.prima),
+          premio: toNum(c.premio),
+          cuotas: Number.parseInt(c.cuotas),
+          impcuotas: toNum(c.impcuotas),
+          ajuste: c.ajuste,
+          formapago: c.formapago,
+          plan_cot: c.plan_cot,
+          solicitud_glm: c.solicitud_glm,
+          comision: c.comision != null ? toNum(c.comision) : undefined,
+          sumaAsegurada
+        }))
+      : [];
+  } catch (error) {
+    console.error("❌ Error al parsear XML ATM:", error);
+  }
+
+  console.log("➡️ Resultado ATM:", resultado);
   return resultado;
 }
+
+
 
 
 export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
@@ -128,13 +144,14 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
 
   const companiaCotizada: CompaniaCotizada = {
     compania: "ATM",
+    sumaAsegurada: coberturas.length > 0 ? coberturas[0].sumaAsegurada ?? null : null,
     rc: buscarCobertura("A0")?.premio,
     b1: buscarCobertura("B1")?.premio,
     b2: buscarCobertura("B0")?.premio,
     c1:  buscarCobertura("C0", "C0-BASICA", "B2")?.premio,
     c2: buscarCobertura("C3", "C3-MEDIA")?.premio,
-    c3: buscarCobertura("C2", "C2-MEDIA")?.premio,   // 👈 ahora busca C2
-    c4: buscarCobertura("C4", "C4-MEDIA")?.premio,   // 👈 busca C4
+    c3: buscarCobertura("C2", "C2-MEDIA")?.premio,
+    c4: buscarCobertura("C4", "C4-MEDIA")?.premio,
     d1: buscarCobertura("D1", "D2", "C")?.premio,
     d2: buscarCobertura("D3")?.premio,
     d3: buscarCobertura("D4")?.premio,
@@ -151,10 +168,10 @@ export function construirCotizacionATM(coberturas: any[]): CompaniaCotizada {
     b1: ["B1"],
     b2: ["B0"],
     c:  [], // ya no se usa
-    c1: ["C0", "C0-BASICA", "B2"],   // ✅ c1 es C0
-    c2: ["C3", "C3-MEDIA"],          // ✅ c2 es C3
-    c3: ["C2", "C2-MEDIA"],          // ✅ c3 es C2
-    c4: ["C4", "C4-MEDIA"],          // ✅ c4 es C4
+    c1: ["C0", "C0-BASICA", "B2"],   //  c1 es C0
+    c2: ["C3", "C3-MEDIA"],          //  c2 es C3
+    c3: ["C2", "C2-MEDIA"],          //  c3 es C2
+    c4: ["C4", "C4-MEDIA"],          //  c4 es C4
     d1: ["D1", "D2", "C"],
     d2: ["D3"],
     d3: ["D4"],

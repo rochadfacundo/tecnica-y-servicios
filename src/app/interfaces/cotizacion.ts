@@ -19,4 +19,5 @@ export interface CotizacionATM {
   plan_cot: string;
   solicitud_glm: string;
   comision?: number;
+  sumaAsegurada?: number;
 }

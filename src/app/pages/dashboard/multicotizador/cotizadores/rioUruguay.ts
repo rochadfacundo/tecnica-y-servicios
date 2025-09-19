@@ -20,16 +20,11 @@
 // como esta y Rc como esta
 // T44 es 10%: NO LA VAMOS A USAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-
-
-
 import { CotizacionFormValue } from "../../../../interfaces/cotizacionFormValue";
-import { CondicionFiscalRus, CotizacionRioUruguay, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
+import { CondicionFiscalRus, CotizacionRioUruguay, RusCotizado, TipoVehiculoRUS, VehiculosRus } from "../../../../interfaces/cotizacionRioUruguay";
 import { TipoDeUso } from "../../../../enums/tiposDeUso";
-import { getRandomNumber, getYesNo } from "../../../../utils/utils";
+import { getYesNo } from "../../../../utils/utils";
 import { Productor } from "../../../../models/productor.model";
-import { Compania } from "../../../../interfaces/compania";
 import rawData from '../../../../../assets/vigenciasRUS.json';
 import { CoberturaDet, CompaniaCotizada } from "../../../../interfaces/companiaCotizada";
 
@@ -126,7 +121,10 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     return match?.id || 0;
   }
 
-  export function construirCotizacionRus(coberturas: any[], tipoVehiculo: string): CompaniaCotizada {
+  export function construirCotizacionRus(
+    coberturas: RusCotizado[],
+    tipoVehiculo: string
+  ): CompaniaCotizada {
     const norm = (s?: string) => (s ?? '').toUpperCase().trim();
 
     const stripHtml = (s?: string) =>
@@ -135,82 +133,83 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
         .replace(/\s+/g, ' ')
         .trim();
 
-    const premio = (item?: any): number | undefined => {
+    const premio = (item?: RusCotizado): number | undefined => {
       const n = Number(item?.premio);
       return Number.isFinite(n) ? n : undefined;
     };
 
-    const humanDesc = (item: any): string => {
+    const humanDesc = (item: RusCotizado | undefined): string => {
       if (!item) return '';
-      let raw = stripHtml(item?.descripcionComercial ?? item?.descripcionCasco ?? item?.detalleCoberturaRC ?? '');
-
-      // 🧹 eliminar repeticiones tipo "(T31)" o "(T32)" que ya están en el código
-      raw = raw.replace(/\([A-Z0-9\-]+\)$/i, '').trim();
-
+      let raw = stripHtml(
+        item.descripcionComercial ??
+          item.descripcionCasco ??
+          item.detalleCoberturaRC ??
+          ''
+      );
+      raw = raw.replace(/\([A-Z0-9\-]+\)$/i, '').trim(); // elimina (T31), (T32), etc
       return raw;
     };
 
-
-    const tipFor = (item?: any) => item ? `${humanDesc(item)} - Ajuste ${item?.ajusteAutomatico || 'N/D'}` : '';
+    const tipFor = (item?: RusCotizado) =>
+      item ? `${humanDesc(item)} - Ajuste ${item.ajusteAutomatico || 'N/D'}` : '';
 
     // --- índices por código ---
-    const byCode: Record<string, any> = {};
-    const rcItems: any[] = [];
+    const byCode: Record<string, RusCotizado> = {};
+    const rcItems: RusCotizado[] = [];
     for (const it of coberturas ?? []) {
       const codeCasco = norm(it?.codigoCasco);
-      const codeRC    = norm(it?.codigoRC);
+      const codeRC = norm(it?.codigoRC);
       if (codeCasco) byCode[codeCasco] = it;
       if (!codeCasco && codeRC) rcItems.push(it);
     }
 
     // helpers
-    const getRC = () => {
-      // 👉 prioridad a RCA C/GRUA
-      const conGrua = rcItems.find(it => norm(it?.codigoRC) === 'RCA C/GRUA');
+    const getRC = (): RusCotizado | undefined => {
+      const conGrua = rcItems.find(
+        (it) => norm(it?.codigoRC) === 'RCA C/GRUA'
+      );
       if (conGrua) return conGrua;
 
-      // fallback a RCA o RCA S/GRUA
-      return rcItems.find(it =>
-        ['RCA','RCA S/GRUA','RCM'].includes(norm(it?.codigoRC))
+      return rcItems.find((it) =>
+        ['RCA', 'RCA S/GRUA', 'RCM'].includes(norm(it?.codigoRC))
       );
     };
 
     const get = (code: string) => byCode[norm(code)];
 
     // === Roles ===
-    const rcIt  = getRC();
-    const b1It  = get('B1-80');
-    const b2It  = get('B-80');
-    const cIt   = get('C3-80');
-    const c1It  = get('S0') || get('S') || get('SIGMA IMPORTADOS');
+    const rcIt = getRC();
+    const b1It = get('B1-80');
+    const b2It = get('B-80');
+    const cIt = get('C3-80');
+    const c1It = get('S0') || get('S') || get('SIGMA IMPORTADOS');
 
     // TR fijos
     const d1It = get('T34'); // 2%
     const d2It = get('T32'); // 3%
     const d3It = get('T31'); // 5%
     const d4It = get('T37'); // 7%
-    // T44 ignorado
 
     // === mapas ===
     const rol2codigo: Record<string, string> = {};
     const rol2tooltip: Record<string, string> = {};
 
-    const setIf = (rol: string, code: string | undefined, item: any) => {
+    const setIf = (rol: string, code: string | undefined, item: RusCotizado) => {
       if (code && item) {
         rol2codigo[rol] = code;
         rol2tooltip[rol] = tipFor(item);
       }
     };
 
-    setIf('rc',  norm(rcIt?.codigoRC), rcIt);
-    setIf('b1',  'B1-80', b1It);
-    setIf('b2',  'B-80', b2It);
-    setIf('c2', 'C3-80', cIt);
-    setIf('c3', norm(c1It?.codigoCasco), c1It);
-    setIf('d1',  'T34', d1It);
-    setIf('d2',  'T32', d2It);
-    setIf('d3',  'T31', d3It);
-    setIf('d4',  'T37', d4It);
+    setIf('rc', norm(rcIt?.codigoRC), rcIt!);
+    setIf('b1', 'B1-80', b1It!);
+    setIf('b2', 'B-80', b2It!);
+    setIf('c2', 'C3-80', cIt!);
+    setIf('c3', norm(c1It?.codigoCasco), c1It!);
+    setIf('d1', 'T34', d1It!);
+    setIf('d2', 'T32', d2It!);
+    setIf('d3', 'T31', d3It!);
+    setIf('d4', 'T37', d4It!);
 
     // === detallesPorCodigo ===
     const detallesPorCodigo: Record<string, CoberturaDet> = {};
@@ -227,15 +226,28 @@ const vigenciasPorRamo: VigenciasPorRamo = rawData;
     const fila: CompaniaCotizada = {
       compania: 'Río Uruguay',
 
-      rc:  premio(rcIt),
-      b1:  premio(b1It),
-      b2:  premio(b2It),
-      c2:  premio(cIt),
-      c3:  premio(c1It),
-      d1:  premio(d1It),
-      d2:  premio(d2It),
-      d3:  premio(d3It),
-      d4:  premio(d4It),
+      rc: premio(rcIt),
+      b1: premio(b1It),
+      b2: premio(b2It),
+      c2: premio(cIt),
+      c3: premio(c1It),
+      d1: premio(d1It),
+      d2: premio(d2It),
+      d3: premio(d3It),
+      d4: premio(d4It),
+
+      sumaAsegurada: Number(
+        rcIt?.sumaAsegurada ??
+          b1It?.sumaAsegurada ??
+          b2It?.sumaAsegurada ??
+          cIt?.sumaAsegurada ??
+          c1It?.sumaAsegurada ??
+          d1It?.sumaAsegurada ??
+          d2It?.sumaAsegurada ??
+          d3It?.sumaAsegurada ??
+          d4It?.sumaAsegurada ??
+          0
+      ),
 
       rol2codigo,
       rol2tooltip,

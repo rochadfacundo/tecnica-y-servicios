@@ -8,23 +8,14 @@ export interface CotizacionMercantil {
   cuotas?:number;
   comision?:number;
   bonificacion?:number;
+  suma_asegurada?:number;
   ajuste_suma?:number;
   iva?:number;
   desglose?:boolean;
 
 }
 
-export interface VehiculoMarcaMercantil{
-  codigo:number;
-  desc:string;
-}
 
-export interface CotizacionLocalidad {
-  codigo_postal: number;
-  id?: number;
-  nombre?: string;
-  provincia?: string;
-}
 
 //COTIZACION PAGO?
 /*
@@ -75,7 +66,7 @@ export interface MercantilCotizado {
   id: number;
   rama: number;
   localidad: CotizacionLocalidad;
-  vehiculo: CotizacionVehiculo;
+  vehiculo: CotizacionVehiculo | CotizacionVehiculoMoto| null;
   suma_asegurada: number;
   iva: number;
   ajuste_suma: number;
@@ -88,6 +79,18 @@ export interface MercantilCotizado {
   productor: ProductorMercantil;
   cantidad: number;
   resultado: Resultado[];
+}
+
+export interface VehiculoMarcaMercantil{
+  codigo:number;
+  desc:string;
+}
+
+export interface CotizacionLocalidad {
+  codigo_postal: number;
+  id?: number;
+  nombre?: string;
+  provincia?: string;
 }
 
 export interface Resultado {

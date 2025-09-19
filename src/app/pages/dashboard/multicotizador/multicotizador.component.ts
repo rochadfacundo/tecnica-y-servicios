@@ -421,13 +421,9 @@ export class MulticotizadorComponent implements OnInit {
             if (!data) return;
             this.cpOpciones = ordenarPorNombre(data);
 
-            if (this.cpOpciones.length === 1) {
-              this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
-              this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
-            } else {
-              this.cotizacionForm.get('cpLocalidadGuarda')?.reset();
-              this.cotizacionForm.get('inderLocalidad')?.reset();
-            }
+            this.cotizacionForm.get('cpLocalidadGuarda')?.setValue(this.cpOpciones[0].cp);
+            this.cotizacionForm.get('inderLocalidad')?.setValue(this.cpOpciones[0].id);
+
           });
       }
     });
@@ -622,7 +618,7 @@ export class MulticotizadorComponent implements OnInit {
       const respuesta = await firstValueFrom(observable$);
 
       console.log('✅ Cotización exitosa Mercantil Andina:', respuesta);
-      const cotizacionMercantil = construirCotizacionMercantil(respuesta.resultado);
+      const cotizacionMercantil = construirCotizacionMercantil(respuesta);
       this.cotizaciones.companiasCotizadas.push(cotizacionMercantil);
     } catch (error: any) {
 
@@ -741,7 +737,8 @@ export class MulticotizadorComponent implements OnInit {
         respuesta?.coberturas?.planes ?? [],
         respuesta?.coberturas?.franquicia,
         this.getTipoVehiculo(),
-        respuesta?.coberturas?.ajuste_automatico
+        respuesta?.coberturas?.ajuste_automatico,
+        respuesta?.vehiculo?.suma_asegurada
       );
 
       // 🔑 1) Asegurar UNA sola fila “Federación Patronal” (upsert sin duplicar)
@@ -890,6 +887,9 @@ export class MulticotizadorComponent implements OnInit {
 
     this.codigoPostalFederacion = cp;
 
+    console.log(this.codigoPostalFederacion);
+
+
     const tareaFederacion = async () => {
       if (esMoto) {
         await this.cotizarFederacion(sinFranquicia);
@@ -935,5 +935,8 @@ export class MulticotizadorComponent implements OnInit {
         } as Vehiculo
       }
     });
+
+
+
   }
 }
