@@ -409,13 +409,15 @@ export class MulticotizadorComponent implements OnInit {
             firstValueFrom(
               this.s_ma.obtenerLocalidadPorNombre(
                 localidad,
-                this.selectedProvincia.provinciaRiv
+                this.selectedProvincia.provinciaRiv,
+                this.cotizacionForm.get('partido')?.value
               )
             ),
             ESpinner.Vaiven,
             MSG_CP
           )
           .then((data: Localidad[] | undefined) => {
+
             if (!data) return;
             this.cpOpciones = ordenarPorNombre(data);
 

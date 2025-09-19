@@ -36,9 +36,14 @@ export class MercantilAndinaService {
     });
   }
 
-  obtenerLocalidadPorNombre(nombre: string, provincia: string): Observable<any> {
+  obtenerLocalidadPorNombre(nombre: string, provincia: string,partido?:string ): Observable<any> {
     return this.http.get(`${this.API_URL}/localidades`, {
-      params: { nombre, provincia }
+      params: {
+        nombre,
+        provincia ,
+        ...(partido ? { partido } : {})
+
+      }
     });
   }
 

@@ -20,7 +20,7 @@
     "Liniers",
     "Mataderos",
     "Monte Castro",
-    "Núñez",
+    "Nuñez",
     "Parque Avellaneda",
     "Parque Chacabuco",
     "Parque Chas",
@@ -29,13 +29,13 @@
     "Puerto Madero",
     "Retiro",
     "Saavedra",
-    "San Cristóbal",
+    "San Cristobal",
     "San Nicolás",
     "San Telmo",
-    "Vélez Sarsfield",
+    "Velez Sarsfield",
     "Versalles",
     "Villa Devoto",
-    "Villa Gral. Mitre",
+    "Villa Mitre",
     "Villa Lugano",
     "Villa Luro",
     "Villa Ortúzar",
@@ -48,7 +48,7 @@
 },
   "Zona Norte": {
     "Vicente López": [
-      "Vicente López",
+      "Vicente Lopez",
       "Olivos",
       "Florida",
       "La Lucila",
@@ -59,8 +59,8 @@
     ],
     "San Isidro": [
       "Villa Adelina",
-      "Boulogne Sur Mer",
-      "Martínez",
+      "Boulogne",
+      "Martinez",
       "Acassuso",
       "San Isidro",
       "Beccar"
@@ -69,7 +69,7 @@
       "San Fernando",
       "Victoria",
       "Virreyes",
-      "Islas del Delta del Paraná"
+      "Delta"
     ],
     "Tigre": [
       "Tigre",
@@ -77,130 +77,59 @@
       "General Pacheco",
       "El Talar",
       "Troncos del Talar",
-      "Benavídez",
-      "Dique Luján",
+      "Benavidez",
+      "Dique Lujan",
       "Ricardo Rojas",
-      "Rincón de Milberg"
+      "Rincon de Milberg"
     ],
     "Escobar": [
-      "Belén de Escobar",
-      "Garín",
+      "Escobar",
+      "Garin",
       "Ingeniero Maschwitz",
       "Matheu",
-      "Maquinista F. Savio",
-      "Puerto Paraná",
+      "Maquinista Savio",
+      "Parana",
       "Loma Verde"
     ],
     "Pilar": [
       "Del Viso",
-      "Fátima",
+      "Fatima",
       "La Lonja",
       "Manzanares",
-      "Champagnat",
-      "San Francisco",
+      "Pilar",
       "Derqui",
       "Villa Astolfi",
       "Manzone",
       "Manuel Alberti",
-      "Lagomarsino",
       "Villa Rosa",
       "Zelaya"
     ],
     "José C. Paz": [
-      "Barrio 20 de Junio",
-      "Barrio 25 de mayo",
-      "Barrio 25 de mayo sur",
-      "Barrio 9 de julio",
-      "Barrio Alberdi",
-      "Barrio Alberdi oeste",
-      "Barrio Antártida Argentina",
-      "Barrio Centenario",
-      "Barrio Diana",
-      "Barrio El Cruce",
-      "Barrio El Ombú",
-      "Barrio Frino norte",
-      "Barrio Frino sur",
-      "Barrio Infico",
-      "Barrio Juan Vucetich",
-      "Barrio La Cava",
-      "Barrio La Paz",
-      "Barrio Las Acacias",
-      "Barrio Las Heras",
-      "Barrio Lido",
-      "Barrio Mirador Altube",
-      "Barrio Monte Criollo",
-      "Barrio Moreno",
-      "Barrio Parque Abascal",
-      "Barrio Parque Alvear III",
-      "Barrio Parque Alvear IV",
-      "Barrio Parque Golf Club",
-      "Barrio Parque Jardín",
-      "Barrio Parque Peró",
-      "Barrio Piñero",
-      "Barrio Primavera",
-      "Barrio Roosvelt",
-      "Barrio Sagrada Familia",
-      "Barrio San Atilio",
-      "Barrio San Gabriel",
-      "Barrio San Luis",
-      "Barrio San Martín Oeste",
-      "Barrio Santa Paula",
-      "Barrio Sarmiento norte",
-      "Barrio Sol y Verde",
-      "Barrio Urquiza",
-      "Barrio Villa Altube",
-      "Barrio Villa Iglesias",
-      "Barrio Villa Germano",
-      "Barrio Yei Porá",
-      "Barrio Zonino"
+      "Jose C. Paz"
     ],
     "Malvinas Argentinas": [
-      "Área de Promoción El Triángulo",
       "Grand Bourg",
-      "Ingeniero Adolfo Sourdeaux",
-      "Ingeniero Pablo Nogués",
+      "Adolfo Sordeaux",
+      "Pablo Nogues",
       "Los Polvorines",
       "Tortuguitas",
       "Villa de Mayo",
-      "Tierras Altas",
       "Malvinas Argentinas"
     ],
     "San Miguel": [
       "San Miguel",
       "Bella Vista",
-      "Campo de Mayo",
       "Muñiz",
-      "Santa María"
+      "Santa Maria"
     ],
     "General San Martín": [
       "Villa Lynch",
-      "Villa Parque Presidente Figueroa Alcorta",
-      "Villa Monteagudo",
-      "Villa Chacabuco",
-      "Villa Maipú",
-      "Villa Granaderos de San Martín",
-      "Villa San Lorenzo",
-      "Villa Marqués",
-      "San Andrés",
-      "Villa Yapeyú",
-      "Villa San Martín",
-      "Villa Ayacucho",
-      "Villa Libertad",
+      "San Andres",
+      "San Martin",
       "Billinghurst",
-      "Villa Bonich",
-      "Villa General Las Heras",
-      "Villa Gregoria Matorras",
       "Villa Ballester",
-      "Villa Tomás Guido",
-      "Villa Sucre",
-      "Villa Godoy Cruz",
-      "Villa Zapiola",
-      "Barrio de Jefes y Oficiales General San Martín",
-      "Villa Remedios de Escalada",
-      "Ciudad Jardín El Libertador",
-      "Villa Independencia",
-      "José León Suárez",
-      "Villa Necochea"
+      "Ciudad Jardin",
+      "Jose Leon Suarez"
     ]
   },
   "Zona Sur": {
@@ -209,71 +138,63 @@
       "Dock Sud",
       "Gerli",
       "Piñeyro",
-      "Sarandí",
-      "Villa Domínico",
+      "Sarandi",
+      "Villa Dominico",
       "Wilde"
     ],
     "Lanús": [
       "Gerli",
-      "Lanús",
+      "Lanus",
       "Monte Chingolo",
       "Remedios de Escalada",
-      "Valentín Alsina"
+      "Valentin Alsina"
     ],
     "Lomas de Zamora": [
       "Banfield",
       "Ingeniero Budge",
-      "Llavallol",
+      "Lavallol",
       "Lomas de Zamora",
-      "San José1",
+      "San Jose",
       "Temperley",
       "Turdera",
       "Villa Centenario",
       "Villa Fiorito",
-      "Villa Albertina",
-      "Parque Barón",
-      "Villa Lamadrid",
-      "Santa Catalina",
-      "Santa Marta"
+      "Villa Albertina"
     ],
     "Esteban Echeverría": [
-      "Nueve de Abril",
+      "9 de Abril",
       "Canning",
-      "El Jagüel",
-      "Luis Guillón",
+      "El Jaguel",
+      "Luis Guillon",
       "Monte Grande"
     ],
     "Ezeiza": [
-      "Aeropuerto Internacional Ezeiza",
+      "Ezeiza",
       "Canning",
       "Carlos Spegazzini",
-      "Ezeiza",
-      "La Unión",
-      "Tristán Suárez"
+      "La Union",
+      "Tristan Suarez"
     ],
     "San Vicente": [
       "San Vicente",
       "Alejandro Korn",
-      "Domselaar",
-      "Las Gaviotas de Canning"
+      "Domselaar"
     ],
     "Presidente Perón": [
       "Guernica"
     ],
     "Almirante Brown": [
-      "Adrogué",
+      "Adrogue",
       "Burzaco",
       "Claypole",
-      "Don Orione",
       "Glew",
-      "José Mármol",
+      "Jose Marmol",
       "Longchamps",
       "Malvinas Argentinas",
       "Ministro Rivadavia",
       "Rafael Calzada",
-      "San Francisco de Asís",
       "San Francisco Solano",
-      "San José"
+      "San Jose"
     ],
     "Quilmes": [
       "Bernal",
@@ -286,23 +207,20 @@
     "Berazategui": [
       "Berazategui",
       "Hudson",
-      "Juan María Gutiérrez",
+      "Gutierrez",
       "Sourigues",
       "Pereyra",
-      "Plátanos",
+      "Platanos",
       "Villa España",
       "El Pato"
     ],
     "Florencio Varela": [
       "Bosques",
       "Florencio Varela",
-      "Estanislao Severo Zeballos",
-      "Gobernador Julio A. Costa",
+      "Zeballos",
+      "Gobernador Costa",
       "Ingeniero Juan Allan",
-      "La Capilla",
       "Villa Brown",
-      "Villa San luis",
-      "Villa Santa Rosa",
       "Villa Vatteone"
     ]
   },
@@ -310,15 +228,15 @@
     "La Matanza": [
       "20 de Junio",
       "Aldo Bonzi",
-      "Ciudad Celina",
+      "La Celina",
       "Ciudad Evita",
-      "González Catán",
-      "Gregorio de Laferrere",
+      "Gonzalez Catan",
+      "Laferrere",
       "Isidro Casanova",
       "La Tablada",
       "Lomas del Mirador",
       "Rafael Castillo",
-      "Ramos Mejía",
+      "Ramos Mejia",
       "San Justo",
       "Tapiales",
       "Villa Luzuriaga",
@@ -328,16 +246,16 @@
     "Tres de Febrero": [
       "Caseros",
       "Churruca",
-      "Ciudad Jardín",
+      "Ciudad Jardin",
       "Ciudadela",
       "El Libertador",
-      "José Ingenieros",
+      "Jose Ingenieros",
       "Loma Hermosa",
-      "Martín Coronado",
+      "Martin Coronado",
       "11 de Septiembre",
-      "Pablo Podestá",
+      "Pablo Podesta",
       "Remedios de Escalada",
-      "Sáenz Peña",
+      "Saenz Peña",
       "Santos Lugares",
       "Villa Bosch",
       "Villa Raffo"
@@ -345,17 +263,17 @@
     "Hurlingham": [
       "Hurlingham",
       "Villa Tesei",
-      "William C. Morris"
+      "William Morris"
     ],
     "Morón": [
-      "Morón",
+      "Moron",
       "Castelar",
       "El Palomar",
       "Haedo",
       "Villa Sarmiento"
     ],
     "Ituzaingó": [
-      "Ituzaingó",
+      "Ituzaingo",
       "Villa Udaondo"
     ],
     "Merlo": [
@@ -363,27 +281,25 @@
       "San Antonio de Padua",
       "Libertad",
       "Mariano Acosta",
-      "Parque San Martín",
+      "Parque San Martin",
       "Pontevedra"
     ],
     "Moreno": [
       "Moreno",
       "La Reja",
-      "Francisco Álvarez",
+      "Francisco Alvarez",
       "Cuartel V",
       "Trujui",
       "Paso del Rey"
     ],
     "General Rodríguez": [
-      "General Rodríguez"
+      "General Rodriguez"
     ],
     "Marcos Paz": [
       "Marcos Paz",
-      "Elías Romero",
+      "Elias Romero",
       "Santa Rosa",
-      "Lisandro de la Torre",
-      "Santa Marta",
-      "Barrio El Portugués"
+      "Santa Marta"
     ]
   },
   "Fuera de AMBA": {
